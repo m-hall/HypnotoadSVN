@@ -32,6 +32,15 @@
 							{
 								"command": "open_file",
 								"args": {
+									"file": "${packages}/TortoiseSVN/Side Bar.sublime-menu",
+									"platform": "Windows"
+								},
+								"caption": "Side Bar Menu"
+							},
+							{ "caption": "-" },
+							{
+								"command": "open_file",
+								"args": {
 									"file": "${packages}/TortoiseSVN/Default (Windows).sublime-keymap",
 									"platform": "Windows"
 								},
