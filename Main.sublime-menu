@@ -30,6 +30,14 @@
 							},
 							{ "caption": "-" },
 							{
+								"command": "open_read_only",
+								"args": {
+									"file": "${packages}/TortoiseSVN/Default Side Bar.sublime-menu",
+									"platform": "Windows"
+								},
+								"caption": "Default Side Bar Menu"
+							},
+							{
 								"command": "open_file",
 								"args": {
 									"file": "${packages}/TortoiseSVN/Side Bar.sublime-menu",

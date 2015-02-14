@@ -1,0 +1,20 @@
+[
+    { "caption": "-" },
+    { "caption": "SVN Update", "command": "svn_update", "args": {"paths":[]}},
+    { "caption": "SVN Commit", "command": "svn_commit", "args": {"paths":[]}},
+    { "caption": "SVN Merge", "command": "svn_merge", "args": {"paths":[]}},
+    { "caption": "SVN Diff", "command": "svn_diff", "args": {"paths":[]}},
+    { "caption": "SVN Diff with previous version", "command": "svn_diff_previous", "args": {"paths":[]}},
+    {
+        "caption": "SVN",
+        "children": [
+            { "caption": "Revert", "command": "svn_revert", "args": {"paths":[]}},
+            { "caption": "Add", "command": "svn_add", "args": {"paths":[]}},
+            { "caption": "Delete", "command": "svn_delete", "args": {"paths":[]}},
+            { "caption": "Log", "command": "svn_log", "args": {"paths":[]}},
+            { "caption": "Blame", "command": "svn_blame", "args": {"paths":[]}},
+            { "caption": "Switch", "command": "svn_switch", "args": {"paths":[]}}
+        ]
+    }
+    { "caption": "-", "id": "end" }
+]

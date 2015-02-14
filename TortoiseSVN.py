@@ -53,6 +53,21 @@ class TortoiseSvnCommand(sublime_plugin.WindowCommand):
         out, err = proce.communicate()
         return out
 
+class OpenReadOnlyCommand(sublime_plugin.WindowCommand):
+    def run(self, paths=None):
+        dir = self.get_path(paths)
+        view = sublime.active_window().open_file(dir)
+        view.set_read_only(True)
+
+    def get_path(self, paths):
+        path = None
+        if paths:
+            path = '*'.join(paths)
+        else:
+            view = sublime.active_window().active_view()
+            path = view.file_name() if view else None
+
+        return path
 
 class MutatingTortoiseSvnCommand(TortoiseSvnCommand):
     def run(self, cmd, paths=None):
