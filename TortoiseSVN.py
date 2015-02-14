@@ -3,21 +3,16 @@ import sublime_plugin
 import os
 import os.path
 import subprocess
+import re
+
 
 class TortoiseSvnCommand(sublime_plugin.WindowCommand):
     def run(self, cmd, paths=None, isHung=False):
-        if paths is not None:
-            for index, path in enumerate(paths):
-              if "${PROJECT_PATH}" in path:
-                  project_data  = sublime.active_window().project_data()
-                  project_folder = project_data['folders'][0]['path']
-                  path = path.replace("${PROJECT_PATH}", project_folder);
-                  paths[index] = path	
         dir = self.get_path(paths)
 
         if not dir:
             return
-            
+
         settings = self.get_setting()
         tortoiseproc_path = settings.get('tortoiseproc_path')
 
@@ -48,15 +43,25 @@ class TortoiseSvnCommand(sublime_plugin.WindowCommand):
     def get_setting(self):
         return sublime.load_settings('TortoiseSVN.sublime-settings')
 
+    def get_status (self, paths):
+        dir = self.get_path(paths)
+
+        if not dir:
+            return
+
+        proce = subprocess.Popen('svn status "%s"' % dir, stdout=subprocess.PIPE, shell=False, creationflags=0x08000000)
+        out, err = proce.communicate()
+        return out
+
 
 class MutatingTortoiseSvnCommand(TortoiseSvnCommand):
     def run(self, cmd, paths=None):
         TortoiseSvnCommand.run(self, cmd, paths, True)
-        
-        self.view = sublime.active_window().active_view()
-        row, col = self.view.rowcol(self.view.sel()[0].begin())
-        self.lastLine = str(row + 1);
-        sublime.set_timeout(self.revert, 100)
+
+        #self.view = sublime.active_window().active_view()
+        #row, col = self.view.rowcol(self.view.sel()[0].begin())
+        #self.lastLine = str(row + 1);
+        #sublime.set_timeout(self.revert, 100)
 
     def revert(self):
         self.view.run_command('revert')
@@ -102,6 +107,50 @@ class SvnDiffCommand(TortoiseSvnCommand):
     def run(self, paths=None):
         TortoiseSvnCommand.run(self, 'diff', paths)
 
+    def is_visible(self, paths=None):
+        file = self.get_path(paths)
+        realFile = os.path.isfile(file)
+        if not realFile:
+            return False
+        status = self.get_status(paths)
+        return len(status) > 0
+
+class SvnDiffPreviousCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        last = int(self.get_last(paths)) - 1
+        current = self.get_current(paths)
+        TortoiseSvnCommand.run(self, 'diff /startrev:' + str(last) + ' /endrev:'+current, paths)
+
+    def is_visible(self, paths=None):
+        file = self.get_path(paths)
+        realFile = os.path.isfile(file)
+        if not realFile:
+            return False
+        status = self.get_status(paths)
+        return len(status) == 0
+
+    def get_current (self, paths):
+        dir = self.get_path(paths)
+
+        if not dir:
+            return
+
+        proce = subprocess.Popen('svnversion "%s"' % dir, stdout=subprocess.PIPE, shell=False, creationflags=0x08000000)
+        out, err = proce.communicate()
+        return out.decode('UTF-8')
+
+    def get_last (self, paths):
+        dir = self.get_path(paths)
+
+        if not dir:
+            return
+
+        proce = subprocess.Popen('svn info "%s"' % dir, stdout=subprocess.PIPE, shell=False, creationflags=0x08000000)
+        out, err = proce.communicate()
+        p = re.compile(r"Last Changed Rev: (\d+)", re.MULTILINE)
+        versionLine = p.search(out.decode('UTF-8'))
+        return versionLine.group(1)
+
 
 class SvnBlameCommand(TortoiseSvnCommand):
     def run(self, paths=None):
@@ -118,3 +167,11 @@ class SvnBlameCommand(TortoiseSvnCommand):
 class SvnAddCommand(TortoiseSvnCommand):
     def run(self, paths=None):
         TortoiseSvnCommand.run(self, 'add', paths)
+
+class SvnDeleteCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'remove', paths)
+
+class SvnMergeCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'merge', paths)

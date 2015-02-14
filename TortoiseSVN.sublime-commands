@@ -2,5 +2,11 @@
 	{ "caption": "TortoiseSVN: Update", "command": "svn_update" },
 	{ "caption": "TortoiseSVN: Commit", "command": "svn_commit" },
 	{ "caption": "TortoiseSVN: Revert", "command": "svn_revert" },
-	{ "caption": "TortoiseSVN: Log", "command": "svn_log" }
+    { "caption": "TortoiseSVN: Log", "command": "svn_log" },
+    { "caption": "TortoiseSVN: Add", "command": "svn_add" },
+    { "caption": "TortoiseSVN: Delete", "command": "svn_delete" },
+    { "caption": "TortoiseSVN: Blame", "command": "svn_blame" },
+    { "caption": "TortoiseSVN: Diff", "command": "svn_diff" },
+    { "caption": "TortoiseSVN: Diff With Previous", "command": "svn_diff_previous" },
+    { "caption": "TortoiseSVN: Merge", "command": "svn_merge" }
 ]
