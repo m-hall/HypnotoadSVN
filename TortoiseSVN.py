@@ -27,8 +27,8 @@ class TortoiseSvnCommand(sublime_plugin.WindowCommand):
         # This is required, cause of ST must wait TortoiseSVN update then revert
         # the file. Otherwise the file reverting occur before SVN update, if the
         # file changed the file content in ST is older.
-        if isHung:
-            proce.communicate()
+        #if isHung:
+            #proce.communicate()
 
     def get_path(self, paths):
         path = None
