@@ -190,3 +190,7 @@ class SvnDeleteCommand(TortoiseSvnCommand):
 class SvnMergeCommand(TortoiseSvnCommand):
     def run(self, paths=None):
         TortoiseSvnCommand.run(self, 'merge', paths)
+
+class SvnBranchCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'copy', paths)

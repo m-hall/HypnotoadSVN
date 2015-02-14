@@ -8,5 +8,6 @@
     { "caption": "TortoiseSVN: Blame", "command": "svn_blame" },
     { "caption": "TortoiseSVN: Diff", "command": "svn_diff" },
     { "caption": "TortoiseSVN: Diff With Previous", "command": "svn_diff_previous" },
-    { "caption": "TortoiseSVN: Merge", "command": "svn_merge" }
+    { "caption": "TortoiseSVN: Merge", "command": "svn_merge" },
+    { "caption": "TortoiseSVN: Branch", "command": "svn_branch" }
 ]
