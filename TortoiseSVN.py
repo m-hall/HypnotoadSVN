@@ -194,3 +194,39 @@ class SvnMergeCommand(TortoiseSvnCommand):
 class SvnBranchCommand(TortoiseSvnCommand):
     def run(self, paths=None):
         TortoiseSvnCommand.run(self, 'copy', paths)
+
+class SvnStatusCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'repostatus', paths)
+
+class SvnCleanupCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'cleanup', paths)
+
+class SvnRenameCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'rename', paths)
+
+class SvnResolveCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'resolve', paths)
+
+class SvnConflictEditorCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'conflicteditor', paths)
+
+class SvnBrowseCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'repobrowser', paths)
+
+class SvnLockCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'lock', paths)
+
+class SvnUnlockCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'unlock', paths)
+
+class SvnSettingsCommand(TortoiseSvnCommand):
+    def run(self, paths=None):
+        TortoiseSvnCommand.run(self, 'settings', paths)

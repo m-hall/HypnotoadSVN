@@ -7,13 +7,28 @@
     { "caption": "SVN Diff with previous version", "command": "svn_diff_previous", "args": {"paths":[]}},
     {
         "caption": "SVN",
-        "children": [
-            { "caption": "Revert", "command": "svn_revert", "args": {"paths":[]}},
-            { "caption": "Add", "command": "svn_add", "args": {"paths":[]}},
-            { "caption": "Delete", "command": "svn_delete", "args": {"paths":[]}},
+        "children": [,
+            { "caption": "Check for Modifications", "command": "svn_status", "args": {"paths":[]}},
             { "caption": "Log", "command": "svn_log", "args": {"paths":[]}},
+            { "caption": "Repo Browser", "command": "svn_browse", "args": {"paths":[]}},
+            { "caption": "-" },
+            { "caption": "Add", "command": "svn_add", "args": {"paths":[]}},
+            { "caption": "Rename", "command": "svn_rename", "args": {"paths":[]}},
+            { "caption": "Delete", "command": "svn_delete", "args": {"paths":[]}},
+            { "caption": "Revert", "command": "svn_revert", "args": {"paths":[]}},
             { "caption": "Blame", "command": "svn_blame", "args": {"paths":[]}},
-            { "caption": "Switch", "command": "svn_switch", "args": {"paths":[]}}
+            { "caption": "-" },
+            { "caption": "Cleanup", "command": "svn_cleanup", "args": {"paths":[]}},
+            { "caption": "Edit Conflicts", "command": "svn_conflict_editor", "args": {"paths":[]}},
+            { "caption": "Resolve", "command": "svn_blame", "args": {"paths":[]}},
+            { "caption": "-" },
+            { "caption": "Switch", "command": "svn_switch", "args": {"paths":[]}},
+            { "caption": "Branch", "command": "svn_branch", "args": {"paths":[]}},
+            { "caption": "-" },
+            { "caption": "Lock", "command": "svn_lock", "args": {"paths":[]}},
+            { "caption": "Unlock", "command": "svn_unlock", "args": {"paths":[]}},
+            { "caption": "-" },
+            { "caption": "Settings", "command": "svn_settings", "args": {"paths":[]}}
         ]
     }
     { "caption": "-", "id": "end" }
