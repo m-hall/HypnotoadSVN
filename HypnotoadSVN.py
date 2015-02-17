@@ -77,10 +77,6 @@ class MutatingSvnCommand(SvnCommand):
     def revertPoint(self):
         self.view.window().run_command('goto_line', {'line':self.lastLine})
 
-class SvnFileCommand(SvnCommand):
-    def is_visible(self, paths=None):
-        return true
-
 class SvnUpdateCommand(MutatingSvnCommand):
     def run(self, paths=None):
         settings = self.get_setting()
@@ -96,21 +92,6 @@ class SvnCommitCommand(SvnCommand):
         closeonend = ('3' if True == settings.get('autoCloseCommitDialog')
             else '0')
         SvnCommand.run(self, 'commit /closeonend:' + closeonend, paths)
-
-
-class SvnRevertCommand(MutatingSvnCommand):
-    def run(self, paths=None):
-        MutatingSvnCommand.run(self, 'revert', paths)
-
-
-class SvnLogCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'log', paths)
-
-
-class SvnSwitchCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'switch', paths)
 
 
 class SvnDiffCommand(SvnCommand):
@@ -160,68 +141,3 @@ class SvnDiffPreviousCommand(SvnCommand):
         p = re.compile(r"Last Changed Rev: (\d+)", re.MULTILINE)
         versionLine = p.search(out.decode('UTF-8'))
         return versionLine.group(1)
-
-
-class SvnBlameCommand(SvnCommand):
-    def run(self, paths=None):
-        view = sublime.active_window().active_view()
-        row = view.rowcol(view.sel()[0].begin())[0] + 1
-
-        SvnCommand.run(self, 'blame /line:' + str(row), paths)
-
-    def is_visible(self, paths=None):
-        file = self.get_path(paths)
-        return os.path.isfile(file) if file else False
-
-
-class SvnAddCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'add', paths)
-
-class SvnDeleteCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'remove', paths)
-
-class SvnMergeCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'merge', paths)
-
-class SvnBranchCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'copy', paths)
-
-class SvnStatusCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'repostatus', paths)
-
-class SvnCleanupCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'cleanup', paths)
-
-class SvnRenameCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'rename', paths)
-
-class SvnResolveCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'resolve', paths)
-
-class SvnConflictEditorCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'conflicteditor', paths)
-
-class SvnBrowseCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'repobrowser', paths)
-
-class SvnLockCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'lock', paths)
-
-class SvnUnlockCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'unlock', paths)
-
-class SvnSettingsCommand(SvnCommand):
-    def run(self, paths=None):
-        SvnCommand.run(self, 'settings', paths)
