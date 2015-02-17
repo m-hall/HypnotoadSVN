@@ -9,7 +9,7 @@
 				"children":
 				[
 					{
-						"caption": "TortoiseSVN",
+						"caption": "HypnotoadSVN",
 						"children":
 						[
 							{
@@ -17,7 +17,7 @@
 								"command": "open_file",
 								"args":
 								{
-									"file": "${packages}/TortoiseSVN/TortoiseSVN.sublime-settings"
+									"file": "${packages}/HypnotoadSVN/HypnotoadSVN.sublime-settings"
 								}
 							},
 							{
@@ -25,29 +25,29 @@
 								"command": "open_file",
 								"args":
 								{
-									"file": "${packages}/User/TortoiseSVN.sublime-settings"
+									"file": "${packages}/User/HypnotoadSVN.sublime-settings"
 								}
 							},
 							{ "caption": "-" },
 							{
 								"command": "open_read_only",
 								"args": {
-									"file": "${packages}/TortoiseSVN/Default Side Bar.sublime-menu"
+									"file": "${packages}/HypnotoadSVN/Default Side Bar.sublime-menu"
 								},
-								"caption": "Default Side Bar Menu"
+								"caption": "Side Bar - Default"
 							},
 							{
 								"command": "open_file",
 								"args": {
-									"file": "${packages}/TortoiseSVN/Side Bar.sublime-menu"
+									"file": "${packages}/HypnotoadSVN/Side Bar.sublime-menu"
 								},
-								"caption": "Side Bar Menu"
+								"caption": "Side Bar - Plugin"
 							},
 							{ "caption": "-" },
 							{
 								"command": "open_file",
 								"args": {
-									"file": "${packages}/TortoiseSVN/Default (Windows).sublime-keymap",
+									"file": "${packages}/HypnotoadSVN/Default (Windows).sublime-keymap",
 									"platform": "Windows"
 								},
 								"caption": "Key Bindings – Default"

@@ -1,0 +1,22 @@
+[
+	{ "caption": "HypnotoadSVN: Update", "command": "svn_update" },
+	{ "caption": "HypnotoadSVN: Commit", "command": "svn_commit" },
+	{ "caption": "HypnotoadSVN: Revert", "command": "svn_revert" },
+    { "caption": "HypnotoadSVN: Log", "command": "svn_log" },
+    { "caption": "HypnotoadSVN: Add", "command": "svn_add" },
+    { "caption": "HypnotoadSVN: Delete", "command": "svn_delete" },
+    { "caption": "HypnotoadSVN: Blame", "command": "svn_blame" },
+    { "caption": "HypnotoadSVN: Diff", "command": "svn_diff" },
+    { "caption": "HypnotoadSVN: Diff With Previous", "command": "svn_diff_previous" },
+    { "caption": "HypnotoadSVN: Merge", "command": "svn_merge" },
+    { "caption": "HypnotoadSVN: Branch", "command": "svn_branch" },
+    { "caption": "HypnotoadSVN: Check for Modifications", "command": "svn_status" },
+    { "caption": "HypnotoadSVN: Repo Browser", "command": "svn_browse" },
+    { "caption": "HypnotoadSVN: Rename", "command": "svn_rename" },
+    { "caption": "HypnotoadSVN: Cleanup", "command": "svn_cleanup" },
+    { "caption": "HypnotoadSVN: Edit Conflicts", "command": "svn_conflict_editor" },
+    { "caption": "HypnotoadSVN: Resolve", "command": "svn_resolve" },
+    { "caption": "HypnotoadSVN: Lock", "command": "svn_lock" },
+    { "caption": "HypnotoadSVN: Unlock", "command": "svn_unlock" },
+    { "caption": "HypnotoadSVN: Settings", "command": "svn_settings" }
+]
