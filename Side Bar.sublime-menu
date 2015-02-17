@@ -7,7 +7,7 @@
     { "caption": "SVN Diff with previous version", "command": "svn_diff_previous", "args": {"paths":[]}},
     {
         "caption": "SVN",
-        "children": [,
+        "children": [
             { "caption": "Check for Modifications", "command": "svn_status", "args": {"paths":[]}},
             { "caption": "Log", "command": "svn_log", "args": {"paths":[]}},
             { "caption": "Repo Browser", "command": "svn_browse", "args": {"paths":[]}},
@@ -30,6 +30,6 @@
             { "caption": "-" },
             { "caption": "Settings", "command": "svn_settings", "args": {"paths":[]}}
         ]
-    }
+    },
     { "caption": "-", "id": "end" }
 ]
