@@ -5,8 +5,24 @@ import os.path
 import subprocess
 import re
 
+class HypnoCommand(sublime_plugin.WindowCommand):
+    def get_path(self, paths):
+        path = None
+        if paths:
+            path = '*'.join(paths)
+        else:
+            view = sublime.active_window().active_view()
+            path = view.file_name() if view else None
 
-class TortoiseSvnCommand(sublime_plugin.WindowCommand):
+        return path
+
+class OpenReadOnlyCommand(sublime_plugin.WindowCommand):
+    def run(self, file):
+        path = file.replace("${packages}", sublime.packages_path())
+        view = sublime.active_window().open_file(path)
+        view.set_read_only(True)
+
+class SvnCommand(HypnoCommand):
     def run(self, cmd, paths=None, isHung=False):
         dir = self.get_path(paths)
 
@@ -14,11 +30,13 @@ class TortoiseSvnCommand(sublime_plugin.WindowCommand):
             return
 
         settings = self.get_setting()
+        print(settings)
         tortoiseproc_path = settings.get('tortoiseproc_path')
+        print(tortoiseproc_path)
 
         if not os.path.isfile(tortoiseproc_path):
             sublime.error_message('can\'t find TortoiseProc.exe,'
-                ' please config setting file' '\n   --sublime-TortoiseSVN')
+                ' please config setting file' '\n   --HypnotoadSVN')
             raise
 
         proce = subprocess.Popen('"' + tortoiseproc_path + '"' + 
@@ -30,18 +48,8 @@ class TortoiseSvnCommand(sublime_plugin.WindowCommand):
         #if isHung:
             #proce.communicate()
 
-    def get_path(self, paths):
-        path = None
-        if paths:
-            path = '*'.join(paths)
-        else:
-            view = sublime.active_window().active_view()
-            path = view.file_name() if view else None
-
-        return path
-
     def get_setting(self):
-        return sublime.load_settings('TortoiseSVN.sublime-settings')
+        return sublime.load_settings('HypnotoadSVN.sublime-settings')
 
     def get_status (self, paths):
         dir = self.get_path(paths)
@@ -53,25 +61,9 @@ class TortoiseSvnCommand(sublime_plugin.WindowCommand):
         out, err = proce.communicate()
         return out
 
-class OpenReadOnlyCommand(sublime_plugin.WindowCommand):
-    def run(self, paths=None):
-        dir = self.get_path(paths)
-        view = sublime.active_window().open_file(dir)
-        view.set_read_only(True)
-
-    def get_path(self, paths):
-        path = None
-        if paths:
-            path = '*'.join(paths)
-        else:
-            view = sublime.active_window().active_view()
-            path = view.file_name() if view else None
-
-        return path
-
-class MutatingTortoiseSvnCommand(TortoiseSvnCommand):
+class MutatingSvnCommand(SvnCommand):
     def run(self, cmd, paths=None):
-        TortoiseSvnCommand.run(self, cmd, paths, True)
+        SvnCommand.run(self, cmd, paths, True)
 
         #self.view = sublime.active_window().active_view()
         #row, col = self.view.rowcol(self.view.sel()[0].begin())
@@ -85,42 +77,45 @@ class MutatingTortoiseSvnCommand(TortoiseSvnCommand):
     def revertPoint(self):
         self.view.window().run_command('goto_line', {'line':self.lastLine})
 
+class SvnFileCommand(SvnCommand):
+    def is_visible(self, paths=None):
+        return true
 
-class SvnUpdateCommand(MutatingTortoiseSvnCommand):
+class SvnUpdateCommand(MutatingSvnCommand):
     def run(self, paths=None):
         settings = self.get_setting()
         closeonend = ('3' if True == settings.get('autoCloseUpdateDialog')
             else '0')
-        MutatingTortoiseSvnCommand.run(self, 'update /closeonend:' + closeonend, 
+        MutatingSvnCommand.run(self, 'update /closeonend:' + closeonend, 
             paths)
 
 
-class SvnCommitCommand(TortoiseSvnCommand):
+class SvnCommitCommand(SvnCommand):
     def run(self, paths=None):
         settings = self.get_setting()
         closeonend = ('3' if True == settings.get('autoCloseCommitDialog')
             else '0')
-        TortoiseSvnCommand.run(self, 'commit /closeonend:' + closeonend, paths)
+        SvnCommand.run(self, 'commit /closeonend:' + closeonend, paths)
 
 
-class SvnRevertCommand(MutatingTortoiseSvnCommand):
+class SvnRevertCommand(MutatingSvnCommand):
     def run(self, paths=None):
-        MutatingTortoiseSvnCommand.run(self, 'revert', paths)
+        MutatingSvnCommand.run(self, 'revert', paths)
 
 
-class SvnLogCommand(TortoiseSvnCommand):
+class SvnLogCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'log', paths)
+        SvnCommand.run(self, 'log', paths)
 
 
-class SvnSwitchCommand(TortoiseSvnCommand):
+class SvnSwitchCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'switch', paths)
+        SvnCommand.run(self, 'switch', paths)
 
 
-class SvnDiffCommand(TortoiseSvnCommand):
+class SvnDiffCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'diff', paths)
+        SvnCommand.run(self, 'diff', paths)
 
     def is_visible(self, paths=None):
         file = self.get_path(paths)
@@ -130,11 +125,11 @@ class SvnDiffCommand(TortoiseSvnCommand):
         status = self.get_status(paths)
         return len(status) > 0
 
-class SvnDiffPreviousCommand(TortoiseSvnCommand):
+class SvnDiffPreviousCommand(SvnCommand):
     def run(self, paths=None):
         last = int(self.get_last(paths)) - 1
         current = self.get_current(paths)
-        TortoiseSvnCommand.run(self, 'diff /startrev:' + str(last) + ' /endrev:'+current, paths)
+        SvnCommand.run(self, 'diff /startrev:' + str(last) + ' /endrev:'+current, paths)
 
     def is_visible(self, paths=None):
         file = self.get_path(paths)
@@ -167,66 +162,66 @@ class SvnDiffPreviousCommand(TortoiseSvnCommand):
         return versionLine.group(1)
 
 
-class SvnBlameCommand(TortoiseSvnCommand):
+class SvnBlameCommand(SvnCommand):
     def run(self, paths=None):
         view = sublime.active_window().active_view()
         row = view.rowcol(view.sel()[0].begin())[0] + 1
 
-        TortoiseSvnCommand.run(self, 'blame /line:' + str(row), paths)
+        SvnCommand.run(self, 'blame /line:' + str(row), paths)
 
     def is_visible(self, paths=None):
         file = self.get_path(paths)
         return os.path.isfile(file) if file else False
 
 
-class SvnAddCommand(TortoiseSvnCommand):
+class SvnAddCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'add', paths)
+        SvnCommand.run(self, 'add', paths)
 
-class SvnDeleteCommand(TortoiseSvnCommand):
+class SvnDeleteCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'remove', paths)
+        SvnCommand.run(self, 'remove', paths)
 
-class SvnMergeCommand(TortoiseSvnCommand):
+class SvnMergeCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'merge', paths)
+        SvnCommand.run(self, 'merge', paths)
 
-class SvnBranchCommand(TortoiseSvnCommand):
+class SvnBranchCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'copy', paths)
+        SvnCommand.run(self, 'copy', paths)
 
-class SvnStatusCommand(TortoiseSvnCommand):
+class SvnStatusCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'repostatus', paths)
+        SvnCommand.run(self, 'repostatus', paths)
 
-class SvnCleanupCommand(TortoiseSvnCommand):
+class SvnCleanupCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'cleanup', paths)
+        SvnCommand.run(self, 'cleanup', paths)
 
-class SvnRenameCommand(TortoiseSvnCommand):
+class SvnRenameCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'rename', paths)
+        SvnCommand.run(self, 'rename', paths)
 
-class SvnResolveCommand(TortoiseSvnCommand):
+class SvnResolveCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'resolve', paths)
+        SvnCommand.run(self, 'resolve', paths)
 
-class SvnConflictEditorCommand(TortoiseSvnCommand):
+class SvnConflictEditorCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'conflicteditor', paths)
+        SvnCommand.run(self, 'conflicteditor', paths)
 
-class SvnBrowseCommand(TortoiseSvnCommand):
+class SvnBrowseCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'repobrowser', paths)
+        SvnCommand.run(self, 'repobrowser', paths)
 
-class SvnLockCommand(TortoiseSvnCommand):
+class SvnLockCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'lock', paths)
+        SvnCommand.run(self, 'lock', paths)
 
-class SvnUnlockCommand(TortoiseSvnCommand):
+class SvnUnlockCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'unlock', paths)
+        SvnCommand.run(self, 'unlock', paths)
 
-class SvnSettingsCommand(TortoiseSvnCommand):
+class SvnSettingsCommand(SvnCommand):
     def run(self, paths=None):
-        TortoiseSvnCommand.run(self, 'settings', paths)
+        SvnCommand.run(self, 'settings', paths)
