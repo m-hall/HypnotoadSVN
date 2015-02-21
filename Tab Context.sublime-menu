@@ -1,0 +1,9 @@
+[
+    { "caption": "-" },
+    { "caption": "SVN Update", "command": "svn_update", "args": {"paths":[]}},
+    { "caption": "SVN Commit", "command": "svn_commit", "args": {"paths":[]}},
+    { "caption": "SVN Merge", "command": "svn", "args": {"cmd": "merge", "paths":[]}},
+    { "caption": "SVN Diff", "command": "svn_diff", "args": {"paths":[]}},
+    { "caption": "SVN Diff with previous version", "command": "svn_diff_previous", "args": {"paths":[]}},
+    { "caption": "-", "id": "end" }
+]
