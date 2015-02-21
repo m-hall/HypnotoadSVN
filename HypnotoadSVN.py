@@ -22,6 +22,51 @@ class OpenReadOnlyCommand(sublime_plugin.WindowCommand):
         view = sublime.active_window().open_file(path)
         view.set_read_only(True)
 
+class NativeSvnCommand(HypnoCommand):
+    def run_command(self, cmd):
+        command = 'svn ' + cmd
+        proce = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        return proce.communicate()
+    def run_path_command(self, cmd, paths):
+        dir = self.get_path(paths)
+        if not dir:
+            return
+        command = cmd + ' "%s"' % dir
+        return self.run_command(command)
+    def test_versionned(self, result):
+        return 'not a working copy' not in result
+    def is_versionned(self, paths=None):
+        result, error = self.run_path_command('info', paths)
+        return self.test_versionned(result) and self.test_versionned(error)
+    def is_visible(self, cmd="", paths=None, versionned=None, fileType=None):
+        visible = True
+        if versionned == True:
+            visible = visible and self.is_versionned()
+        elif versionned == False:
+            visible = visible and not self.is_versionned()
+        
+        if fileType != None:
+            if paths == None:
+                return False
+            file = self.get_path(paths)
+            if fileType == 'folder':
+                visible = visible and not os.path.isfile(file)
+            elif fileType == 'file':
+                visible = visible and os.path.isfile(file)
+
+        return visible
+    def run(self, cmd="", paths=None):
+        result, error = self.run_path_command(cmd, paths)
+
+        if error:
+            if not self.test_versionned(error):
+                sublime.error_message('File is not versionned.')
+            else:
+                sublime.error_message(error.decode('UTF-8'))
+            return
+
+        sublime.status_message('Command successfully completed')
+
 class SvnCommand(HypnoCommand):
     def run(self, cmd, paths=None, isHung=False):
         dir = self.get_path(paths)
@@ -57,7 +102,10 @@ class SvnCommand(HypnoCommand):
         if not dir:
             return
 
-        proce = subprocess.Popen('svn status "%s"' % dir, stdout=subprocess.PIPE, shell=False, creationflags=0x08000000)
+        if os.name == 'nt':
+            proce = subprocess.Popen('svn status "%s"' % dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, creationflags=0x08000000)
+        else:
+            proce = subprocess.Popen('svn status "%s"' % dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = proce.communicate()
         return out
 
@@ -77,13 +125,13 @@ class MutatingSvnCommand(SvnCommand):
     def revertPoint(self):
         self.view.window().run_command('goto_line', {'line':self.lastLine})
 
-class SvnUpdateCommand(MutatingSvnCommand):
-    def run(self, paths=None):
-        settings = self.get_setting()
-        closeonend = ('3' if True == settings.get('autoCloseUpdateDialog')
-            else '0')
-        MutatingSvnCommand.run(self, 'update /closeonend:' + closeonend, 
-            paths)
+# class SvnUpdateCommand(MutatingSvnCommand):
+#     def run(self, paths=None):
+#         settings = self.get_setting()
+#         closeonend = ('3' if True == settings.get('autoCloseUpdateDialog')
+#             else '0')
+#         MutatingSvnCommand.run(self, 'update /closeonend:' + closeonend, 
+#             paths)
 
 
 class SvnCommitCommand(SvnCommand):
@@ -99,6 +147,8 @@ class SvnDiffCommand(SvnCommand):
         SvnCommand.run(self, 'diff', paths)
 
     def is_visible(self, paths=None):
+        # if not super(SvnDiffCommand, self).is_visible(paths):
+        #     return false
         file = self.get_path(paths)
         realFile = os.path.isfile(file)
         if not realFile:
@@ -126,7 +176,10 @@ class SvnDiffPreviousCommand(SvnCommand):
         if not dir:
             return
 
-        proce = subprocess.Popen('svnversion "%s"' % dir, stdout=subprocess.PIPE, shell=False, creationflags=0x08000000)
+        if os.name == 'nt':
+            proce = subprocess.Popen('svnversion "%s"' % dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, creationflags=0x08000000)
+        else:
+            proce = subprocess.Popen('svnversion "%s"' % dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = proce.communicate()
         return out.decode('UTF-8')
 
@@ -136,8 +189,55 @@ class SvnDiffPreviousCommand(SvnCommand):
         if not dir:
             return
 
-        proce = subprocess.Popen('svn info "%s"' % dir, stdout=subprocess.PIPE, shell=False, creationflags=0x08000000)
+        if os.name == 'nt':
+            proce = subprocess.Popen('svn info "%s"' % dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False, creationflags=0x08000000)
+        else:
+            proce = subprocess.Popen('svn info "%s"' % dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         out, err = proce.communicate()
         p = re.compile(r"Last Changed Rev: (\d+)", re.MULTILINE)
         versionLine = p.search(out.decode('UTF-8'))
         return versionLine.group(1)
+
+class SvnViewEvents(sublime_plugin.EventListener):
+    def on_close(self, view):
+        if view == SvnUpdateCommand.view:
+            SvnUpdateCommand.view = None
+
+class SvnUpdateMessagesCommand(sublime_plugin.TextCommand):
+    def run(self, edit, result="", error=""):
+        print(result)
+        if result:
+            self.view.insert(edit, self.view.size(), result)
+        if error:
+            self.view.insert(edit, self.view.size(), error)
+
+
+class SvnUpdateCommand(NativeSvnCommand):
+    view=None
+    def run(self, paths=None):
+        result, error = self.run_path_command('update', paths)
+        if SvnUpdateCommand.view:
+            self.view = SvnUpdateCommand.view
+        else:
+            self.view = sublime.active_window().new_file()
+            SvnUpdateCommand.view = self.view
+            self.view.set_scratch(True)
+            #self.view.settings().set("syntax", "Packages/Markdown/Markdown.tmLanguage")
+            self.view.run_command(
+                'svn_update_messages',
+                {
+                    "result": 'SVN UPDATE\n'
+                }
+            );
+        self.view.set_read_only(False)
+        self.view.run_command(
+            'svn_update_messages',
+            {
+                "result": result.decode("UTF-8"),
+                "error": error.decode("UTF-8")
+            }
+        );
+        self.view.set_read_only(True)
+
+    def is_visible(self, paths=None):
+        return True #super(SvnCommand, self).is_visible('update', paths, True)
