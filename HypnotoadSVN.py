@@ -4,6 +4,9 @@ import os
 import os.path
 import subprocess
 import re
+from . import SvnView
+
+SVNView = SvnView.SvnView
 
 class HypnoCommand(sublime_plugin.WindowCommand):
     def get_path(self, paths):
@@ -198,46 +201,13 @@ class SvnDiffPreviousCommand(SvnCommand):
         versionLine = p.search(out.decode('UTF-8'))
         return versionLine.group(1)
 
-class SvnViewEvents(sublime_plugin.EventListener):
-    def on_close(self, view):
-        if view == SvnUpdateCommand.view:
-            SvnUpdateCommand.view = None
-
-class SvnUpdateMessagesCommand(sublime_plugin.TextCommand):
-    def run(self, edit, result="", error=""):
-        print(result)
-        if result:
-            self.view.insert(edit, self.view.size(), result)
-        if error:
-            self.view.insert(edit, self.view.size(), error)
-
-
 class SvnUpdateCommand(NativeSvnCommand):
-    view=None
     def run(self, paths=None):
         result, error = self.run_path_command('update', paths)
-        if SvnUpdateCommand.view:
-            self.view = SvnUpdateCommand.view
-        else:
-            self.view = sublime.active_window().new_file()
-            SvnUpdateCommand.view = self.view
-            self.view.set_scratch(True)
-            #self.view.settings().set("syntax", "Packages/Markdown/Markdown.tmLanguage")
-            self.view.run_command(
-                'svn_update_messages',
-                {
-                    "result": 'SVN UPDATE\n'
-                }
-            );
-        self.view.set_read_only(False)
-        self.view.run_command(
-            'svn_update_messages',
-            {
-                "result": result.decode("UTF-8"),
-                "error": error.decode("UTF-8")
-            }
-        );
-        self.view.set_read_only(True)
+        SVNView.add_command('SVN Update')
+        SVNView.add_result(result.decode('UTF-8'))
+        SVNView.add_error(error.decode('UTF-8'))
+        SVNView.end_command()
 
     def is_visible(self, paths=None):
         return True #super(SvnCommand, self).is_visible('update', paths, True)
