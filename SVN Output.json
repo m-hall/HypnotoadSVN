@@ -1,0 +1,27 @@
+// [PackageDev] target_format: plist, ext: tmLanguage
+{
+    "name": "SVN Output",
+    "scopeName": "source.svn-output",
+    "fileTypes": ["SVN-output"],
+    "uuid": "feea73e8-edc4-4c42-b547-847410c70e16",
+    "patterns": [
+        { "include": "#command" },
+        { "include": "#scopeName" }
+    ],
+
+    "repository": {
+        "command": {
+            "match": "(?!:^|\n)(Command): ([^\n]*)",
+            "captures": {
+                "1": { "name": "keyword.other.control.svn-output" },
+                "2": { "name": "string.meta.syntax.name.svn-output" }
+            }
+        },
+        "scopeName": {
+            "match": "(?!:^|\n)(Output|Error):",
+            "captures": {
+                "1": { "name": "keyword.other.control.svn-output" }
+            }
+        }
+    }
+}

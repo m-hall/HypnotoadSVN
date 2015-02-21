@@ -15,6 +15,7 @@ class SvnView(sublime_plugin.EventListener):
             SvnView.view.set_scratch(True)
             SvnView.view.set_name('SVN Output')
             SvnView.view.set_read_only(True)
+            SvnView.view.set_syntax_file('Packages/Hypnotoad/SVNOutput.tmLanguage')
         return SvnView.view
 
     @staticmethod
@@ -32,7 +33,7 @@ class SvnView(sublime_plugin.EventListener):
     @staticmethod
     def add_command(name, args=None):
         view = SvnView.get()
-        point = view.text_to_layout(view.size())
+        point = view.text_to_layout(view.size() - 1)
         SvnView.add_message("Command: " + name + "\n")
         if args is not None:
             for arg in args:
@@ -51,7 +52,7 @@ class SvnView(sublime_plugin.EventListener):
 
     @staticmethod
     def end_command():
-        SvnView.add_message("\n\n")
+        SvnView.add_message("\n")
 
     def on_close(self, view):
         if view == SvnView.view:
