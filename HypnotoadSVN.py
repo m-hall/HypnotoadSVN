@@ -12,7 +12,7 @@ class HypnoCommand(sublime_plugin.WindowCommand):
     def get_path(self, paths):
         path = None
         if paths:
-            path = '*'.join(paths)
+            path = '"' + '" "'.join(paths) + '"'
         else:
             view = sublime.active_window().active_view()
             path = view.file_name() if view else None
@@ -28,13 +28,14 @@ class OpenReadOnlyCommand(sublime_plugin.WindowCommand):
 class NativeSvnCommand(HypnoCommand):
     def run_command(self, cmd):
         command = 'svn ' + cmd
+        print(command)
         proce = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         return proce.communicate()
     def run_path_command(self, cmd, paths):
         dir = self.get_path(paths)
         if not dir:
             return
-        command = cmd + ' "%s"' % dir
+        command = cmd + ' %s' % dir
         return self.run_command(command)
     def test_versionned(self, result):
         return 'not a working copy' not in result
