@@ -20,7 +20,6 @@ class Process:
                 self.log_result()
 
     def log_result(self):
-        print(self.name)
         SvnOutput.add_command(self.name)
         SvnOutput.add_result(self.output())
         SvnOutput.add_error(self.error())
@@ -33,11 +32,8 @@ class Process:
         self.done = True
 
     def check_status(self):
-        print('checked '+self.name)
         if self.is_done():
-            print('done!')
             if self.log:
-                print('log')
                 self.log_result()
         else:
             self.timer = Timer(0.5, self.check_status)
