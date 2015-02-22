@@ -6,8 +6,6 @@ import subprocess
 import re
 from . import SvnView
 
-SVNView = SvnView.SvnView
-
 class HypnoCommand(sublime_plugin.WindowCommand):
     def get_path(self, paths):
         path = None
@@ -205,10 +203,10 @@ class SvnDiffPreviousCommand(SvnCommand):
 class SvnUpdateCommand(NativeSvnCommand):
     def run(self, paths=None):
         result, error = self.run_path_command('update', paths)
-        SVNView.add_command('SVN Update')
-        SVNView.add_result(result.decode('UTF-8'))
-        SVNView.add_error(error.decode('UTF-8'))
-        SVNView.end_command()
+        SvnView.add_command('SVN Update')
+        SvnView.add_result(result.decode('UTF-8'))
+        SvnView.add_error(error.decode('UTF-8'))
+        SvnView.end_command()
 
     def is_visible(self, paths=None):
         return True #super(SvnCommand, self).is_visible('update', paths, True)

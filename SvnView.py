@@ -2,58 +2,57 @@ import sublime
 import sublime_plugin
 import re
 
+class SvnView:
+    view = None
+    def get():
+        if not SvnView.view:
+            view = sublime.active_window().new_file()
+            view.set_scratch(True)
+            view.set_name('SVN Output')
+            view.set_read_only(True)
+            view.set_syntax_file('Packages/Hypnotoad/SVNOutput.tmLanguage')
+            SvnView.view = view
+        return SvnView.view
+
 class SvnMessageCommand(sublime_plugin.TextCommand):
     def run(self, edit, message=""):
         self.view.insert(edit, self.view.size(), message)
 
-class SvnView(sublime_plugin.EventListener):
-    view=None
-    @staticmethod
-    def get():
-        if not SvnView.view:
-            SvnView.view = sublime.active_window().new_file()
-            SvnView.view.set_scratch(True)
-            SvnView.view.set_name('SVN Output')
-            SvnView.view.set_read_only(True)
-            SvnView.view.set_syntax_file('Packages/Hypnotoad/SVNOutput.tmLanguage')
-        return SvnView.view
-
-    @staticmethod
-    def add_message(message):
-        view = SvnView.get()
-        view.set_read_only(False)
-        view.run_command(
-            'svn_message',
-            {
-                "message": message
-            }
-        );
-        view.set_read_only(True)
-
-    @staticmethod
-    def add_command(name, args=None):
-        view = SvnView.get()
-        point = view.text_to_layout(view.size() - 1)
-        SvnView.add_message("Command: " + name + "\n")
-        if args is not None:
-            for arg in args:
-                SvnView.add_message("    " + arg + "\n")
-        SvnView.get().set_viewport_position(point, True)
-
-    @staticmethod
-    def add_result(result):
-        if result:
-            SvnView.add_message("Output:\n    " + re.sub(r'\n', '\n    ', result) + "\n")
-
-    @staticmethod
-    def add_error(err):
-        if err:
-            SvnView.add_message("Error:\n    " + re.sub(r'\n', '\n    ', err) + "\n")
-
-    @staticmethod
-    def end_command():
-        SvnView.add_message("\n")
-
+class SvnViewEvents(sublime_plugin.EventListener):
     def on_close(self, view):
-        if view == SvnView.view:
-            SvnView.view = None
+        if view == view:
+            view = None
+
+
+
+def add_message(message):
+    view = SvnView.get()
+    view.set_read_only(False)
+    view.run_command(
+        'svn_message',
+        {
+            "message": message
+        }
+    );
+    view.set_read_only(True)
+
+def add_command(name, args=None):
+    view = SvnView.get()
+    view.window().focus_view(view)
+    point = view.text_to_layout(view.size() - 1)
+    add_message("Command: " + name + "\n")
+    if args is not None:
+        for arg in args:
+            add_message("    " + arg + "\n")
+    view.set_viewport_position(point, True)
+
+def add_result(result):
+    if result:
+        add_message("Output:\n    " + re.sub(r'\n', '\n    ', result) + "\n")
+
+def add_error(err):
+    if err:
+        add_message("Error:\n    " + re.sub(r'\n', '\n    ', err) + "\n")
+
+def end_command():
+    add_message("\n")
