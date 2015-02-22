@@ -1,8 +1,11 @@
-
+import sublime
 from subprocess import Popen, PIPE
 from threading import Thread, Timer
 from queue import Queue, Empty
 from . import SvnOutput
+
+TIME_INTERVAL = 0.05
+LOADING_SIZE = 7
 
 class Process:
     def __init__(self, name, cmd, log=True, thread=False):
@@ -11,6 +14,7 @@ class Process:
         self.log = log
         self.outputText = None
         self.errorText = None
+        self.loading = 0
         self.process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
         if thread:
             self.check_status()
@@ -33,10 +37,16 @@ class Process:
 
     def check_status(self):
         if self.is_done():
+            sublime.status_message("Complete: " + self.name)
             if self.log:
                 self.log_result()
         else:
-            self.timer = Timer(0.5, self.check_status)
+            if LOADING_SIZE > 0:
+                n = abs(self.loading - LOADING_SIZE)
+                sublime.status_message("Running: " + self.name + "[" + " " * (LOADING_SIZE - n) + "=" + " " * n + "]")
+                self.loading = (self.loading + 1) % (LOADING_SIZE * 2)
+
+            self.timer = Timer(TIME_INTERVAL, self.check_status)
             self.timer.start()
 
     def output(self):
