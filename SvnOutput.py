@@ -2,28 +2,25 @@ import sublime
 import sublime_plugin
 import re
 
-class SvnView:
+
+class SvnView(sublime_plugin.EventListener):
     view = None
     def get():
-        if not SvnView.view:
+        if SvnView.view is None:
             view = sublime.active_window().new_file()
             view.set_scratch(True)
             view.set_name('SVN Output')
             view.set_read_only(True)
-            view.set_syntax_file('Packages/Hypnotoad/SVNOutput.tmLanguage')
+            view.set_syntax_file('Packages/Hypnotoad/SVN Output.tmLanguage')
             SvnView.view = view
         return SvnView.view
+    def on_close(self, view):
+        if view == SvnView.view:
+            SvnView.view = None
 
 class SvnMessageCommand(sublime_plugin.TextCommand):
     def run(self, edit, message=""):
         self.view.insert(edit, self.view.size(), message)
-
-class SvnViewEvents(sublime_plugin.EventListener):
-    def on_close(self, view):
-        if view == view:
-            view = None
-
-
 
 def add_message(message):
     view = SvnView.get()
