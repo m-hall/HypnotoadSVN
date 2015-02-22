@@ -18,9 +18,49 @@
 			<key>include</key>
 			<string>#scopeName</string>
 		</dict>
+		<dict>
+			<key>include</key>
+			<string>#add</string>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>#delete</string>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>#update</string>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>#merge</string>
+		</dict>
+		<dict>
+			<key>include</key>
+			<string>#conflict</string>
+		</dict>
 	</array>
 	<key>repository</key>
 	<dict>
+		<key>add</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>string.meta.syntax.added.svn-output</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>entity.other.add.svn-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(?!:^|
+) {4}(A)[A-Z ][A-Z ]\s+([^
+]+)</string>
+		</dict>
 		<key>command</key>
 		<dict>
 			<key>captures</key>
@@ -41,6 +81,66 @@
 )(Command): ([^
 ]*)</string>
 		</dict>
+		<key>conflict</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>string.meta.syntax.added.svn-output</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.other.conflict.svn-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(?!:^|
+) {4}(C)[A-Z ][A-Z ]\s+([^
+]+)</string>
+		</dict>
+		<key>delete</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>string.meta.syntax.added.svn-output</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.other.delete.svn-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(?!:^|
+) {4}(D)[A-Z ][A-Z ]\s+([^
+]+)</string>
+		</dict>
+		<key>merge</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>string.meta.syntax.added.svn-output</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>string.other.merge.svn-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(?!:^|
+) {4}(G)[A-Z ][A-Z ]\s+([^
+]+)</string>
+		</dict>
 		<key>scopeName</key>
 		<dict>
 			<key>captures</key>
@@ -54,6 +154,26 @@
 			<key>match</key>
 			<string>(?!:^|
 )(Output|Error):</string>
+		</dict>
+		<key>update</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>string.meta.syntax.added.svn-output</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>support.function.magic.update.svn-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(?!:^|
+) {4}(U)[A-Z ][A-Z ]\s+([^
+]+)</string>
 		</dict>
 	</dict>
 	<key>scopeName</key>

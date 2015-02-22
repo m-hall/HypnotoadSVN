@@ -6,7 +6,12 @@
     "uuid": "feea73e8-edc4-4c42-b547-847410c70e16",
     "patterns": [
         { "include": "#command" },
-        { "include": "#scopeName" }
+        { "include": "#scopeName" },
+        { "include": "#add" },
+        { "include": "#delete" },
+        { "include": "#update" },
+        { "include": "#merge" },
+        { "include": "#conflict" }
     ],
 
     "repository": {
@@ -21,6 +26,41 @@
             "match": "(?!:^|\n)(Output|Error):",
             "captures": {
                 "1": { "name": "keyword.other.control.svn-output" }
+            }
+        },
+        "add": {
+            "match": "(?!:^|\n) {4}(A)[A-Z ][A-Z ]\\s+([^\n]+)",
+            "captures": {
+                "1": { "name": "string.meta.syntax.added.svn-output"},
+                "2": { "name": "entity.other.add.svn-output"} // green
+            }
+        },
+        "delete": {
+            "match": "(?!:^|\n) {4}(D)[A-Z ][A-Z ]\\s+([^\n]+)",
+            "captures": {
+                "1": { "name": "string.meta.syntax.added.svn-output"},
+                "2": { "name": "punctuation.definition.other.delete.svn-output"} // orange
+            }
+        },
+        "update": {
+            "match": "(?!:^|\n) {4}(U)[A-Z ][A-Z ]\\s+([^\n]+)",
+            "captures": {
+                "1": { "name": "string.meta.syntax.added.svn-output"},
+                "2": { "name": "support.function.magic.update.svn-output"} // blue
+            }
+        },
+        "merge": {
+            "match": "(?!:^|\n) {4}(G)[A-Z ][A-Z ]\\s+([^\n]+)",
+            "captures": {
+                "1": { "name": "string.meta.syntax.added.svn-output"},
+                "2": { "name": "string.other.merge.svn-output"} // yellow
+            }
+        },
+        "conflict": {
+            "match": "(?!:^|\n) {4}(C)[A-Z ][A-Z ]\\s+([^\n]+)",
+            "captures": {
+                "1": { "name": "string.meta.syntax.added.svn-output"},
+                "2": { "name": "keyword.other.conflict.svn-output"} // red
             }
         }
     }
