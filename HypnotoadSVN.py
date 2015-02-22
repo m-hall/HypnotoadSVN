@@ -43,3 +43,19 @@ class SvnCommand(sublime_plugin.WindowCommand):
             return
         self.name = "SVN " + cmd.upper()
         self.run_command(cmd, paths)
+
+class SvnUpdateRevisionCommand(SvnCommand):
+    def on_done_input(self, value):
+        self.name = "SVN Update to revision (%s)" % value
+        self.run_command('update -r %s' % value, self.paths)
+    def on_change_input(self, value):
+        print(value)
+    def on_cancel_input(self):
+        return
+    def is_visible(self, paths=None):
+        return super(SvnUpdateRevisionCommand, self).is_visible(paths=paths, versionned=True)
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.paths = paths
+        sublime.active_window().show_input_panel('Which revision', '', self.on_done_input, self.on_change_input, self.on_cancel_input)
