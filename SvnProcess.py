@@ -1,21 +1,23 @@
 import sublime
 from subprocess import Popen, PIPE
 from threading import Thread, Timer
-from queue import Queue, Empty
 from . import SvnOutput
 
 TIME_INTERVAL = 0.05
 LOADING_SIZE = 7
 
 class Process:
-    def __init__(self, name, cmd, log=True, thread=False):
+    def __init__(self, name, cmd, paths=None, log=True, thread=False, on_complete=None):
         self.name = name
+        self.cmd = cmd
+        self.paths = paths
         self.done = False
         self.log = log
         self.outputText = None
         self.errorText = None
         self.loading = 0
-        self.process = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
+        self.on_complete = on_complete
+        self.process = Popen(cmd + ' ' + self.get_path(paths), stdout=PIPE, stderr=PIPE, shell=True)
         if thread:
             self.check_status()
         else:
@@ -23,8 +25,18 @@ class Process:
             if log:
                 self.log_result()
 
+    def get_path(self, paths):
+        path = None
+        if paths:
+            path = '"' + '" "'.join(paths) + '"'
+        else:
+            view = sublime.active_window().active_view()
+            path = view.file_name() if view else None
+        return path
+
     def log_result(self):
         SvnOutput.add_command(self.name)
+        SvnOutput.add_files(self.paths)
         SvnOutput.add_result(self.output())
         SvnOutput.add_error(self.error())
         SvnOutput.end_command()
@@ -38,12 +50,14 @@ class Process:
     def check_status(self):
         if self.is_done():
             sublime.status_message("Complete: " + self.name)
+            if self.on_complete is not None:
+                self.on_complete(self)
             if self.log:
                 self.log_result()
         else:
             if LOADING_SIZE > 0:
                 n = abs(self.loading - LOADING_SIZE)
-                sublime.status_message("Running: " + self.name + "[" + " " * (LOADING_SIZE - n) + "=" + " " * n + "]")
+                sublime.status_message("Running: " + self.name + "  [" + " " * (LOADING_SIZE - n) + "=" + " " * n + "]")
                 self.loading = (self.loading + 1) % (LOADING_SIZE * 2)
 
             self.timer = Timer(TIME_INTERVAL, self.check_status)
