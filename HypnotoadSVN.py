@@ -24,7 +24,7 @@ class OpenReadOnlyCommand(sublime_plugin.WindowCommand):
         view = sublime.active_window().open_file(path)
         view.set_read_only(True)
 
-class NativeSvnCommand(HypnoCommand):
+class SvnCommand(HypnoCommand):
     def run_command(self, cmd, args="", log=True, thread=True):
         command = 'svn ' + cmd + ' ' + args
         return SvnProcess.Process(self.name, command, log, thread)
@@ -40,23 +40,19 @@ class NativeSvnCommand(HypnoCommand):
 
     def is_versionned(self, paths=None):
         p = self.run_path_command('info', paths, False, False)
-        return self.test_versionned(p.output()) or self.test_versionned(p.error())
+        return self.test_versionned(p.output() + p.error())
 
     def is_visible(self, cmd="", paths=None, versionned=None, fileType=None):
-        visible = True
-        if versionned == True:
-            visible = visible and self.is_versionned()
-        elif versionned == False:
-            visible = visible and not self.is_versionned()
-        if fileType != None:
+        if versionned is not None:
+            if versionned != self.is_versionned(paths):
+                return False
+        if fileType is not None:
             if paths == None:
                 return False
             file = self.get_path(paths)
-            if fileType == 'folder':
-                visible = visible and not os.path.isfile(file)
-            elif fileType == 'file':
-                visible = visible and os.path.isfile(file)
-        return visible
+            if os.path.isfile(file) == (fileType == 'file'):
+                return False
+        return True
 
     def run(self, cmd="", paths=None):
         if cmd is "":
@@ -64,7 +60,7 @@ class NativeSvnCommand(HypnoCommand):
         self.name = "SVN " + cmd.upper()
         self.run_path_command(cmd, paths)
 
-class SvnUpdateCommand(NativeSvnCommand):
+class SvnUpdateCommand(SvnCommand):
     def run(self, paths=None):
         self.name = "SVN Update"
         self.run_path_command('update', paths, True, True)
@@ -72,9 +68,9 @@ class SvnUpdateCommand(NativeSvnCommand):
     def is_visible(self, paths=None):
         return True #super(SvnCommand, self).is_visible('update', paths, True)
 
-class SvnUpdateRevisionCommand(NativeSvnCommand):
+class SvnUpdateRevisionCommand(SvnCommand):
     def run(self, paths=None):
-        self.name = "SVN Update to revision (2)"
+        self.name = "SVN Update to revision (%s)" % 2
         self.run_path_command('update -r 2', paths, True, False)
 
     def is_visible(self, paths=None):
