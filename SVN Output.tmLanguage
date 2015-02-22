@@ -153,7 +153,7 @@
 			</dict>
 			<key>match</key>
 			<string>(?!:^|
-)(Output|Error):</string>
+)(Output|Error|Files):</string>
 		</dict>
 		<key>update</key>
 		<dict>

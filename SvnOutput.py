@@ -20,7 +20,10 @@ class SvnView(sublime_plugin.EventListener):
 
 class SvnMessageCommand(sublime_plugin.TextCommand):
     def run(self, edit, message=""):
-        self.view.insert(edit, self.view.size(), message)
+        self.view.insert(edit, self.view.size(), message + '\n')
+
+def indent(text="", spaces=4):
+    return " " * spaces + re.sub(r'\n', '\n' + " " * spaces, text)
 
 def add_message(message):
     view = SvnView.get()
@@ -33,23 +36,28 @@ def add_message(message):
     );
     view.set_read_only(True)
 
-def add_command(name, args=None):
+def add_command(name):
     view = SvnView.get()
     view.window().focus_view(view)
     point = view.text_to_layout(view.size() - 1)
-    add_message("Command: " + name + "\n")
-    if args is not None:
-        for arg in args:
-            add_message("    " + arg + "\n")
+    add_message("Command: " + name)
     view.set_viewport_position(point, True)
+
+def add_files(paths=None):
+    if paths is None:
+        return
+    s = paths
+    if isinstance(paths, list):
+        s = "\n".join(paths)
+    add_message("Files:\n" + indent(s))
 
 def add_result(result):
     if result:
-        add_message("Output:\n    " + re.sub(r'\n', '\n    ', result) + "\n")
+        add_message("Output:\n" + indent(result))
 
 def add_error(err):
     if err:
-        add_message("Error:\n    " + re.sub(r'\n', '\n    ', err) + "\n")
+        add_message("Error:\n" + indent(err))
 
 def end_command():
     add_message("\n")

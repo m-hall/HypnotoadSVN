@@ -23,7 +23,7 @@
             }
         },
         "scopeName": {
-            "match": "(?!:^|\n)(Output|Error):",
+            "match": "(?!:^|\n)(Output|Error|Files):",
             "captures": {
                 "1": { "name": "keyword.other.control.svn-output" }
             }
