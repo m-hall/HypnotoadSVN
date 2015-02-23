@@ -3,6 +3,7 @@ import sublime_plugin
 import os
 import os.path
 import re
+from . import util
 from . import SvnProcess
 
 LOG_PARSE = r'-{10,}\nr(\d+) \| ([^|]+) \| ([^|]+) \| [^\n]+\n\n(.+)'
@@ -25,39 +26,53 @@ class SvnCommand(sublime_plugin.WindowCommand):
     def test_versionned(self, result):
         return 'not a working copy' not in result
 
-    def is_versionned(self, paths=None):
+    def is_versionned(self, paths):
+        if len(paths) == 0:
+            return False
         p = self.run_command('info', paths, False, False)
         return self.test_versionned(p.output() + p.error())
 
-    def is_visible(self, cmd="", paths=None, versionned=None, fileType=None):
-        if versionned is not None:
-            if versionned != self.is_versionned(paths):
-                return False
-        if fileType is not None:
-            if paths == None:
-                return False
-            file = self.get_path(paths)
-            if os.path.isfile(file) == (fileType == 'file'):
-                return False
+    def is_single(self, paths=None):
+        if paths == None:
+            return False
+        if len(paths) == 1:
+            return True
+        return False
+
+    def is_file(self, paths):
+        if paths == None:
+            return False
+        file = self.get_path(paths)
+        if os.path.isfile(file):
+            return False
         return True
 
-    def run(self, cmd="", paths=None, versionned=None, fileType=None):
+    def is_folder(self, paths):
+        if paths == None:
+            return False
+        file = self.get_path(paths)
+        if not os.path.isfile(file):
+            return False
+        return True
+
+    def run(self, cmd="", paths=None, group=-1, index=-1):
         if cmd is "":
             return
+        files = util.get_paths(paths, group, index)
         self.name = cmd.upper()
-        self.run_command(cmd, paths)
+        self.run_command(cmd, files)
 
 class SvnCommitCommand(SvnCommand):
     def commit(self):
         self.name = "SVN Commit"
-        self.run_command('commit', self.paths)
+        self.run_command('commit', self.files)
     def verify(self):
         files = []
         for index, include in enumerate(self.includes):
             if include is True:
                 files.append(self.items[index])
         if sublime.ok_dialog(self.message+'\n\nFiles:\n'+'\n'.join(files)):
-            self.paths = files
+            self.files = files
             self.commit()
     def on_done_input(self, value):
         self.message = value
@@ -66,8 +81,6 @@ class SvnCommitCommand(SvnCommand):
         return
     def on_cancel_input(self):
         return
-    def is_visible(self, paths=None):
-        return super(SvnCommitCommand, self).is_visible(paths=paths, versionned=True)
     def show_message_panel(self):
         sublime.active_window().show_input_panel('Commit message', '', self.on_done_input, self.on_change_input, self.on_cancel_input)
     def show_changes_panel(self):
@@ -108,23 +121,23 @@ class SvnCommitCommand(SvnCommand):
             return
         self.show_changes_panel()
     def get_changes(self):
-        SvnProcess.Process('Log', 'svn status', self.paths, False, True, self.on_changes_available)
-    def run(self, paths=None):
-        if paths is None:
-            return
-        self.paths = paths
+        SvnProcess.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.files = files
         self.get_changes()
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
 class SvnUpdateRevisionCommand(SvnCommand):
     def on_done_input(self, value):
         self.name = "Update to revision (%s)" % value
-        self.run_command('update -r %s' % value, self.paths)
+        self.run_command('update -r %s' % value, self.files)
     def on_change_input(self, value):
         return
     def on_cancel_input(self):
         return
-    def is_visible(self, paths=None):
-        return super(SvnUpdateRevisionCommand, self).is_visible(paths=paths, versionned=True)
     def on_select(self, index):
         if index < 0:
             return
@@ -133,7 +146,7 @@ class SvnUpdateRevisionCommand(SvnCommand):
             self.get_revisions(self.number)
         revision = self.revisions[index]
         self.name = "Update to revision (%s)" % revision
-        self.run_command('update -r %s' % revision, self.paths)
+        self.run_command('update -r %s' % revision, self.files)
     def parse_logs(self, raw):
         matches = re.findall(LOG_PARSE, raw, re.M)
         revisions = []
@@ -154,108 +167,110 @@ class SvnUpdateRevisionCommand(SvnCommand):
         self.parse_logs(output)
         sublime.active_window().show_quick_panel(self.logs, self.on_select)
     def get_revisions(self, revisions):
-        SvnProcess.Process('Log', 'svn log -r HEAD:1 -l ' + str(revisions), self.paths, False, True, self.on_logs_available)
-    def run(self, paths=None):
-        if paths is None:
-            return
-        self.paths = paths
+        SvnProcess.Process('Log', 'svn log -r HEAD:1 -l ' + str(revisions), self.files, False, True, self.on_logs_available)
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.files = files
         show_history = self.get_setting("updateToRevisionHistory")
         if (show_history):
             self.number = self.get_setting('updateToRevisionHistorySize')
             self.get_revisions(self.number)
         else:
             sublime.active_window().show_input_panel('Which revision', '', self.on_done_input, self.on_change_input, self.on_cancel_input)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
 class SvnUpdateCommand(SvnCommand):
-    def run(self, paths=None):
-        if paths is None:
-            return
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
         self.name = "Update"
-        self.run_command('update', paths)
-    def is_visible(self, paths=None):
-        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+        self.run_command('update', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
 class SvnLogCommand(SvnCommand):
-    def run(self, paths=None):
-        if paths is None:
-            return
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
         self.name = "Log"
         revisions = self.get_setting('logHistorySize')
         if isinstance(revisions, int) and revisions > 0:
-            self.run_command('log -v -l %s' % revision, paths)
+            self.run_command('log -v -l %s' % revision, files)
         else:
-            self.run_command('log -v', paths)
-    def is_visible(self, paths=None):
-        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+            self.run_command('log -v', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
 class SvnStatusCommand(SvnCommand):
-    def run(self, paths=None):
-        if paths is None:
-            return
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
         self.name = "Check for Modifications"
-        self.run_command('status -v', paths)
-    def is_visible(self, paths=None):
-        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+        self.run_command('status -v', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
 class SvnAddCommand(SvnCommand):
-    def run(self, paths=None):
-        if paths is None:
-            return
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
         self.name = "Add"
-        self.run_command('add', paths)
-    def is_visible(self, paths=None):
-        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+        self.run_command('add', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
 class SvnDeleteCommand(SvnCommand):
-    def run(self, paths=None):
-        if paths is None:
-            return
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
         self.name = "Delete"
-        self.run_command('delete', paths)
-    def is_visible(self, paths=None):
-        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+        self.run_command('delete', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
 class SvnRevertCommand(SvnCommand):
-    def run(self, paths=None):
-        if paths is None:
-            return
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
         self.name = "Revert"
-        self.run_command('revert -R', paths)
-    def is_visible(self, paths=None):
-        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+        self.run_command('revert -R', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
 class SvnCleanupCommand(SvnCommand):
-    def run(self, paths=None):
-        if paths is None:
-            return
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
         self.name = "Cleanup"
-        self.run_command('cleanup -R', paths)
-    def is_visible(self, paths=None):
-        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+        self.run_command('cleanup -R', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
 class SvnLockCommand(SvnCommand):
-    def run(self, paths=None):
-        if paths is None:
-            return
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
         self.name = "Lock"
-        self.run_command('lock', paths)
-    def is_visible(self, paths=None):
-        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+        self.run_command('lock', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
 class SvnStealLockCommand(SvnCommand):
-    def run(self, paths=None):
-        if paths is None:
-            return
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
         self.name = "Steal Lock"
-        self.run_command('lock --force', paths)
-    def is_visible(self, paths=None):
-        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+        self.run_command('lock --force', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
 
-class SvnCleanupCommand(SvnCommand):
-    def run(self, paths=None):
-        if paths is None:
-            return
-        self.name = "Cleanup"
-        self.run_command('cleanup -R', paths)
-    def is_visible(self, paths=None):
-        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+class SvnUnlockCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.name = "Unlock"
+        self.run_command('unlock', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)

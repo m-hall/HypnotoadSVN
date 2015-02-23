@@ -139,3 +139,16 @@ def generate_color_scheme_async():
     prefs.set('color_scheme', path)
     sublime.save_settings('Preferences.sublime-settings')
 
+
+def get_files(paths=None, group=-1, index=-1):
+    files = []
+    if isinstance(paths, list):
+        files = files+paths
+    if group >=0 and index >= 0:
+        view = sublime.active_window().views_in_group(group)[index]
+        files.append(view.file_name())
+    if len(files) == 0:
+        view = sublime.active_window().active_view()
+        if os.path.exists(view.file_name()):
+            files.append(view.file_name())
+    return files
