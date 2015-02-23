@@ -1,4 +1,8 @@
 [
+    // If you change this file it will be overwritten with the next update to HypnotoadSVN plugin
+    // To reset this file:
+    // 1. go to https://github.com/m-hall/HypnotoadSVN/blob/master/Side%20Bar.sublime-menu
+    // 2. copy file contents to this file and save
     { "caption": "-" },
     { "caption": "SVN Update", "command": "svn_update", "args": {"paths":[]}},
     { "caption": "SVN Commit", "command": "svn_commit", "args": {"paths":[]}},

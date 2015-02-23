@@ -30,13 +30,6 @@
 							},
 							{ "caption": "-" },
 							{
-								"command": "open_read_only",
-								"args": {
-									"file": "${packages}/HypnotoadSVN/Default Side Bar.sublime-menu"
-								},
-								"caption": "Side Bar - Default"
-							},
-							{
 								"command": "open_file",
 								"args": {
 									"file": "${packages}/HypnotoadSVN/Side Bar.sublime-menu"
