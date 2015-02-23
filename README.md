@@ -1,15 +1,13 @@
 HypnotoadSVN
 =============
-HypnotoadSVN is an extension for Sublime Text 2/3 that adds TortoiseSVN features to the folder list and the command palatte.
+HypnotoadSVN is an extension for Sublime Text 2/3 that adds SVN features to the folder list and the command palatte.
 
 This plugin started from [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/sublime-TortoiseSVN).
-**It runs only on Windows and needs the TortoiseSVN and TortoiseSVN command line tools (TortoiseProc.exe).**
 
 Requirements
 ------------
 - Sublime Text 2/3
 - Sublime Package Control
-- TortoiseSVN
 
 Installation
 ------------
@@ -22,46 +20,19 @@ Installation
 Settings
 --------
 
-### tortoiseproc_path
-If you have installed TortoiseSVN to a directory other than the default, set this value to the location of "TortoiseProc.exe".
+### Update To Revision
+Update to revision command can be modified to disable the history if you find it to be too slow.
 
 Default
 ```JSON
 {
-    "tortoiseproc_path": "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe"
+    "updateToRevisionHistory": true, // Set this to false to simply enter the desired revision number
+    "updateToRevisionHistorySize": 20 // This changes the number of items in the revision history panel
 }
 ```
-
-### autoCloseUpdateDialog
-Closes the Update dialog after it is complete provided there are no errors, conflicts or merges.
-
-Default
-```JSON
-{
-    "autoCloseUpdateDialog": false
-}
-```
-
-### autoCloseCommitDialog
-Closes the commit dialog after it is complete provided that there are no errors.
-
-Default
-```JSON
-{
-    "autoCloseCommitDialog": true
-}
-```
-
-Key Bindings
-------------
-The default key bindings are 
-- [alt+c] : commit current file.
-- [alt+u] : update current file.
-- [alt+r] : revert current file.
 
 Resources
 ---------
 - [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/sublime-TortoiseSVN)
-- [TortoiseSVN](http://tortoisesvn.net/)
 - [Sublime Text](http://www.sublimetext.com/)
 - [Sublime Package Control](http://wbond.net/sublime_packages/package_control)
