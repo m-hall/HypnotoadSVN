@@ -27,7 +27,7 @@
             { "caption": "-" },
             { "caption": "Lock", "command": "svn_lock", "args": {"paths":[]}},
             { "caption": "Steal Lock", "command": "svn_steal_lock", "args": {"paths":[]}},
-            { "caption": "Unlock", "command": "svn_unlock", "args": "args": {"paths":[]}},
+            { "caption": "Unlock", "command": "svn_unlock", "args": {"paths":[]}}
         ]
     },
     { "caption": "-", "id": "end" }
