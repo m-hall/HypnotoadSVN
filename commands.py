@@ -3,6 +3,7 @@ import sublime_plugin
 import os
 import os.path
 import re
+import subprocess
 from . import util
 from . import SvnProcess
 
@@ -17,11 +18,17 @@ class OpenReadOnlyCommand(sublime_plugin.WindowCommand):
 
 class SvnCommand(sublime_plugin.WindowCommand):
     def get_setting(self, name):
-        settings = sublime.load_settings("HypnotoadSVN.sublime-settings")
-        return settings.get(name)
+        return util.get_setting(name)
 
     def run_command(self, cmd, paths=None, log=True, thread=True):
         return SvnProcess.Process(self.name, 'svn ' + cmd, paths, log, thread)
+
+    def run_tortoise(self, cmd, paths):
+        if not util.use_tortoise():
+            error_message('Tortoise command can not be run: ' + cmd)
+            return
+        command = '"' + get_setting('tortoiseproc_path') + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(paths)
+        return subprocess.Popen(command, stdout=subprocess.PIPE)
 
     def test_versionned(self, result):
         return 'not a working copy' not in result
@@ -64,7 +71,6 @@ class SvnCommand(sublime_plugin.WindowCommand):
 
 class SvnCommitCommand(SvnCommand):
     def commit(self):
-        self.name = "SVN Commit"
         self.run_command('commit', self.files)
     def verify(self):
         files = []
@@ -124,6 +130,10 @@ class SvnCommitCommand(SvnCommand):
         SvnProcess.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
+        self.name = "Commit"
+        if util.always_tortoise():
+            self.run_tortoise('commit', files)
+            return
         self.files = files
         self.get_changes()
     def is_visible(self, paths=None, group=-1, index=-1):
@@ -185,6 +195,9 @@ class SvnUpdateCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Update"
+        if util.always_tortoise():
+            self.run_tortoise('update', files)
+            return
         self.run_command('update', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
@@ -194,6 +207,9 @@ class SvnLogCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Log"
+        if util.always_tortoise():
+            self.run_tortoise('log', files)
+            return
         revisions = self.get_setting('logHistorySize')
         if isinstance(revisions, int) and revisions > 0:
             self.run_command('log -v -l %s' % revision, files)
@@ -207,6 +223,9 @@ class SvnStatusCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Check for Modifications"
+        if util.always_tortoise():
+            self.run_tortoise('repostatus', files)
+            return
         self.run_command('status -v', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
@@ -216,12 +235,18 @@ class SvnAddCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Add"
+        if util.always_tortoise():
+            self.run_tortoise('add', files)
+            return
         self.run_command('add', files)
 
 class SvnDeleteCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Delete"
+        if util.always_tortoise():
+            self.run_tortoise('remove', files)
+            return
         self.run_command('delete', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
@@ -231,6 +256,9 @@ class SvnRevertCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Revert"
+        if util.always_tortoise():
+            self.run_tortoise('revert', files)
+            return
         self.run_command('revert -R', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
@@ -240,6 +268,9 @@ class SvnCleanupCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Cleanup"
+        if util.always_tortoise():
+            self.run_tortoise('cleanup', files)
+            return
         self.run_command('cleanup -R', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
@@ -249,6 +280,9 @@ class SvnLockCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Lock"
+        if util.always_tortoise():
+            self.run_tortoise('lock', files)
+            return
         self.run_command('lock', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
@@ -261,12 +295,15 @@ class SvnStealLockCommand(SvnCommand):
         self.run_command('lock --force', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        return self.is_versionned(files)
+        return self.is_versionned(files) and not util.always_tortoise()
 
 class SvnUnlockCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Unlock"
+        if util.always_tortoise():
+            self.run_tortoise('unlock', files)
+            return
         self.run_command('unlock', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
@@ -276,97 +313,118 @@ class SvnMergeCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Merge"
+        if util.use_tortoise():
+            self.run_tortoise("merge", files)
+            return
         self.run_command('merge', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        return self.is_versionned(files)
+        return self.is_versionned(files) and self.is_single(files)
     def is_enabled(self, paths=None, group=-1, index=-1):
-        return False
+        return util.use_tortoise()
 
 class SvnDiffCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Diff"
+        if util.use_tortoise():
+            self.run_tortoise("diff", files)
+            return
         self.run_command('diff', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        return self.is_versionned(files)
+        return self.is_versionned(files) and self.is_single(files)
     def is_enabled(self, paths=None, group=-1, index=-1):
-        return False
+        return util.use_tortoise()
 
 class SvnDiffPreviousCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Diff With Previous"
-        self.run_command('diff', files)
+        if util.use_tortoise():
+            self.run_tortoise("branch", files)
+            return
+        #self.run_command('diff', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        return self.is_versionned(files)
+        return self.is_versionned(files) and self.is_single(files)
     def is_enabled(self, paths=None, group=-1, index=-1):
-        return False
+        return util.use_tortoise()
 
 class SvnRenameCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Rename"
-        self.run_command('move', files)
+        if util.use_tortoise():
+            self.run_tortoise("rename", files)
+            return
+        #self.run_command('move', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        return self.is_versionned(files)
+        return self.is_versionned(files) and self.is_single(paths)
     def is_enabled(self, paths=None, group=-1, index=-1):
-        return False
+        return util.use_tortoise()
 
 class SvnBlameCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Blame"
-        self.run_command('blame', files)
+        if util.use_tortoise():
+            self.run_tortoise("blame", files)
+            return
+        #self.run_command('blame', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         return self.is_versionned(files)
     def is_enabled(self, paths=None, group=-1, index=-1):
-        return False
+        return util.use_tortoise()
 
 class SvnConflictEditorCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        self.name = "Blame"
-        self.run_command('blame', files)
+        self.run_tortoise('conflicteditor', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        return self.is_versionned(files)
-    def is_enabled(self, paths=None, group=-1, index=-1):
-        return False
+        return util.use_tortoise() and self.is_versionned(files)
 
 class SvnResolveCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Resolve"
-        self.run_command('resolve', files)
+        if util.use_tortoise():
+            self.run_tortoise("resolve", files)
+            return
+        #self.run_command('resolve', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         return self.is_versionned(files)
     def is_enabled(self, paths=None, group=-1, index=-1):
-        return False
+        return util.use_tortoise()
 
 class SvnSwitchCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Switch"
-        self.run_command('switch', files)
+        if util.use_tortoise():
+            self.run_tortoise("switch", files)
+            return
+        #self.run_command('switch', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        return self.is_versionned(files)
+        return self.is_versionned(files) and self.is_single(files)
     def is_enabled(self, paths=None, group=-1, index=-1):
-        return False
+        return util.use_tortoise()
 
 class SvnBranchCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        self.name = "branch"
-        self.run_command('branch', files)
+        self.name = "Branch"
+        if util.use_tortoise():
+            self.run_tortoise("branch", files)
+            return
+        #self.run_command('branch', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        return self.is_versionned(files)
+        return self.is_versionned(files) and self.is_single(files)
     def is_enabled(self, paths=None, group=-1, index=-1):
-        return False
+        return util.use_tortoise()

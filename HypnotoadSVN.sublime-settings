@@ -1,4 +1,10 @@
 {
     "updateToRevisionHistory": true, // Set this to false to simply enter the desired revision number
-    "updateToRevisionHistorySize": 20 // This changes the number of items in the revision history panel
+    "updateToRevisionHistorySize": 20, // This changes the number of items in the revision history panel
+
+
+    // Windows only
+    "useTortoise": false, // allows commands that can only be used via TortoiseSVN
+    "alwaysTortoise": false, // allows only commands that can be used via TortoiseSVN
+    "tortoiseproc_path": "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe", // path to TortoiseProc
 }

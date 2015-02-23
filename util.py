@@ -139,6 +139,9 @@ def generate_color_scheme_async():
     prefs.set('color_scheme', path)
     sublime.save_settings('Preferences.sublime-settings')
 
+def get_setting(name):
+    settings = sublime.load_settings("HypnotoadSVN.sublime-settings")
+    return settings.get(name)
 
 def get_files(paths=None, group=-1, index=-1):
     files = []
@@ -152,3 +155,16 @@ def get_files(paths=None, group=-1, index=-1):
         if os.path.exists(view.file_name()):
             files.append(view.file_name())
     return files
+
+def use_tortoise():
+    if os.name == 'nt' and get_setting('useTortoise'):
+        tortoise_path = get_setting('tortoiseproc_path');
+        if os.path.isfile(tortoise_path):
+            return True
+    return False
+
+def always_tortoise():
+    return get_setting('always_tortoise') and use_tortoise()
+
+def tortoise_path(paths):
+    return "*".join(paths)
