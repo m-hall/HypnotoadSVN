@@ -217,9 +217,6 @@ class SvnAddCommand(SvnCommand):
         files = util.get_paths(paths, group, index)
         self.name = "Add"
         self.run_command('add', files)
-    def is_visible(self, paths=None, group=-1, index=-1):
-        files = util.get_paths(paths, group, index)
-        return self.is_versionned(files)
 
 class SvnDeleteCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -274,3 +271,102 @@ class SvnUnlockCommand(SvnCommand):
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         return self.is_versionned(files)
+
+class SvnMergeCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.name = "Merge"
+        self.run_command('merge', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
+    def is_enabled(self, paths=None, group=-1, index=-1):
+        return False
+
+class SvnDiffCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.name = "Diff"
+        self.run_command('diff', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
+    def is_enabled(self, paths=None, group=-1, index=-1):
+        return False
+
+class SvnDiffPreviousCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.name = "Diff With Previous"
+        self.run_command('diff', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
+    def is_enabled(self, paths=None, group=-1, index=-1):
+        return False
+
+class SvnRenameCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.name = "Rename"
+        self.run_command('move', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
+    def is_enabled(self, paths=None, group=-1, index=-1):
+        return False
+
+class SvnBlameCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.name = "Blame"
+        self.run_command('blame', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
+    def is_enabled(self, paths=None, group=-1, index=-1):
+        return False
+
+class SvnConflictEditorCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.name = "Blame"
+        self.run_command('blame', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
+    def is_enabled(self, paths=None, group=-1, index=-1):
+        return False
+
+class SvnResolveCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.name = "Resolve"
+        self.run_command('resolve', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
+    def is_enabled(self, paths=None, group=-1, index=-1):
+        return False
+
+class SvnSwitchCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.name = "Switch"
+        self.run_command('switch', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
+    def is_enabled(self, paths=None, group=-1, index=-1):
+        return False
+
+class SvnBranchCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        self.name = "branch"
+        self.run_command('branch', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_paths(paths, group, index)
+        return self.is_versionned(files)
+    def is_enabled(self, paths=None, group=-1, index=-1):
+        return False
