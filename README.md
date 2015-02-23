@@ -24,7 +24,7 @@ Settings
 Update to revision command can be modified to disable the history if you find it to be too slow.
 
 Default
-```JSON
+```
 {
     "updateToRevisionHistory": true, // Set this to false to simply enter the desired revision number
     "updateToRevisionHistorySize": 20 // This changes the number of items in the revision history panel
