@@ -7,68 +7,28 @@
     "patterns": [
         { "include": "#command" },
         { "include": "#scopeName" },
-        { "include": "#add" },
-        { "include": "#delete" },
-        { "include": "#update" },
-        { "include": "#merge" },
-        { "include": "#conflict" },
-        { "include": "#unversionned" }
+        { "include": "#update" }
     ],
 
     "repository": {
         "command": {
             "match": "(?!:^|\n)(Command): ([^\n]*)",
             "captures": {
-                "1": { "name": "keyword.other.control.svn-output" },
-                "2": { "name": "string.meta.syntax.name.svn-output" }
+                "1": { "name": "keyword.control.svn-output" },
+                "2": { "name": "string.meta.command.name.svn-output" }
             }
         },
         "scopeName": {
             "match": "(?!:^|\n)(Output|Error|Files):",
             "captures": {
-                "1": { "name": "keyword.other.control.svn-output" }
+                "1": { "name": "keyword.control.svn-output" }
             }
         },
-        "add": {
-            "match": "(?!:^|\n) {4}(A)[A-Z\\+\\?\\!\\>\\ ]+ ([^\n]+)",
+        "update": {//(A?)(D?)(U?)(M?G?)(\\??)(\\!?)
+            "match": "(?!:^|\n) {4}([ADGMU\\?\\! ]{4}) ([^\n]+)",
             "captures": {
-                "1": { "name": "punctuation.other.add.svn-output"},
-                "2": { "name": "string.meta.path.add.svn-output"}
-            }
-        },
-        "delete": {
-            "match": "(?!:^|\n) {4}(D|!)[A-Z\\+\\?\\!\\>\\ ]+ ([^\n]+)",
-            "captures": {
-                "1": { "name": "punctuation.other.delete.svn-output"},
-                "2": { "name": "string.meta.path.delete.svn-output"}
-            }
-        },
-        "update": {
-            "match": "(?!:^|\n) {4}(U)[A-Z\\+\\?\\!\\>\\ ]+ ([^\n]+)",
-            "captures": {
-                "1": { "name": "punctuation.other.update.svn-output"},
-                "2": { "name": "string.meta.path.update.svn-output"}
-            }
-        },
-        "merge": {
-            "match": "(?!:^|\n) {4}(G)[A-Z\\+\\?\\!\\>\\ ]+ ([^\n]+)",
-            "captures": {
-                "1": { "name": "punctuation.other.merge.svn-output"},
-                "2": { "name": "string.meta.path.merge.svn-output"}
-            }
-        },
-        "conflict": {
-            "match": "(?!:^|\n) {4}[A-Z\\+\\?\\!\\>\\ ]{2}(C)[A-Z\\+\\?\\!\\>\\ ]+ ([^\n]+)",
-            "captures": {
-                "1": { "name": "punctuation.other.conflict.svn-output"},
-                "2": { "name": "string.error.path.conflict.svn-output"}
-            }
-        },
-        "unversionned": {
-            "match": "(?!:^|\n) {4}(\\?)[A-Z\\+\\?\\!\\>\\ ]+ ([^\n]+)",
-            "captures": {
-                "1": { "name": "punctuation.other.unversionned.svn-output"},
-                "2": { "name": "string.meta.path.unversionned.svn-output"}
+                "1": { "name": "keyword.status.svn-output"},
+                "2": { "name": "string.path.svn-output"}
             }
         }
     }

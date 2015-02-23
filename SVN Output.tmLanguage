@@ -20,51 +20,11 @@
 		</dict>
 		<dict>
 			<key>include</key>
-			<string>#add</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#delete</string>
-		</dict>
-		<dict>
-			<key>include</key>
 			<string>#update</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#merge</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#conflict</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#unversionned</string>
 		</dict>
 	</array>
 	<key>repository</key>
 	<dict>
-		<key>add</key>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.other.add.svn-output</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>string.meta.path.add.svn-output</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(?!:^|
-) {4}(A)[A-Z\+\?\!\&gt;\ ]+ ([^
-]+)</string>
-		</dict>
 		<key>command</key>
 		<dict>
 			<key>captures</key>
@@ -72,78 +32,18 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.other.control.svn-output</string>
+					<string>keyword.control.svn-output</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>string.meta.syntax.name.svn-output</string>
+					<string>string.meta.command.name.svn-output</string>
 				</dict>
 			</dict>
 			<key>match</key>
 			<string>(?!:^|
 )(Command): ([^
 ]*)</string>
-		</dict>
-		<key>conflict</key>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.other.conflict.svn-output</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>string.error.path.conflict.svn-output</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(?!:^|
-) {4}[A-Z\+\?\!\&gt;\ ]{2}(C)[A-Z\+\?\!\&gt;\ ]+ ([^
-]+)</string>
-		</dict>
-		<key>delete</key>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.other.delete.svn-output</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>string.meta.path.delete.svn-output</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(?!:^|
-) {4}(D|!)[A-Z\+\?\!\&gt;\ ]+ ([^
-]+)</string>
-		</dict>
-		<key>merge</key>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.other.merge.svn-output</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>string.meta.path.merge.svn-output</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(?!:^|
-) {4}(G)[A-Z\+\?\!\&gt;\ ]+ ([^
-]+)</string>
 		</dict>
 		<key>scopeName</key>
 		<dict>
@@ -152,32 +52,12 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.other.control.svn-output</string>
+					<string>keyword.control.svn-output</string>
 				</dict>
 			</dict>
 			<key>match</key>
 			<string>(?!:^|
 )(Output|Error|Files):</string>
-		</dict>
-		<key>unversionned</key>
-		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>punctuation.other.unversionned.svn-output</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>string.meta.path.unversionned.svn-output</string>
-				</dict>
-			</dict>
-			<key>match</key>
-			<string>(?!:^|
-) {4}(\?)[A-Z\+\?\!\&gt;\ ]+ ([^
-]+)</string>
 		</dict>
 		<key>update</key>
 		<dict>
@@ -186,17 +66,17 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>punctuation.other.update.svn-output</string>
+					<string>keyword.status.svn-output</string>
 				</dict>
 				<key>2</key>
 				<dict>
 					<key>name</key>
-					<string>string.meta.path.update.svn-output</string>
+					<string>string.path.svn-output</string>
 				</dict>
 			</dict>
 			<key>match</key>
 			<string>(?!:^|
-) {4}(U)[A-Z\+\?\!\&gt;\ ]+ ([^
+) {4}([ADGMU\?\! ]{4}) ([^
 ]+)</string>
 		</dict>
 	</dict>
