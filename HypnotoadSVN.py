@@ -6,6 +6,7 @@ import re
 from . import SvnProcess
 
 LOG_PARSE = r'-{10,}\nr(\d+) \| ([^|]+) \| ([^|]+) \| [^\n]+\n\n(.+)'
+STATUS_PARSE = r'(^[A-Z\?\!\ >]{3,6}) (.*)'
 
 class OpenReadOnlyCommand(sublime_plugin.WindowCommand):
     def run(self, file):
@@ -46,12 +47,80 @@ class SvnCommand(sublime_plugin.WindowCommand):
         self.name = "SVN " + cmd.upper()
         self.run_command(cmd, paths)
 
+class SvnCommitCommand(SvnCommand):
+    def commit(self):
+        self.name = "SVN Commit"
+        self.run_command('commit', self.paths)
+    def verify(self):
+        files = []
+        for index, include in enumerate(self.includes):
+            if include is True:
+                files.append(self.items[index])
+        if sublime.ok_dialog(self.message+'\n\nFiles:\n'+'\n'.join(files)):
+            self.paths = files
+            self.commit()
+    def on_done_input(self, value):
+        self.message = value
+        verify()
+    def on_change_input(self, value):
+        return
+    def on_cancel_input(self):
+        return
+    def is_visible(self, paths=None):
+        return super(SvnCommitCommand, self).is_visible(paths=paths, versionned=True)
+    def show_message_panel(self):
+        sublime.active_window().show_input_panel('Commit message', '', self.on_done_input, self.on_change_input, self.on_cancel_input)
+    def show_changes_panel(self):
+        sublime.active_window().show_quick_panel(self.items, self.on_select, sublime.MONOSPACE_FONT)
+    def on_select(self, index):
+        if index < 0:
+            return
+        if index == 0:
+            self.show_message_panel()
+        if self.includes[index]:
+            self.items[index] = re.sub(r'^\[X\]', '[ ]', self.items[index])
+        else:
+            self.items[index] = re.sub(r'^\[ \]', '[X]', self.items[index])
+        self.includes[index] = not self.includes[index]
+        sublime.set_timeout(self.show_changes_panel, 50)
+    def parse_changes(self, raw):
+        matches = re.findall(STATUS_PARSE, raw, re.M)
+        if len(matches) < 1:
+            sublime.status_message('No changes to commit')
+            return False
+        files = []
+        items = []
+        includes = []
+        files.append(None)
+        items.append('Done')
+        includes.append(None)
+        for change, path in matches:
+            files.append(path)
+            items.append('[ ]' + change + ": " + path)
+            includes.append(False)
+        self.files = files
+        self.items = items
+        self.includes = includes
+        return True
+    def on_changes_available(self, process):
+        output = process.output()
+        if self.parse_changes(output) == False:
+            return
+        self.show_changes_panel()
+    def get_changes(self):
+        SvnProcess.Process('Log', 'svn status', self.paths, False, True, self.on_changes_available)
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.paths = paths
+        self.get_changes()
+
 class SvnUpdateRevisionCommand(SvnCommand):
     def on_done_input(self, value):
         self.name = "SVN Update to revision (%s)" % value
         self.run_command('update -r %s' % value, self.paths)
     def on_change_input(self, value):
-        print(value)
+        return
     def on_cancel_input(self):
         return
     def is_visible(self, paths=None):
@@ -65,8 +134,8 @@ class SvnUpdateRevisionCommand(SvnCommand):
         revision = self.revisions[index]
         self.name = "SVN Update to revision (%s)" % revision
         self.run_command('update -r %s' % revision, self.paths)
-    def parse_logs(self, raw_logs):
-        matches = re.findall(LOG_PARSE, raw_logs, re.M)
+    def parse_logs(self, raw):
+        matches = re.findall(LOG_PARSE, raw, re.M)
         revisions = []
         logs = []
         show_more = len(matches) >= self.number
