@@ -9,6 +9,8 @@ from . import SvnProcess
 
 LOG_PARSE = r'-{10,}\nr(\d+) \| ([^|]+) \| ([^|]+) \| [^\n]+\n\n(.+)'
 STATUS_PARSE = r'(^[A-Z\?\!\ >]{3,6}) (.*)'
+INFO_PARSE_REVISION = r"Revision: (\d+)"
+INFO_PARSE_LAST_CHANGE = r"Last Changed Rev: (\d+)"
 
 class OpenReadOnlyCommand(sublime_plugin.WindowCommand):
     def run(self, file):
@@ -20,47 +22,46 @@ class SvnCommand(sublime_plugin.WindowCommand):
     def get_setting(self, name):
         return util.get_setting(name)
 
-    def run_command(self, cmd, paths=None, log=True, thread=True):
-        return SvnProcess.Process(self.name, 'svn ' + cmd, paths, log, thread)
+    def run_command(self, cmd, files=None, log=True, thread=True):
+        return SvnProcess.Process(self.name, 'svn ' + cmd, files, log, thread)
 
-    def run_tortoise(self, cmd, paths):
+    def run_tortoise(self, cmd, files):
         if not util.use_tortoise():
             error_message('Tortoise command can not be run: ' + cmd)
             return
-        command = '"' + get_setting('tortoiseproc_path') + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(paths)
+        command = '"' + get_setting('tortoiseproc_path') + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(files)
         return subprocess.Popen(command, stdout=subprocess.PIPE)
 
     def test_versionned(self, result):
         return 'not a working copy' not in result
 
-    def is_versionned(self, paths):
-        if len(paths) == 0:
+    def is_versionned(self, files):
+        if len(files) == 0:
             return False
-        p = self.run_command('info', paths, False, False)
+        p = self.run_command('info', files, False, False)
         return self.test_versionned(p.output() + p.error())
 
-    def is_single(self, paths=None):
-        if paths == None:
-            return False
-        if len(paths) == 1:
+    def is_changed(self, files):
+        p = self.run_command('status', files, False, False)
+        return bool(p.output())
+
+    def is_unchanged(self, files):
+        return not self.is_changed(files)
+
+    def is_single(self, files):
+        if len(files) == 1:
             return True
         return False
 
-    def is_file(self, paths):
-        if paths == None:
-            return False
-        file = self.get_path(paths)
-        if os.path.isfile(file):
-            return False
-        return True
+    def is_file(self, files):
+        if self.is_single(files) and os.path.isfile(files[0]):
+            return True
+        return False
 
-    def is_folder(self, paths):
-        if paths == None:
-            return False
-        file = self.get_path(paths)
-        if not os.path.isfile(file):
-            return False
-        return True
+    def is_folder(self, files):
+        if self.is_single(files) and not os.path.isfile(files[0]):
+            return True
+        return False
 
     def run(self, cmd="", paths=None, group=-1, index=-1):
         if cmd is "":
@@ -333,7 +334,7 @@ class SvnDiffCommand(SvnCommand):
         self.run_command('diff', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        return self.is_versionned(files) and self.is_single(files)
+        return self.is_file(files) and self.is_versionned(files) and self.is_changed(files)
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
 
@@ -341,13 +342,17 @@ class SvnDiffPreviousCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         self.name = "Diff With Previous"
+        p = self.run_command('info')
+        output = p.output()
+        current = re.search(INFO_PARSE_REVISION, output).group(1)
+        last = re.search(INFO_PARSE_LAST_CHANGE, output).group(1)
         if util.use_tortoise():
-            self.run_tortoise("branch", files)
+            self.run_tortoise("diff /startrev:", files)
             return
         #self.run_command('diff', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
-        return self.is_versionned(files) and self.is_single(files)
+        return self.is_file(files) and self.is_versionned(files) and self.is_unchanged(files)
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
 
