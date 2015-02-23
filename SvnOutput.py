@@ -11,7 +11,7 @@ class SvnView(sublime_plugin.EventListener):
             view.set_scratch(True)
             view.set_name('SVN Output')
             view.set_read_only(True)
-            view.set_syntax_file('Packages/Hypnotoad/SVN Output.tmLanguage')
+            view.set_syntax_file('Packages/HypnotoadSVN/language/SVN Output.tmLanguage')
             SvnView.view = view
         return SvnView.view
     def on_close(self, view):
