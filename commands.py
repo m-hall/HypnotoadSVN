@@ -44,7 +44,7 @@ class SvnCommand(sublime_plugin.WindowCommand):
     def run(self, cmd="", paths=None, versionned=None, fileType=None):
         if cmd is "":
             return
-        self.name = "SVN " + cmd.upper()
+        self.name = cmd.upper()
         self.run_command(cmd, paths)
 
 class SvnCommitCommand(SvnCommand):
@@ -117,7 +117,7 @@ class SvnCommitCommand(SvnCommand):
 
 class SvnUpdateRevisionCommand(SvnCommand):
     def on_done_input(self, value):
-        self.name = "SVN Update to revision (%s)" % value
+        self.name = "Update to revision (%s)" % value
         self.run_command('update -r %s' % value, self.paths)
     def on_change_input(self, value):
         return
@@ -132,7 +132,7 @@ class SvnUpdateRevisionCommand(SvnCommand):
             self.number = self.number * 2
             self.get_revisions(self.number)
         revision = self.revisions[index]
-        self.name = "SVN Update to revision (%s)" % revision
+        self.name = "Update to revision (%s)" % revision
         self.run_command('update -r %s' % revision, self.paths)
     def parse_logs(self, raw):
         matches = re.findall(LOG_PARSE, raw, re.M)
@@ -165,3 +165,97 @@ class SvnUpdateRevisionCommand(SvnCommand):
             self.get_revisions(self.number)
         else:
             sublime.active_window().show_input_panel('Which revision', '', self.on_done_input, self.on_change_input, self.on_cancel_input)
+
+class SvnUpdateCommand(SvnCommand):
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.name = "Update"
+        self.run_command('update', paths)
+    def is_visible(self, paths=None):
+        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+
+class SvnLogCommand(SvnCommand):
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.name = "Log"
+        revisions = self.get_setting('logHistorySize')
+        if isinstance(revisions, int) and revisions > 0:
+            self.run_command('log -v -l %s' % revision, paths)
+        else:
+            self.run_command('log -v', paths)
+    def is_visible(self, paths=None):
+        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+
+class SvnStatusCommand(SvnCommand):
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.name = "Check for Modifications"
+        self.run_command('status -v', paths)
+    def is_visible(self, paths=None):
+        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+
+class SvnAddCommand(SvnCommand):
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.name = "Add"
+        self.run_command('add', paths)
+    def is_visible(self, paths=None):
+        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+
+class SvnDeleteCommand(SvnCommand):
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.name = "Delete"
+        self.run_command('delete', paths)
+    def is_visible(self, paths=None):
+        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+
+class SvnRevertCommand(SvnCommand):
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.name = "Revert"
+        self.run_command('revert -R', paths)
+    def is_visible(self, paths=None):
+        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+
+class SvnCleanupCommand(SvnCommand):
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.name = "Cleanup"
+        self.run_command('cleanup -R', paths)
+    def is_visible(self, paths=None):
+        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+
+class SvnLockCommand(SvnCommand):
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.name = "Lock"
+        self.run_command('lock', paths)
+    def is_visible(self, paths=None):
+        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+
+class SvnStealLockCommand(SvnCommand):
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.name = "Steal Lock"
+        self.run_command('lock --force', paths)
+    def is_visible(self, paths=None):
+        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
+
+class SvnCleanupCommand(SvnCommand):
+    def run(self, paths=None):
+        if paths is None:
+            return
+        self.name = "Cleanup"
+        self.run_command('cleanup -R', paths)
+    def is_visible(self, paths=None):
+        return super(SvnUpdateCommand, self).is_visible(paths=paths, versionned=True)
