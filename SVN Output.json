@@ -7,7 +7,7 @@
     "patterns": [
         { "include": "#command" },
         { "include": "#scopeName" },
-        { "include": "#update" }
+        { "include": "#status" }
     ],
 
     "repository": {
@@ -24,8 +24,8 @@
                 "1": { "name": "keyword.control.svn-output" }
             }
         },
-        "update": {//(A?)(D?)(U?)(M?G?)(\\??)(\\!?)
-            "match": "(?!:^|\n) {4}([ADGMU\\?\\! ]{4}) ([^\n]+)",
+        "status": {
+            "match": "(?!:^|\n) {4}([UGMCADSIXRLE\\?\\!\\+\\> ]{4,7}) ([^\n]+)",
             "captures": {
                 "1": { "name": "keyword.status.svn-output"},
                 "2": { "name": "string.path.svn-output"}

@@ -227,7 +227,7 @@ class SvnStatusCommand(SvnCommand):
         if util.always_tortoise():
             self.run_tortoise('repostatus', files)
             return
-        self.run_command('status -v', files)
+        self.run_command('status', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_paths(paths, group, index)
         return self.is_versionned(files)
