@@ -11,12 +11,6 @@ STATUS_PARSE = r'(^[A-Z\?\!\ >]{3,6}) (.*)'
 INFO_PARSE_REVISION = r"Revision: (\d+)"
 INFO_PARSE_LAST_CHANGE = r"Last Changed Rev: (\d+)"
 
-class OpenReadOnlyCommand(sublime_plugin.WindowCommand):
-    def run(self, file):
-        path = file.replace("${packages}", sublime.packages_path())
-        view = sublime.active_window().open_file(path)
-        view.set_read_only(True)
-
 class SvnCommand(sublime_plugin.WindowCommand):
     def get_setting(self, name):
         return util.get_setting(name)
