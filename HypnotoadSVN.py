@@ -1,7 +1,7 @@
 import sublime
 import sublime_plugin
 import os
-from .lib import util
+from .lib import color_scheme
 
 def plugin_loaded():
-    util.generate_color_scheme()
+    color_scheme.generate()
