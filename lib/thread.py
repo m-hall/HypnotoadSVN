@@ -1,13 +1,13 @@
 import sublime
 from subprocess import Popen, PIPE
 from threading import Thread, Timer
-from . import SvnOutput
+from . import output
 
 TIME_INTERVAL = 0.05
 LOADING_SIZE = 7
 
 class Process:
-    def __init__(self, name, cmd, paths=None, log=True, thread=False, on_complete=None):
+    def __init__(self, name, cmd, paths=None, log=True, async=False, on_complete=None):
         self.name = name
         self.cmd = cmd
         self.paths = paths
@@ -18,7 +18,7 @@ class Process:
         self.loading = 0
         self.on_complete = on_complete
         self.process = Popen(cmd + ' ' + self.get_path(paths), stdout=PIPE, stderr=PIPE, shell=True)
-        if thread:
+        if async:
             self.check_status()
         else:
             self.finish()

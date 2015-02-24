@@ -4,7 +4,7 @@ import os
 import os.path
 import re
 import subprocess
-from .lib import util, SvnProcess
+from .lib import util, thread
 
 LOG_PARSE = r'-{10,}\nr(\d+) \| ([^|]+) \| ([^|]+) \| [^\n]+\n\n(.+)'
 STATUS_PARSE = r'(^[A-Z\?\!\ >]{3,6}) (.*)'
@@ -15,8 +15,8 @@ class SvnCommand(sublime_plugin.WindowCommand):
     def get_setting(self, name):
         return util.get_setting(name)
 
-    def run_command(self, cmd, files=None, log=True, thread=True):
-        return SvnProcess.Process(self.name, 'svn ' + cmd, files, log, thread)
+    def run_command(self, cmd, files=None, log=True, async=True):
+        return thread.Process(self.name, 'svn ' + cmd, files, log, async)
 
     def run_tortoise(self, cmd, files):
         if not util.use_tortoise():
@@ -121,7 +121,7 @@ class SvnCommitCommand(SvnCommand):
             return
         self.show_changes_panel()
     def get_changes(self):
-        SvnProcess.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
+        thread.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Commit"
@@ -171,7 +171,7 @@ class SvnUpdateRevisionCommand(SvnCommand):
         self.parse_logs(output)
         sublime.active_window().show_quick_panel(self.logs, self.on_select)
     def get_revisions(self, revisions):
-        SvnProcess.Process('Log', 'svn log -r HEAD:1 -l ' + str(revisions), self.files, False, True, self.on_logs_available)
+        thread.Process('Log', 'svn log -r HEAD:1 -l ' + str(revisions), self.files, False, True, self.on_logs_available)
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.files = files
