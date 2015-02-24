@@ -48,9 +48,9 @@ SCHEMES = [
 ]
 
 def generate():
-    util.remove_preferences_listener(LISTENER_NAME)
+    #util.remove_preferences_listener(LISTENER_NAME)
     sublime.set_timeout_async(generate_async, 0)
-    util.add_preferences_listener(LISTENER_NAME, generate)
+    #util.add_preferences_listener(LISTENER_NAME, generate)
 
 def generate_async():
     """
