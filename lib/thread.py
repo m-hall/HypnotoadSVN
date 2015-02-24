@@ -35,11 +35,11 @@ class Process:
         return path
 
     def log_result(self):
-        SvnOutput.add_command(self.name)
-        SvnOutput.add_files(self.paths)
-        SvnOutput.add_result(self.output())
-        SvnOutput.add_error(self.error())
-        SvnOutput.end_command()
+        output.add_command(self.name)
+        output.add_files(self.paths)
+        output.add_result(self.output())
+        output.add_error(self.error())
+        output.end_command()
 
     def finish(self):
         output, error = self.process.communicate()
