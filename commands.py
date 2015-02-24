@@ -11,6 +11,12 @@ STATUS_PARSE = r'(^[A-Z\?\!\ >]{3,6}) (.*)'
 INFO_PARSE_REVISION = r"Revision: (\d+)"
 INFO_PARSE_LAST_CHANGE = r"Last Changed Rev: (\d+)"
 
+class SvnViewMessageCommand(sublime_plugin.TextCommand):
+    def run(self, edit, message=""):
+        self.view.set_read_only(False)
+        self.view.insert(edit, self.view.size(), message + '\n')
+        self.view.set_read_only(True)
+
 class SvnCommand(sublime_plugin.WindowCommand):
     def get_setting(self, name):
         return util.get_setting(name)
@@ -167,7 +173,6 @@ class SvnUpdateRevisionCommand(SvnCommand):
         self.logs = logs
     def on_logs_available(self, process):
         output = process.output()
-        print(output)
         self.parse_logs(output)
         sublime.active_window().show_quick_panel(self.logs, self.on_select)
     def get_revisions(self, revisions):

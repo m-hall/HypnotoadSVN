@@ -8,35 +8,30 @@ SYNTAX = 'Packages/HypnotoadSVN/languages/SVN Output.tmLanguage'
 class SvnView(sublime_plugin.EventListener):
     view = None
     def get():
-        if SvnView.view is None:
+        if SvnView.view is None or SvnView.view.window() is None:
             view = sublime.active_window().new_file()
             view.set_scratch(True)
-            view.set_read_only(True)
             view.set_name(VIEW_NAME)
             view.set_syntax_file(SYNTAX)
+            view.set_read_only(True)
             SvnView.view = view
         return SvnView.view
     def on_close(self, view):
         if view == SvnView.view:
             SvnView.view = None
 
-class SvnMessageCommand(sublime_plugin.TextCommand):
-    def run(self, edit, message=""):
-        self.view.insert(edit, self.view.size(), message + '\n')
 
 def indent(text="", spaces=4):
     return " " * spaces + re.sub(r'\n', '\n' + " " * spaces, text)
 
 def add_message(message):
     view = SvnView.get()
-    view.set_read_only(False)
     view.run_command(
-        'svn_message',
+        'svn_view_message',
         {
             "message": message
         }
     );
-    view.set_read_only(True)
 
 def add_command(name):
     view = SvnView.get()
