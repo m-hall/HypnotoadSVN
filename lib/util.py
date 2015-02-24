@@ -2,8 +2,21 @@ import sublime, sublime_plugin
 import re
 import os
 
+SETTINGS_FILE = "HypnotoadSVN.sublime-settings"
+GLOBAL_PREFERENCES = "Preferences.sublime-settings"
+LISTENER_PREFIX = 'HypnotoadSVN-'
+
+settings = sublime.load_settings(SETTINGS_FILE)
+preferences = sublime.load_settings(GLOBAL_PREFERENCES)
+
+def add_preferences_listener(name, observer):
+    remove_preferences_listener(name)
+    preferences.add_on_change(LISTENER_PREFIX + name, observer)
+
+def remove_preferences_listener(name):
+    preferences.clear_on_change(LISTENER_PREFIX + name)
+
 def get_setting(name):
-    settings = sublime.load_settings("HypnotoadSVN.sublime-settings")
     return settings.get(name)
 
 def get_path_components(path):

@@ -4,6 +4,7 @@ import os
 from xml.etree import ElementTree
 from . import util
 
+LISTENER_NAME='color-scheme'
 LANGUAGE = 'svn-output'
 GREEN = '#A6E22E'
 BLUE = '#66D9EF'
@@ -47,7 +48,9 @@ SCHEMES = [
 ]
 
 def generate():
+    util.remove_preferences_listener(LISTENER_NAME)
     sublime.set_timeout_async(generate_async, 0)
+    util.add_preferences_listener(LISTENER_NAME, generate)
 
 def generate_async():
     """
@@ -101,7 +104,7 @@ def generate_async():
 
     # Write the amended color scheme to Packages/User/HypnotoadSVN
     original_name = os.path.splitext(os.path.basename(scheme))[0]
-    name = original_name + ' (HSVN)'
+    name = original_name
     scheme_path = os.path.join(sublime.packages_path(), 'User', 'HypnotoadSVN', name + '.tmTheme')
 
     with open(scheme_path, 'w', encoding='utf8') as f:
