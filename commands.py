@@ -28,7 +28,7 @@ class SvnCommand(sublime_plugin.WindowCommand):
         if not util.use_tortoise():
             error_message('Tortoise command can not be run: ' + cmd)
             return
-        command = '"' + get_setting('tortoiseproc_path') + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(files)
+        command = '"' + util.get_setting('tortoiseproc_path') + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(files)
         return subprocess.Popen(command, stdout=subprocess.PIPE)
 
     def test_versionned(self, result):
