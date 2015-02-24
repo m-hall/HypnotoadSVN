@@ -2,6 +2,8 @@ import sublime
 import sublime_plugin
 import re
 
+VIEW_NAME = 'SVN Output'
+SYNTAX = 'Packages/HypnotoadSVN/languages/SVN Output.tmLanguage'
 
 class SvnView(sublime_plugin.EventListener):
     view = None
@@ -9,9 +11,9 @@ class SvnView(sublime_plugin.EventListener):
         if SvnView.view is None:
             view = sublime.active_window().new_file()
             view.set_scratch(True)
-            view.set_name('SVN Output')
             view.set_read_only(True)
-            view.set_syntax_file('Packages/HypnotoadSVN/language/SVN Output.tmLanguage')
+            view.set_name(VIEW_NAME)
+            view.set_syntax_file(SYNTAX)
             SvnView.view = view
         return SvnView.view
     def on_close(self, view):
