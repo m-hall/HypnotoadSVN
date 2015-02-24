@@ -1,40 +1,52 @@
-Sublime-TSVN
-============
-sublimeTSVN is an extension to the [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/sublime-TortoiseSVN).
-It is designed specifically to expose as many of the native TortoiseSVN commands to the Sublime Text as possible.
-**It runs only on Windows and needs the TortoiseSVN and TortoiseSVN command line tools (TortoiseProc.exe).**
+# HypnotoadSVN
+HypnotoadSVN is an extension for Sublime Text 2/3 that adds SVN features to the folder list and the command palatte.
 
-Usage
-=====
-Install it using [Sublime Package Control](http://wbond.net/sublime_packages/package_control).
-If TortoiseSVN is not installed at `C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe`, specify the correct path
-by setting property "tortoiseproc_path" in your TortoiseSVN.sublime-settings file. 
+This plugin started from [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/sublime-TortoiseSVN).
 
-The default key bindings are 
-- [alt+c] : commit current file.
-- [alt+u] : update current file.
-- [alt+r] : revert current file.
+##Requirements
+- Sublime Text 3
+- Sublime Package Control
+- SVN command line
 
-You can also call TortoiseSVN commands when right-clicking folders or files in the side bar.
+### Optional
+- TortoiseSVN
 
+## Installation
+1. Open Sublime text.
+2. Open Command Palatte.
+3. Type "install" and select "Package Control: Install Package".
+4. Search for "HypnotoadSVN" and select it.
+5. Optionally refer to "Settings" 
 
-Settings
-========
+## Settings
 
-If your TortoiseProc.exe path is not the default, please modify the path by selecting 
-"Preferences->Package Settings->TortoiseSVN->Settings - User" in the menu.
+### Update To Revision
+Update to revision command can be modified to disable the history if you find it to be too slow.
 
-The default setting is:
+#### Default
+```Javascript
+{
+    "updateToRevisionHistory": true, // Set this to false to simply enter the desired revision number
+    "updateToRevisionHistorySize": 20 // This changes the number of items in the revision history panel
+}
+```
 
-    {
-        // Auto close update dialog when no errors, conflicts and merges
-        "autoCloseUpdateDialog": false,
-        "tortoiseproc_path": "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe"
-    }
+### TortoiseSVN (Windows only)
+Support for running commands through TortoiseSVN interface.
+You MUST have TortoiseSVN installed to be able to use these options.
 
-Resources
-=========
+#### Default
+```Javascript
+{
+    // Windows only
+    "useTortoise": false, // allows commands that can only be used via TortoiseSVN
+    "alwaysTortoise": false, // makes all commands run using TortoiseSVN only
+    "tortoiseproc_path": "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe", // path to TortoiseProc
+}
+```
+
+## Resources
 - [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/sublime-TortoiseSVN)
-- [TortoiseSVN](http://tortoisesvn.net/)
+- [TortoiseSVN](https://tortoisesvn.net/)
 - [Sublime Text](http://www.sublimetext.com/)
 - [Sublime Package Control](http://wbond.net/sublime_packages/package_control)
