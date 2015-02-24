@@ -4,7 +4,7 @@ import os
 import os.path
 import re
 import subprocess
-from . import util, SvnProcess
+from .lib import util, SvnProcess
 
 LOG_PARSE = r'-{10,}\nr(\d+) \| ([^|]+) \| ([^|]+) \| [^\n]+\n\n(.+)'
 STATUS_PARSE = r'(^[A-Z\?\!\ >]{3,6}) (.*)'
