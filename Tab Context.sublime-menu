@@ -1,9 +1,0 @@
-[
-    { "caption": "-" },
-    { "caption": "SVN Update", "command": "svn_update", "args": {"group": -1, "index": -1 }},
-    { "caption": "SVN Commit", "command": "svn_commit", "args": {"group": -1, "index": -1 }},
-    { "caption": "SVN Merge", "command": "svn_merge", "args": {"group": -1, "index": -1 }},
-    { "caption": "SVN Diff", "command": "svn_diff", "args": {"group": -1, "index": -1 }},
-    { "caption": "SVN Diff with previous version", "command": "svn_diff_previous", "args": {"group": -1, "index": -1 }},
-    { "caption": "-", "id": "end" }
-]

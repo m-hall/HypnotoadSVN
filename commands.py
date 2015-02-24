@@ -265,7 +265,7 @@ class SvnCleanupCommand(SvnCommand):
         if util.always_tortoise():
             self.run_tortoise('cleanup', files)
             return
-        self.run_command('cleanup -R', files)
+        self.run_command('cleanup', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         return self.is_versionned(files)
