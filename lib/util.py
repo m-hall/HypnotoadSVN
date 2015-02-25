@@ -33,8 +33,9 @@ def get_files(paths=None, group=-1, index=-1):
         files.append(view.file_name())
     if len(files) == 0:
         view = sublime.active_window().active_view()
-        if os.path.exists(view.file_name()):
-            files.append(view.file_name())
+        file_name = view.file_name()
+        if file_name is not None and os.path.exists(file_name):
+            files.append(file_name)
     return files
 
 def use_native():
