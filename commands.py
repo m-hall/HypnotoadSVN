@@ -358,7 +358,7 @@ class SvnDiffCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Diff"
-        if util.use_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise("diff", files)
             return
         self.run_command('diff', files)
@@ -366,27 +366,23 @@ class SvnDiffCommand(SvnCommand):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['file'] and tests['versionned'] and tests['changed']
-    def is_enabled(self, paths=None, group=-1, index=-1):
-        return util.use_tortoise()
 
 class SvnDiffPreviousCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Diff With Previous"
-        p = self.run_command('info')
+        p = self.run_command('info', files, False, False)
         output = p.output()
         current = re.search(INFO_PARSE_REVISION, output).group(1)
-        last = re.search(INFO_PARSE_LAST_CHANGE, output).group(1)
-        if util.use_tortoise():
-            self.run_tortoise("diff /startrev:", files)
+        last = str(int(re.search(INFO_PARSE_LAST_CHANGE, output).group(1)) - 1)
+        if util.prefer_tortoise():
+            self.run_tortoise("diff /startrev:" + last + " /endrev:" + current, files)
             return
-        #self.run_command('diff', files)
+        self.run_command('diff -r ' + last + ":" + current, files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['file'] and tests['versionned'] and not tests['changed']
-    def is_enabled(self, paths=None, group=-1, index=-1):
-        return util.use_tortoise()
 
 class SvnRenameCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
