@@ -47,10 +47,25 @@ SCHEMES = [
     ("Error Path", "string.error.path", [("foreground", RED)])
 ]
 
+listening = false
+def stop_listening():
+    listening = false
+
+def start_listening():
+    listening = false
+
+def add_listener():
+    settings.listen_to_changes(LISTENER_NAME, listener)
+
+def listener():
+    if not listening:
+        start_listening()
+        return
+    stop_listening()
+    generate()
+
 def generate():
-    #settings.unlisten_to_changes(LISTENER_NAME)
     sublime.set_timeout_async(generate_async, 0)
-    #settings.listen_to_changes(LISTENER_NAME, generate)
 
 def generate_async():
     """
