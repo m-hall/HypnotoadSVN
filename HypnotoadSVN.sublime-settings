@@ -2,6 +2,7 @@
     "updateToRevisionHistory": true, // Set this to false to simply enter the desired revision number
     "updateToRevisionHistorySize": 20, // This changes the number of items in the revision history panel
 
+    "outputTo": "panel", // "tab", "panel", "dialog"
 
     // Windows only
     "useTortoise": false, // allows commands that can only be used via TortoiseSVN
