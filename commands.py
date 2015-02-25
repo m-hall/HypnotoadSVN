@@ -384,7 +384,7 @@ class SvnDiffPreviousCommand(SvnCommand):
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['file'] and tests['versionned'] and tests['unchanged']
+        return tests['file'] and tests['versionned'] and not tests['changed']
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
 

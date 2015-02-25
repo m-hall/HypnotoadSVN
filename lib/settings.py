@@ -33,7 +33,7 @@ def listen_to_changes(name, observer):
 def unlisten_to_changes(name):
     Settings.unlisten_changes(name)
 
-def get(name, svn_type):
+def get(name, svn_type=None):
     return Settings.get(name, svn_type)
 
 def get_native(name):
