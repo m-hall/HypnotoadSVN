@@ -3,6 +3,7 @@ import sublime_plugin
 import os
 import os.path
 import re
+import time
 import subprocess
 from .lib import util, thread, settings
 
@@ -18,6 +19,7 @@ class SvnViewMessageCommand(sublime_plugin.TextCommand):
         self.view.set_read_only(True)
 
 class SvnCommand(sublime_plugin.WindowCommand):
+    recent_files = []
 
     def run_command(self, cmd, files=None, log=True, async=True):
         return thread.Process(self.name, 'svn ' + cmd, files, log, async)
@@ -59,6 +61,26 @@ class SvnCommand(sublime_plugin.WindowCommand):
         if self.is_single(files) and not os.path.isfile(files[0]):
             return True
         return False
+
+    def test_all(self, files):
+        uid = "*".join(files)
+        for tests in SvnCommand.recent_files:
+            if time.time() - tests['timestamp'] > 1:
+                SvnCommand.recent_files.remove(tests)
+                continue
+            if uid == tests['uid']:
+                return tests
+        tests = {
+            'uid': uid,
+            'timestamp': time.time(),
+            'versionned': self.is_versionned(files),
+            'changed': self.is_changed(files),
+            'file': self.is_file(files),
+            'folder': self.is_folder(files),
+            'single': self.is_single(files)
+        }
+        SvnCommand.recent_files.append(tests)
+        return tests
 
     def run(self, cmd="", paths=None, group=-1, index=-1):
         if cmd is "":
@@ -136,7 +158,8 @@ class SvnCommitCommand(SvnCommand):
         self.get_changes()
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnUpdateRevisionCommand(SvnCommand):
     def on_done_input(self, value):
@@ -186,7 +209,8 @@ class SvnUpdateRevisionCommand(SvnCommand):
             sublime.active_window().show_input_panel('Which revision', '', self.on_done_input, self.on_change_input, self.on_cancel_input)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnUpdateCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -198,7 +222,8 @@ class SvnUpdateCommand(SvnCommand):
         self.run_command('update', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnLogCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -214,7 +239,8 @@ class SvnLogCommand(SvnCommand):
             self.run_command('log -v', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnStatusCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -226,7 +252,8 @@ class SvnStatusCommand(SvnCommand):
         self.run_command('status', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnAddCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -247,7 +274,8 @@ class SvnDeleteCommand(SvnCommand):
         self.run_command('delete', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnRevertCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -259,7 +287,8 @@ class SvnRevertCommand(SvnCommand):
         self.run_command('revert -R', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnCleanupCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -271,7 +300,8 @@ class SvnCleanupCommand(SvnCommand):
         self.run_command('cleanup', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnLockCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -283,7 +313,8 @@ class SvnLockCommand(SvnCommand):
         self.run_command('lock', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnStealLockCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -292,7 +323,8 @@ class SvnStealLockCommand(SvnCommand):
         self.run_command('lock --force', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files) and not util.prefer_tortoise()
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnUnlockCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -304,7 +336,8 @@ class SvnUnlockCommand(SvnCommand):
         self.run_command('unlock', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
 
 class SvnMergeCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -316,7 +349,8 @@ class SvnMergeCommand(SvnCommand):
         self.run_command('merge', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files) and self.is_single(files)
+        tests = self.test_all(files)
+        return tests['versionned'] and tests['single']
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
 
@@ -330,7 +364,8 @@ class SvnDiffCommand(SvnCommand):
         self.run_command('diff', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_file(files) and self.is_versionned(files) and self.is_changed(files)
+        tests = self.test_all(files)
+        return tests['file'] and tests['versionned'] and tests['changed']
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
 
@@ -348,7 +383,8 @@ class SvnDiffPreviousCommand(SvnCommand):
         #self.run_command('diff', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_file(files) and self.is_versionned(files) and self.is_unchanged(files)
+        tests = self.test_all(files)
+        return tests['file'] and tests['versionned'] and tests['unchanged']
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
 
@@ -362,7 +398,8 @@ class SvnRenameCommand(SvnCommand):
         #self.run_command('move', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files) and self.is_single(paths)
+        tests = self.test_all(files)
+        return tests['versionned'] and tests['single']
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
 
@@ -376,7 +413,8 @@ class SvnBlameCommand(SvnCommand):
         #self.run_command('blame', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
 
@@ -386,7 +424,8 @@ class SvnConflictEditorCommand(SvnCommand):
         self.run_tortoise('conflicteditor', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return util.use_tortoise() and self.is_versionned(files)
+        tests = self.test_all(files)
+        return util.use_tortoise() and tests['versionned']
 
 class SvnResolveCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -398,7 +437,8 @@ class SvnResolveCommand(SvnCommand):
         #self.run_command('resolve', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files)
+        tests = self.test_all(files)
+        return tests['versionned']
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
 
@@ -412,7 +452,8 @@ class SvnSwitchCommand(SvnCommand):
         #self.run_command('switch', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files) and self.is_single(files)
+        tests = self.test_all(files)
+        return tests['versionned'] and tests['single']
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
 
@@ -426,6 +467,7 @@ class SvnBranchCommand(SvnCommand):
         #self.run_command('branch', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files) and self.is_single(files)
+        tests = self.test_all(files)
+        return tests['versionned'] and tests['single']
     def is_enabled(self, paths=None, group=-1, index=-1):
         return util.use_tortoise()
