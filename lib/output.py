@@ -43,10 +43,11 @@ class SvnView(sublime_plugin.EventListener):
         view = SvnView.get()
         if view is None:
             return
+        msg = re.sub(r'\r\n?', '\n', message)
         view.run_command(
             'svn_view_message',
             {
-                "message": message
+                "message": msg
             }
         );
     def end():
