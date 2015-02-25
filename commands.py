@@ -4,7 +4,7 @@ import os
 import os.path
 import re
 import subprocess
-from .lib import util, thread
+from .lib import util, thread, settings
 
 LOG_PARSE = r'-{72}\nr(\d+) \| ([^|]+) \| ([^|]+) \| [^\n]+\n\n(.+)'
 STATUS_PARSE = r'(^[A-Z\?\!\ >]{3,6}) (.*)'
@@ -18,8 +18,6 @@ class SvnViewMessageCommand(sublime_plugin.TextCommand):
         self.view.set_read_only(True)
 
 class SvnCommand(sublime_plugin.WindowCommand):
-    def get_setting(self, name):
-        return util.get_setting(name)
 
     def run_command(self, cmd, files=None, log=True, async=True):
         return thread.Process(self.name, 'svn ' + cmd, files, log, async)
@@ -28,7 +26,7 @@ class SvnCommand(sublime_plugin.WindowCommand):
         if not util.use_tortoise():
             error_message('Tortoise command can not be run: ' + cmd)
             return
-        command = '"' + util.get_setting('tortoiseproc_path') + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(files)
+        command = '"' + settings.get_tortoise('tortoiseproc_path') + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(files)
         return subprocess.Popen(command, stdout=subprocess.PIPE)
 
     def test_versionned(self, result):
@@ -131,7 +129,7 @@ class SvnCommitCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Commit"
-        if util.always_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise('commit', files)
             return
         self.files = files
@@ -180,9 +178,9 @@ class SvnUpdateRevisionCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.files = files
-        show_history = self.get_setting("updateToRevisionHistory")
+        show_history = settings.get_native("updateToRevisionHistory")
         if (show_history):
-            self.number = self.get_setting('updateToRevisionHistorySize')
+            self.number = settings.get_native('updateToRevisionHistorySize')
             self.get_revisions(self.number)
         else:
             sublime.active_window().show_input_panel('Which revision', '', self.on_done_input, self.on_change_input, self.on_cancel_input)
@@ -194,7 +192,7 @@ class SvnUpdateCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Update"
-        if util.always_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise('update', files)
             return
         self.run_command('update', files)
@@ -206,10 +204,10 @@ class SvnLogCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Log"
-        if util.always_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise('log', files)
             return
-        revisions = self.get_setting('logHistorySize')
+        revisions = settings.get_native('logHistorySize')
         if isinstance(revisions, int) and revisions > 0:
             self.run_command('log -v -l %s' % revision, files)
         else:
@@ -222,7 +220,7 @@ class SvnStatusCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Check for Modifications"
-        if util.always_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise('repostatus', files)
             return
         self.run_command('status', files)
@@ -234,7 +232,7 @@ class SvnAddCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Add"
-        if util.always_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise('add', files)
             return
         self.run_command('add', files)
@@ -243,7 +241,7 @@ class SvnDeleteCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Delete"
-        if util.always_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise('remove', files)
             return
         self.run_command('delete', files)
@@ -255,7 +253,7 @@ class SvnRevertCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Revert"
-        if util.always_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise('revert', files)
             return
         self.run_command('revert -R', files)
@@ -267,7 +265,7 @@ class SvnCleanupCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Cleanup"
-        if util.always_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise('cleanup', files)
             return
         self.run_command('cleanup', files)
@@ -279,7 +277,7 @@ class SvnLockCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Lock"
-        if util.always_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise('lock', files)
             return
         self.run_command('lock', files)
@@ -294,13 +292,13 @@ class SvnStealLockCommand(SvnCommand):
         self.run_command('lock --force', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
-        return self.is_versionned(files) and not util.always_tortoise()
+        return self.is_versionned(files) and not util.prefer_tortoise()
 
 class SvnUnlockCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Unlock"
-        if util.always_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise('unlock', files)
             return
         self.run_command('unlock', files)

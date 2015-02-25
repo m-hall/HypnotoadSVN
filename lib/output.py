@@ -1,7 +1,7 @@
 import sublime
 import sublime_plugin
 import re
-from . import util
+from . import util, settings
 
 VIEW_NAME = 'SVN Output'
 PANEL_ID = 'svn-output'
@@ -12,7 +12,7 @@ class SvnView(sublime_plugin.EventListener):
     view = None
     panel = None
     def get():
-        output = util.get_setting("outputTo")
+        output = settings.get_native("outputTo")
         if output == "dialog":
             return None
         if output == "tab":
@@ -28,15 +28,15 @@ class SvnView(sublime_plugin.EventListener):
             panel = sublime.active_window().create_output_panel(PANEL_ID)
             panel.set_syntax_file(SYNTAX)
             SvnView.panel = panel
-            sublime.active_window().run_command(
-                'show_panel',
-                {
-                    'panel': 'output.'+PANEL_ID
-                }
-            )
-            return SvnView.panel
+        sublime.active_window().run_command(
+            'show_panel',
+            {
+                'panel': 'output.'+PANEL_ID
+            }
+        )
+        return SvnView.panel
     def message(message):
-        output = util.get_setting("outputTo")
+        output = settings.get_native("outputTo")
         if output == "dialog":
             SvnView.buffer = SvnView.buffer + message + "\n"
             return
@@ -50,7 +50,7 @@ class SvnView(sublime_plugin.EventListener):
             }
         );
     def end():
-        output = util.get_setting("outputTo")
+        output = settings.get_native("outputTo")
         if output == "dialog":
             sublime.message_dialog(SvnView.buffer)
         SvnView.buffer = ""
@@ -68,7 +68,7 @@ class SvnView(sublime_plugin.EventListener):
     def on_close(self, view):
         if view == SvnView.view:
             SvnView.view = None
-        if view == SvnPanel:
+        if view == SvnView.panel:
             SvnView.panel = None
 
 

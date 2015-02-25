@@ -1,11 +1,16 @@
 {
-    "updateToRevisionHistory": true, // Set this to false to simply enter the desired revision number
-    "updateToRevisionHistorySize": 20, // This changes the number of items in the revision history panel
-
-    "outputTo": "panel", // "tab", "panel", "dialog"
+    "nativeSVN": {
+        "disable": false,
+        "updateToRevisionHistory": true, // Set this to false to simply enter the desired revision number
+        "updateToRevisionHistorySize": 20, // This changes the number of items in the revision history panel
+        "logHistorySize": 20,
+        "outputTo": "panel", // "tab", "panel", "dialog"
+    },
 
     // Windows only
-    "useTortoise": false, // allows commands that can only be used via TortoiseSVN
-    "alwaysTortoise": false, // allows only commands that can be used via TortoiseSVN
-    "tortoiseproc_path": "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe", // path to TortoiseProc
+    "tortoiseSVN": {
+        "disable": false,
+        "tortoiseproc_path": "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe", // path to TortoiseProc
+    },
+    "prefer": "nativeSVN"
 }
