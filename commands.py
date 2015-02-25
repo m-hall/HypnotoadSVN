@@ -234,7 +234,7 @@ class SvnLogCommand(SvnCommand):
             return
         revisions = settings.get_native('logHistorySize')
         if isinstance(revisions, int) and revisions > 0:
-            self.run_command('log -v -l %s' % revision, files)
+            self.run_command('log -v -l %s' % revisions, files)
         else:
             self.run_command('log -v', files)
     def is_visible(self, paths=None, group=-1, index=-1):
