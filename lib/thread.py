@@ -54,7 +54,7 @@ class Process:
 
     def check_status(self):
         if self.log and self.process.stdout.raw:
-            line = self.process.stdout.raw.readline().decode("UTF-8").strip()
+            line = self.process.stdout.raw.readline().decode("UTF-8").strip('\r\n')
             if line:
                 output.add_result_message(line)
         if self.is_done():
@@ -63,7 +63,7 @@ class Process:
             if self.on_complete is not None:
                 self.on_complete(self)
             if self.log:
-                output.add_result_message(self.process.stdout.raw.read().decode("UTF-8").strip())
+                output.add_result_message(self.process.stdout.raw.read().decode("UTF-8").strip('\r\n'))
                 output.add_error(self.error(), self.process.returncode)
                 output.end_command()
         else:
