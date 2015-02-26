@@ -38,17 +38,25 @@ def get_files(paths=None, group=-1, index=-1):
             files.append(file_name)
     return files
 
+def enabled():
+    return use_native() or use_tortoise()
+
 def use_native():
     if settings.get_native('disable') is not True:
         return True
     return False
 
-def use_tortoise():
-    if os.name == 'nt' and settings.get_tortoise('disable') is not True:
-        tortoise_path = settings.get_tortoise('tortoiseproc_path');
-        if os.path.isfile(tortoise_path):
-            return True
-    return False
+if os.name == 'nt':
+    def use_tortoise():
+        if settings.get_tortoise('disable') is not True:
+            tortoise_path = settings.get_tortoise('tortoiseproc_path');
+            if os.path.isfile(tortoise_path):
+                return True
+        return False
+else:
+    def use_tortoise():
+        return False
+
 
 def prefer_tortoise():
     return use_tortoise() and settings.get('prefer') == 'tortoiseSVN'
