@@ -12,6 +12,7 @@
     {
         "caption": "SVN",
         "children": [
+            { "caption": "Checkout", "command": "svn_checkout", "args": {"paths":[]}},
             { "caption": "Check for Modifications", "command": "svn_status", "args": {"paths":[]}},
             { "caption": "Log", "command": "svn_log", "args": {"paths":[]}},
             { "caption": "-" },

@@ -21,5 +21,6 @@
     { "caption": "HypnotoadSVN: Branch", "command": "svn_copy"},
     { "caption": "HypnotoadSVN: Lock", "command": "svn_lock"},
     { "caption": "HypnotoadSVN: Steal Lock", "command": "svn_steal_lock"},
-    { "caption": "HypnotoadSVN: Unlock", "command": "svn_unlock"}
+    { "caption": "HypnotoadSVN: Unlock", "command": "svn_unlock"},
+    { "caption": "HypnotoadSVN: Checkout", "command": "svn_checkout"}
 ]

@@ -502,3 +502,16 @@ class SvnBranchCommand(SvnCommand):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and util.use_tortoise()
+
+class SvnCheckoutCommand(SvnCommand):
+    def run(self, paths=None, group=-1, index=-1):
+        files = util.get_files(paths, group, index)
+        self.name = "Checkout"
+        if util.use_tortoise():
+            self.run_tortoise("checkout", files)
+            return
+        #self.run_command('checkout', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        files = util.get_files(paths, group, index)
+        tests = self.test_all(files)
+        return not tests['versionned'] and tests['folder'] and util.use_tortoise()
