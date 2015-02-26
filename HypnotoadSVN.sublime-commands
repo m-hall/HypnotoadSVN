@@ -1,5 +1,6 @@
 [
     { "caption": "HypnotoadSVN: Show output", "command": "show_panel", "args":{"panel": "output.svn-output"}},
+    { "caption": "HypnotoadSVN: Kill active processes", "command": "svn_kill_processes"},
     { "caption": "HypnotoadSVN: Update", "command": "svn_update"},
     { "caption": "HypnotoadSVN: Commit", "command": "svn_commit"},
     { "caption": "HypnotoadSVN: Merge", "command": "svn_merge"},

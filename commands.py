@@ -18,6 +18,10 @@ class SvnViewMessageCommand(sublime_plugin.TextCommand):
         self.view.insert(edit, self.view.size(), message + '\n')
         self.view.set_read_only(True)
 
+class SvnKillProcessesCommand(sublime_plugin.WindowCommand):
+    def run(self):
+        thread.terminate_all()
+
 class SvnCommand(sublime_plugin.WindowCommand):
     recent_files = []
 

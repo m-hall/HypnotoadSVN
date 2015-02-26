@@ -100,3 +100,12 @@ class Process:
         if not self.done:
             self.done = self.process.poll() is not None
         return self.done
+
+    def terminate(self):
+        if not self.is_done():
+            self.process.terminate()
+        Process.active_processes.remove(self)
+
+def terminate_all():
+    for proc in Process.active_processes:
+        proc.terminate()
