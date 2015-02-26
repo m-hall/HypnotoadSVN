@@ -92,13 +92,25 @@ def add_files(paths=None):
         s = "\n".join(paths)
     add_message("Files:\n" + indent(s))
 
+def add_files_section():
+    add_message("Files:")
+
 def add_result(result):
     if result:
         add_message("Output:\n" + indent(result))
 
-def add_error(err):
+def add_result_section():
+    add_message("Output:")
+
+def add_result_message(result):
+    add_message(indent(result))
+
+def add_error(err, code=None):
     if err:
-        add_message("Error:\n" + indent(err))
+        add_message("Error: " + (code if code is not None else "") + "\n" + indent(err))
+
+def add_error_section(code = None):
+    add_message("Error: " + (code if code is not None else ""))
 
 def end_command():
     SvnView.end()

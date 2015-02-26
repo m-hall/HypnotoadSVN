@@ -1,4 +1,5 @@
 import sublime
+import re
 from subprocess import Popen, PIPE
 from threading import Thread, Timer
 from . import output
@@ -7,23 +8,28 @@ TIME_INTERVAL = 0.05
 LOADING_SIZE = 7
 
 class Process:
+    active_processes = []
     def __init__(self, name, cmd, paths=None, log=True, async=False, on_complete=None):
         self.name = name
         self.cmd = cmd
         self.paths = paths
         self.done = False
         self.log = log
+        self.lines = []
         self.outputText = None
         self.errorText = None
         self.loading = 0
         self.on_complete = on_complete
-        self.process = Popen(cmd + ' ' + self.get_path(paths), stdout=PIPE, stderr=PIPE, shell=True)
+        Process.active_processes.append(self)
+        if log:
+            output.add_command(self.name)
+            output.add_files(self.paths)
+            output.add_result_section()
+        self.process = Popen(cmd + ' ' + self.get_path(paths), stdout=PIPE, stderr=PIPE, shell=True, bufsize=20)
         if async:
             self.check_status()
         else:
             self.finish()
-            if log:
-                self.log_result()
 
     def get_path(self, paths):
         path = None
@@ -34,26 +40,31 @@ class Process:
             path = view.file_name() if view else None
         return path
 
-    def log_result(self):
-        output.add_command(self.name)
-        output.add_files(self.paths)
-        output.add_result(self.output())
-        output.add_error(self.error())
-        output.end_command()
-
     def finish(self):
-        output, error = self.process.communicate()
-        self.outputText = output.decode('UTF-8')
+        out, error = self.process.communicate()
+        self.outputText = out.decode('UTF-8')
         self.errorText = error.decode('UTF-8')
         self.done = True
+        Process.active_processes.remove(self)
+        if self.log:
+            output.add_result(self.output())
+            output.add_error(self.error(), self.process.returncode)
+            output.end_command()
 
     def check_status(self):
+        if self.log and self.process.stdout.raw:
+            line = self.process.stdout.raw.readline().decode("UTF-8")
+            if line:
+                output.add_result_message(re.sub('\r?\n?', '', line))
         if self.is_done():
+            Process.active_processes.remove(self)
             sublime.status_message("Complete: " + self.name)
             if self.on_complete is not None:
                 self.on_complete(self)
             if self.log:
-                self.log_result()
+                output.add_result(self.process.stdout.raw.read())
+                output.add_error(self.error(), self.process.returncode)
+                output.end_command()
         else:
             if LOADING_SIZE > 0:
                 n = abs(self.loading - LOADING_SIZE)
@@ -67,10 +78,10 @@ class Process:
         if self.outputText is not None:
             return self.outputText
         if not self.is_done():
-            return ''
-        output = self.process.stdout.read()
-        if output is not None:
-            self.outputText = output.decode('UTF-8')
+            return self.process.stdout.read()
+        out = self.process.stdout.read()
+        if out is not None:
+            self.outputText = out.decode('UTF-8')
             return self.outputText
         return None
 
@@ -78,8 +89,8 @@ class Process:
         if self.errorText is not None:
             return self.errorText
         if not self.is_done():
-            return ''
-        error = self.process.stdout.read()
+            return self.process.stderr.read()
+        error = self.process.stderr.read()
         if error is not None:
             self.errorText = error.decode('UTF-8')
             return self.errorText
