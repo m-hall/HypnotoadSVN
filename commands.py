@@ -497,21 +497,27 @@ class SvnBranchCommand(SvnCommand):
         if util.use_tortoise():
             self.run_tortoise("branch", files)
             return
-        #self.run_command('branch', files)
+        #self.run_command('copy', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and util.use_tortoise()
 
 class SvnCheckoutCommand(SvnCommand):
+    def on_done_input(self, value):
+        self.name = "Rename"
+        self.run_command('checkout', self.files)
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Checkout"
         if util.use_tortoise():
             self.run_tortoise("checkout", files)
             return
-        #self.run_command('checkout', files)
+        if not util.use_native():
+            return
+        self.files = files
+        sublime.active_window().show_input_panel('Checkout from...', 'http://', self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return not tests['versionned'] and tests['folder'] and util.use_tortoise()
+        return not tests['versionned'] and tests['folder'] and util.enabled()
