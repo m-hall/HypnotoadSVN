@@ -2,7 +2,7 @@ import sublime, sublime_plugin
 import re
 import os
 from xml.etree import ElementTree
-from . import util
+from . import util, settings
 
 LISTENER_NAME='color-scheme'
 LANGUAGE = 'svn-output'
@@ -31,7 +31,7 @@ COLOR_SCHEME = '''
 '''
 THEME_XML_DEFINITION = '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-'''
+'''.strip()
 SCHEMES = [
     ("Scopes", "keyword.control", [("foreground", RED)]),
     ("Command Name", "string.meta.command", []),
@@ -47,12 +47,12 @@ SCHEMES = [
     ("Error Path", "string.error.path", [("foreground", RED)])
 ]
 
-listening = false
+listening = False
 def stop_listening():
-    listening = false
+    listening = False
 
 def start_listening():
-    listening = false
+    listening = True
 
 def add_listener():
     settings.listen_to_changes(LISTENER_NAME, listener)

@@ -19,11 +19,15 @@ class Settings:
         return Settings.plugin.get(name)
 
     def listen_changes(name, observer):
+        if not Settings.plugin or not Settings.preferences:
+            Settings.load()
         Settings.unlisten_changes(name)
         Settings.preferences.add_on_change(LISTENER_PREFIX + name, observer)
         Settings.plugin.add_on_change(LISTENER_PREFIX + name, observer)
 
     def unlisten_changes(name):
+        if not Settings.plugin or not Settings.preferences:
+            Settings.load()
         Settings.preferences.clear_on_change(LISTENER_PREFIX + name)
         Settings.plugin.clear_on_change(LISTENER_PREFIX + name)
 
