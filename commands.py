@@ -465,17 +465,28 @@ class SvnConflictEditorCommand(SvnCommand):
         return util.use_tortoise() and tests['versionned']
 
 class SvnResolveCommand(SvnCommand):
+    options = [
+        'base',
+        'working',
+        'mine-conflict',
+        'theirs-conflict',
+        'mine-full',
+        'theirs-full'
+    ]
+    def on_select(self, index):
+        self.run_command('resolve -R --accept ' + SvnResolveCommand.options[index], self.files)
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Resolve"
         if util.use_tortoise():
             self.run_tortoise("resolve", files)
             return
-        #self.run_command('resolve', files)
+        self.files = files
+        sublime.active_window().show_quick_panel(SvnResolveCommand.options, self.on_select)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.use_tortoise()
+        return tests['versionned'] and tests['single'] and util.enabled()
 
 class SvnSwitchCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
