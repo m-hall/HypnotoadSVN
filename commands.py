@@ -521,7 +521,7 @@ class SvnCheckoutCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Checkout"
-        if util.use_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise("checkout", files)
             return
         if not util.use_native():
