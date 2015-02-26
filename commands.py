@@ -8,7 +8,7 @@ import subprocess
 from .lib import util, thread, settings
 
 LOG_PARSE = r'-{72}\nr(\d+) \| ([^|]+) \| ([^|]+) \| [^\n]+\n\n(.+)'
-STATUS_PARSE = r'(^[A-Z\?\!\ >]{3,6}) (.*)'
+STATUS_PARSE = r'(^[A-Z\?\!\ >]+?) +(.*)'
 INFO_PARSE_REVISION = r"Revision: (\d+)"
 INFO_PARSE_LAST_CHANGE = r"Last Changed Rev: (\d+)"
 
@@ -100,25 +100,23 @@ class SvnCommand(sublime_plugin.WindowCommand):
         return util.enabled()
 
 class SvnCommitCommand(SvnCommand):
+    def escape(self, message):
+        return message.replace('"', '\\"')
     def commit(self):
-        self.run_command('commit', self.files)
+        self.run_command('commit -m "' + self.escape(self.message) + '"', self.files)
     def verify(self):
         files = []
         for index, include in enumerate(self.includes):
             if include is True:
-                files.append(self.items[index])
-        if sublime.ok_dialog(self.message+'\n\nFiles:\n'+'\n'.join(files)):
+                files.append(self.files[index])
+        if sublime.ok_cancel_dialog(self.message+'\n\nFiles:\n'+'\n'.join(files)):
             self.files = files
             self.commit()
     def on_done_input(self, value):
         self.message = value
-        verify()
-    def on_change_input(self, value):
-        return
-    def on_cancel_input(self):
-        return
+        self.verify()
     def show_message_panel(self):
-        sublime.active_window().show_input_panel('Commit message', '', self.on_done_input, self.on_change_input, self.on_cancel_input)
+        sublime.active_window().show_input_panel('Commit message', '', self.on_done_input, self.nothing, self.nothing)
     def show_changes_panel(self):
         sublime.active_window().show_quick_panel(self.items, self.on_select, sublime.MONOSPACE_FONT)
     def on_select(self, index):
@@ -126,6 +124,7 @@ class SvnCommitCommand(SvnCommand):
             return
         if index == 0:
             self.show_message_panel()
+            return
         if self.includes[index]:
             self.items[index] = re.sub(r'^\[X\]', '[ ]', self.items[index])
         else:
@@ -144,9 +143,14 @@ class SvnCommitCommand(SvnCommand):
         items.append('Done')
         includes.append(None)
         for change, path in matches:
-            files.append(path)
-            items.append('[ ]' + change + ": " + path)
-            includes.append(False)
+            inSVN = self.is_versionned([path])
+            files.append(path.strip())
+            if inSVN:
+                items.append('[X]' + change + ": " + path)
+                includes.append(True)
+            else:
+                items.append('[ ]' + change + ": " + path)
+                includes.append(False)
         self.files = files
         self.items = items
         self.includes = includes
