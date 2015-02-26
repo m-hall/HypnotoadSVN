@@ -35,7 +35,7 @@ class SvnCommand(sublime_plugin.WindowCommand):
         if not util.use_tortoise():
             error_message('Tortoise command can not be run: ' + cmd)
             return
-        command = '"' + settings.get_tortoise('tortoiseproc_path') + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(files)
+        command = '"' + settings.get_tortoise_path() + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(files)
         return subprocess.Popen(command, stdout=subprocess.PIPE)
 
     def test_versionned(self, result):
@@ -211,9 +211,9 @@ class SvnUpdateRevisionCommand(SvnCommand):
             return
         files = util.get_files(paths, group, index)
         self.files = files
-        show_history = settings.get_native("updateToRevisionHistory")
+        show_history = settings.get_native("updateToRevisionHistory", True)
         if (show_history):
-            self.number = settings.get_native('updateToRevisionHistorySize')
+            self.number = settings.get_native('updateToRevisionHistorySize', 20)
             self.get_revisions(self.number)
         else:
             sublime.active_window().show_input_panel('Which revision', '', self.on_done_input, self.nothing, self.nothing)
@@ -246,7 +246,7 @@ class SvnLogCommand(SvnCommand):
             return
         if not util.use_native():
             return
-        revisions = settings.get_native('logHistorySize')
+        revisions = settings.get_native('logHistorySize', 20)
         if isinstance(revisions, int) and revisions > 0:
             self.run_command('log -v -l %s' % revisions, files)
         else:

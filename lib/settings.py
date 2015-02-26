@@ -11,12 +11,12 @@ class Settings:
         Settings.plugin = sublime.load_settings(SETTINGS_FILE)
         Settings.preferences = sublime.load_settings(GLOBAL_PREFERENCES)
 
-    def get(name, type=None):
+    def get(name, type=None, default=None):
         if not Settings.plugin or not Settings.preferences:
             Settings.load()
         if type is not None:
-            return Settings.plugin.get(type, {}).get(name)
-        return Settings.plugin.get(name)
+            return Settings.plugin.get(type, {}).get(name, default)
+        return Settings.plugin.get(name, default)
 
     def listen_changes(name, observer):
         if not Settings.plugin or not Settings.preferences:
@@ -37,11 +37,14 @@ def listen_to_changes(name, observer):
 def unlisten_to_changes(name):
     Settings.unlisten_changes(name)
 
-def get(name, svn_type=None):
-    return Settings.get(name, svn_type)
+def get(name, svn_type=None, default=None):
+    return Settings.get(name, svn_type, default)
 
-def get_native(name):
-    return Settings.get(name, 'nativeSVN')
+def get_native(name, default=None):
+    return Settings.get(name, 'nativeSVN', default)
 
-def get_tortoise(name):
-    return Settings.get(name, 'tortoiseSVN')
+def get_tortoise(name, default=None):
+    return Settings.get(name, 'tortoiseSVN', default)
+
+def get_tortoise_path():
+    return Settings.get("tortoiseproc_path", "tortoiseSVN", "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe")

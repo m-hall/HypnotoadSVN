@@ -12,7 +12,7 @@ class SvnView(sublime_plugin.EventListener):
     view = None
     panel = None
     def get():
-        output = settings.get_native("outputTo")
+        output = settings.get_native("outputTo", "panel")
         if output == "dialog":
             return None
         if output == "tab":
@@ -36,7 +36,7 @@ class SvnView(sublime_plugin.EventListener):
         )
         return SvnView.panel
     def message(message):
-        output = settings.get_native("outputTo")
+        output = settings.get_native("outputTo", "panel")
         if output == "dialog":
             SvnView.buffer = SvnView.buffer + message + "\n"
             return
@@ -51,7 +51,7 @@ class SvnView(sublime_plugin.EventListener):
             }
         );
     def end():
-        output = settings.get_native("outputTo")
+        output = settings.get_native("outputTo", "panel")
         if output == "dialog":
             sublime.message_dialog(SvnView.buffer)
         SvnView.buffer = ""
