@@ -21,6 +21,9 @@ class SvnViewMessageCommand(sublime_plugin.TextCommand):
 class SvnCommand(sublime_plugin.WindowCommand):
     recent_files = []
 
+    def nothing(nothing1=None, nothing2=None, nothing3=None, **args):
+        return
+
     def run_command(self, cmd, files=None, log=True, async=True):
         return thread.Process(self.name, 'svn ' + cmd, files, log, async)
 
@@ -165,10 +168,6 @@ class SvnUpdateRevisionCommand(SvnCommand):
     def on_done_input(self, value):
         self.name = "Update to revision (%s)" % value
         self.run_command('update -r %s' % value, self.files)
-    def on_change_input(self, value):
-        return
-    def on_cancel_input(self):
-        return
     def on_select(self, index):
         if index < 0:
             return
@@ -206,7 +205,7 @@ class SvnUpdateRevisionCommand(SvnCommand):
             self.number = settings.get_native('updateToRevisionHistorySize')
             self.get_revisions(self.number)
         else:
-            sublime.active_window().show_input_panel('Which revision', '', self.on_done_input, self.on_change_input, self.on_cancel_input)
+            sublime.active_window().show_input_panel('Which revision', '', self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
@@ -385,19 +384,24 @@ class SvnDiffPreviousCommand(SvnCommand):
         return tests['file'] and tests['versionned'] and not tests['changed']
 
 class SvnRenameCommand(SvnCommand):
+    def on_done_input(self, value):
+        self.name = "Rename"
+        self.run_command('rename --parents' + self.current_path + self.current_name + ' ' + self.current_path + value)
     def run(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         self.name = "Rename"
         if util.use_tortoise():
             self.run_tortoise("rename", files)
             return
-        #self.run_command('move', files)
+        path = util.get_path_components(files[0])
+        self.current_name = path[-1]
+        path.remove(path[-1])
+        self.current_path = "/".join(path) + "/"
+        sublime.active_window().show_input_panel('Rename...', self.current_name, self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single']
-    def is_enabled(self, paths=None, group=-1, index=-1):
-        return util.use_tortoise()
 
 class SvnBlameCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
@@ -406,7 +410,7 @@ class SvnBlameCommand(SvnCommand):
         if util.use_tortoise():
             self.run_tortoise("blame", files)
             return
-        #self.run_command('blame', files)
+        self.run_command('blame', files)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
