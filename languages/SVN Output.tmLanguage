@@ -16,6 +16,10 @@
 		</dict>
 		<dict>
 			<key>include</key>
+			<string>#commandEnd</string>
+		</dict>
+		<dict>
+			<key>include</key>
 			<string>#scopeName</string>
 		</dict>
 		<dict>
@@ -44,6 +48,20 @@
 			<string>(?!:^|
 )(Command): ([^
 ]*)</string>
+		</dict>
+		<key>commandEnd</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.control.svn-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(?!:^|
+)(Completed)</string>
 		</dict>
 		<key>scopeName</key>
 		<dict>

@@ -6,6 +6,7 @@
     "uuid": "feea73e8-edc4-4c42-b547-847410c70e16",
     "patterns": [
         { "include": "#command" },
+        { "include": "#commandEnd" },
         { "include": "#scopeName" },
         { "include": "#status" }
     ],
@@ -20,6 +21,12 @@
         },
         "scopeName": {
             "match": "(?!:^|\n)(Output|Error|Files):",
+            "captures": {
+                "1": { "name": "keyword.control.svn-output" }
+            }
+        },
+        "commandEnd": {
+            "match": "(?!:^|\n)(Completed)",
             "captures": {
                 "1": { "name": "keyword.control.svn-output" }
             }

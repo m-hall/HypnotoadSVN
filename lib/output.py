@@ -55,6 +55,7 @@ class SvnView(sublime_plugin.EventListener):
         if output == "dialog":
             sublime.message_dialog(SvnView.buffer)
         SvnView.buffer = ""
+        SvnView.message("Completed\n")
     def focus():
         view = SvnView.get()
         if view is None:
@@ -107,10 +108,10 @@ def add_result_message(result):
 
 def add_error(err, code=None):
     if err:
-        add_message("Error: " + (code if code is not None else "") + "\n" + indent(err))
+        add_message("Error: " + str(code if code is not None else "") + "\n" + indent(err))
 
 def add_error_section(code = None):
-    add_message("Error: " + (code if code is not None else ""))
+    add_message("Error: " + str(code if code is not None else ""))
 
 def end_command():
     SvnView.end()

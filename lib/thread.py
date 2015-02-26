@@ -23,6 +23,7 @@ class Process:
         Process.active_processes.append(self)
         if log:
             output.add_command(self.name)
+            output.add_message(output.indent(cmd + ' ' + self.get_path(paths)))
             output.add_files(self.paths)
             output.add_result_section()
         self.process = Popen(cmd + ' ' + self.get_path(paths), stdout=PIPE, stderr=PIPE, shell=True, bufsize=20)
@@ -53,16 +54,16 @@ class Process:
 
     def check_status(self):
         if self.log and self.process.stdout.raw:
-            line = self.process.stdout.raw.readline().decode("UTF-8")
+            line = self.process.stdout.raw.readline().decode("UTF-8").strip()
             if line:
-                output.add_result_message(re.sub('\r?\n?', '', line))
+                output.add_result_message(line)
         if self.is_done():
             Process.active_processes.remove(self)
             sublime.status_message("Complete: " + self.name)
             if self.on_complete is not None:
                 self.on_complete(self)
             if self.log:
-                output.add_result(self.process.stdout.raw.read())
+                output.add_result_message(self.process.stdout.raw.read().decode("UTF-8").strip())
                 output.add_error(self.error(), self.process.returncode)
                 output.end_command()
         else:
