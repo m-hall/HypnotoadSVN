@@ -28,7 +28,7 @@
             { "caption": "Resolve", "command": "svn_resolve", "args": {"paths":[]}},
             { "caption": "-" },
             { "caption": "Switch", "command": "svn_switch", "args": {"paths":[]}},
-            { "caption": "Branch", "command": "svn_copy", "args": {"paths":[]}},
+            { "caption": "Branch", "command": "svn_branch", "args": {"paths":[]}},
             { "caption": "-" },
             { "caption": "Lock", "command": "svn_lock", "args": {"paths":[]}},
             { "caption": "Steal Lock", "command": "svn_steal_lock", "args": {"paths":[]}},

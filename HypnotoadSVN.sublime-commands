@@ -18,7 +18,7 @@
     { "caption": "HypnotoadSVN: Edit Conflicts", "command": "svn_conflict_editor"},
     { "caption": "HypnotoadSVN: Resolve", "command": "svn_resolve"},
     { "caption": "HypnotoadSVN: Switch", "command": "svn_switch"},
-    { "caption": "HypnotoadSVN: Branch", "command": "svn_copy"},
+    { "caption": "HypnotoadSVN: Branch", "command": "svn_branch"},
     { "caption": "HypnotoadSVN: Lock", "command": "svn_lock"},
     { "caption": "HypnotoadSVN: Steal Lock", "command": "svn_steal_lock"},
     { "caption": "HypnotoadSVN: Unlock", "command": "svn_unlock"},
