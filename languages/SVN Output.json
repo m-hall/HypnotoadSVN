@@ -32,7 +32,7 @@
             }
         },
         "status": {
-            "match": "(?!:^|\n) {4}([UGMCADSIXRLE\\?\\!\\+\\> ]{4,7}) ([^\n]+)",
+            "match": "(?!:^|\n) {4}([UGMCADSIXRLE\\?\\!\\+\\> ]+) ([^\n]+)",
             "captures": {
                 "1": { "name": "keyword.status.svn-output"},
                 "2": { "name": "string.path.svn-output"}
