@@ -2,17 +2,19 @@ import sublime
 import re
 from subprocess import Popen, PIPE
 from threading import Thread, Timer
-from . import output
+from . import output, util
 
 TIME_INTERVAL = 0.05
 LOADING_SIZE = 7
 
-class Process:
+class Process(Thread):
     active_processes = []
     def __init__(self, name, cmd, paths=None, log=True, async=False, on_complete=None):
+        Thread.__init__(self)
         self.name = name
         self.cmd = cmd
         self.paths = paths
+        self.async = async
         self.done = False
         self.log = log
         self.lines = []
@@ -29,12 +31,29 @@ class Process:
             self.command = cmd
         else:
             self.command = cmd + ' ' + self.get_path(paths)
-        self.process = Popen(self.command, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
-        if async:
-            Process.active_processes.append(self)
-            self.check_status()
+        util.debug(self.command)
+        if self.async:
+            self.start()
         else:
-            self.finish()
+            self.run()
+
+    def runSync(self):
+        self.process = Popen(self.command, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
+        self.outputText, self.errorText = self.process.communicate()
+        if self.log:
+            output.add_result_message(self.outputText)
+        self.complete()
+
+    def run(self):
+        self.process = Popen(self.command, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
+        Process.active_processes.append(self)
+        for line in self.process.stdout:
+            self.lines.append(line)
+            if self.log:
+                output.add_result_message(line.strip('\r\n'))
+        self.outputText = "\n".join(self.lines)
+        self.errorText = self.process.stderr.read()
+        self.complete()
 
     def get_path(self, paths):
         path = None
@@ -45,35 +64,23 @@ class Process:
             path = view.file_name() if view else None
         return path
 
-    def finish(self):
-        out, error = self.process.communicate()
-        self.outputText = out
-        self.errorText = error
+    def complete(self):
+        if self.done:
+            return
         self.done = True
+        if self in Process.active_processes:
+            Process.active_processes.remove(self)
         if self.log:
-            output.add_result(self.output())
             output.add_error(self.error(), self.process.returncode)
             output.end_command()
+        if self.on_complete is not None:
+            self.on_complete(self)
 
     def check_status(self):
         if self not in Process.active_processes:
             return
-        if self.process.stdout:
-            line = self.process.stdout.readline().strip('\r\n')
-            self.lines.append(line)
-            if self.log and line:
-                output.add_result_message(line)
-        if self.is_done():
-            last = self.process.stdout.read().strip('\r\n')
-            self.outputText = "\n".join(self.lines) + "\n" + last
-            Process.active_processes.remove(self)
+        if self.done:
             sublime.status_message("Complete: " + self.name)
-            if self.on_complete is not None:
-                self.on_complete(self)
-            if self.log:
-                output.add_result_message(last)
-                output.add_error(self.error(), self.process.returncode)
-                output.end_command()
         else:
             if LOADING_SIZE > 0:
                 n = abs(self.loading - LOADING_SIZE)
@@ -84,36 +91,15 @@ class Process:
             self.timer.start()
 
     def output(self):
-        if self.outputText is not None:
-            return self.outputText
-        if not self.is_done():
-            return self.process.stdout.read()
-        out = self.process.stdout.read()
-        if out is not None:
-            self.outputText = out
-            return self.outputText
-        return None
+        return self.outputText
 
     def error(self):
-        if self.errorText is not None:
-            return self.errorText
-        if not self.is_done():
-            return self.process.stderr.read()
-        error = self.process.stderr.read()
-        if error is not None:
-            self.errorText = error
-            return self.errorText
-        return None
-
-    def is_done(self):
-        if not self.done:
-            self.done = self.process.poll() is not None
-        return self.done
+        return self.errorText
 
     def terminate(self):
-        if not self.is_done():
+        if not self.done:
             self.process.terminate()
-        Process.active_processes.remove(self)
+        self.complete()
 
 def terminate_all():
     for proc in Process.active_processes:
