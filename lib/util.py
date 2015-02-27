@@ -59,7 +59,7 @@ else:
 
 
 def prefer_tortoise():
-    return use_tortoise() and settings.get('prefer') == 'tortoiseSVN'
+    return use_tortoise() and (settings.get('prefer') == 'tortoiseSVN' or not use_native())
 
 def tortoise_path(paths):
     return "*".join(paths)
