@@ -1,4 +1,5 @@
 {
+    "debug": false,
     "nativeSVN": {
         "disable": false,
         "updateToRevisionHistory": true, // Set this to false to simply enter the desired revision number

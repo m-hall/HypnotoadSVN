@@ -63,3 +63,7 @@ def prefer_tortoise():
 
 def tortoise_path(paths):
     return "*".join(paths)
+
+def debug(message):
+    if (settings.get("debug", default=False)):
+        print('HypnotoadSVN: ' + message)
