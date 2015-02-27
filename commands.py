@@ -401,9 +401,7 @@ class SvnMergeCommand(SvnCommand):
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and tests['single']
-    def is_enabled(self, paths=None, group=-1, index=-1):
-        return util.use_tortoise()
+        return tests['versionned'] and tests['single'] and util.use_tortoise()
 
 class SvnDiffCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
