@@ -67,6 +67,7 @@ class Process(Thread):
     def complete(self):
         if self.done:
             return
+        util.debug(self.command + " DONE")
         self.done = True
         if self in Process.active_processes:
             Process.active_processes.remove(self)
