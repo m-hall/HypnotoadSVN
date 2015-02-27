@@ -7,7 +7,7 @@ import time
 import subprocess
 from .lib import util, thread, settings
 
-LOG_PARSE = r'-{72}\nr(\d+) \| ([^|]+) \| ([^|]+) \| [^\n]+\n\n(.+)'
+LOG_PARSE = r'-{72}[\r\n]+r(\d+) \| ([^|]+) \| ([^|]+) \| [^\n\r]+[\n\r]+(.+)'
 STATUS_PARSE = r'(^[A-Z\?\!\ >]+?) +(.*)'
 INFO_PARSE_REVISION = r"Revision: (\d+)"
 INFO_PARSE_LAST_CHANGE = r"Last Changed Rev: (\d+)"
@@ -163,6 +163,7 @@ class SvnCommitCommand(SvnCommand):
     def get_changes(self):
         thread.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Commit')
         files = util.get_files(paths, group, index)
         self.name = "Commit"
         if util.prefer_tortoise():
@@ -207,10 +208,13 @@ class SvnUpdateRevisionCommand(SvnCommand):
     def on_logs_available(self, process):
         output = process.output()
         self.parse_logs(output)
-        sublime.active_window().show_quick_panel(self.logs, self.on_select)
+        util.debug(",".join(self.logs))
+        if len(self.logs) > 0:
+            sublime.active_window().show_quick_panel(self.logs, self.on_select)
     def get_revisions(self, revisions):
         thread.Process('Log', 'svn log -r HEAD:1 -l ' + str(revisions), self.files, False, True, self.on_logs_available)
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Update to revision')
         if not util.use_native():
             return
         files = util.get_files(paths, group, index)
@@ -228,6 +232,7 @@ class SvnUpdateRevisionCommand(SvnCommand):
 
 class SvnUpdateCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Update')
         files = util.get_files(paths, group, index)
         self.name = "Update"
         if util.prefer_tortoise():
@@ -243,6 +248,7 @@ class SvnUpdateCommand(SvnCommand):
 
 class SvnLogCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Log')
         files = util.get_files(paths, group, index)
         self.name = "Log"
         if util.prefer_tortoise():
@@ -262,6 +268,7 @@ class SvnLogCommand(SvnCommand):
 
 class SvnStatusCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Check for Modifications')
         files = util.get_files(paths, group, index)
         self.name = "Check for Modifications"
         if util.prefer_tortoise():
@@ -277,6 +284,7 @@ class SvnStatusCommand(SvnCommand):
 
 class SvnAddCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Add')
         files = util.get_files(paths, group, index)
         self.name = "Add"
         if util.prefer_tortoise():
@@ -288,6 +296,7 @@ class SvnAddCommand(SvnCommand):
 
 class SvnDeleteCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Delete')
         files = util.get_files(paths, group, index)
         self.name = "Delete"
         if util.prefer_tortoise():
@@ -303,6 +312,7 @@ class SvnDeleteCommand(SvnCommand):
 
 class SvnRevertCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Revert')
         files = util.get_files(paths, group, index)
         self.name = "Revert"
         if util.prefer_tortoise():
@@ -318,6 +328,7 @@ class SvnRevertCommand(SvnCommand):
 
 class SvnCleanupCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Cleanup')
         files = util.get_files(paths, group, index)
         self.name = "Cleanup"
         if util.prefer_tortoise():
@@ -333,6 +344,7 @@ class SvnCleanupCommand(SvnCommand):
 
 class SvnLockCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Lock')
         files = util.get_files(paths, group, index)
         self.name = "Lock"
         if util.prefer_tortoise():
@@ -348,6 +360,7 @@ class SvnLockCommand(SvnCommand):
 
 class SvnStealLockCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Steal Lock')
         if not util.use_native():
             return
         files = util.get_files(paths, group, index)
@@ -360,6 +373,7 @@ class SvnStealLockCommand(SvnCommand):
 
 class SvnUnlockCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Unlock')
         files = util.get_files(paths, group, index)
         self.name = "Unlock"
         if util.prefer_tortoise():
@@ -375,6 +389,7 @@ class SvnUnlockCommand(SvnCommand):
 
 class SvnMergeCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Merge')
         files = util.get_files(paths, group, index)
         self.name = "Merge"
         if util.use_tortoise():
@@ -392,6 +407,7 @@ class SvnMergeCommand(SvnCommand):
 
 class SvnDiffCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Diff')
         files = util.get_files(paths, group, index)
         self.name = "Diff"
         if util.prefer_tortoise():
@@ -407,6 +423,7 @@ class SvnDiffCommand(SvnCommand):
 
 class SvnDiffPreviousCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Diff with previous')
         files = util.get_files(paths, group, index)
         self.name = "Diff With Previous"
         p = self.run_command('info', files, False, False)
@@ -429,6 +446,7 @@ class SvnRenameCommand(SvnCommand):
         self.name = "Rename"
         self.run_command('rename --parents' + self.current_path + self.current_name + ' ' + self.current_path + value)
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Rename')
         files = util.get_files(paths, group, index)
         self.name = "Rename"
         if util.use_tortoise():
@@ -448,6 +466,7 @@ class SvnRenameCommand(SvnCommand):
 
 class SvnBlameCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Blame')
         files = util.get_files(paths, group, index)
         self.name = "Blame"
         if util.use_tortoise():
@@ -461,6 +480,7 @@ class SvnBlameCommand(SvnCommand):
 
 class SvnConflictEditorCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Conflict Editor')
         files = util.get_files(paths, group, index)
         self.run_tortoise('conflicteditor', files)
     def is_visible(self, paths=None, group=-1, index=-1):
@@ -480,6 +500,7 @@ class SvnResolveCommand(SvnCommand):
     def on_select(self, index):
         self.run_command('resolve -R --accept ' + SvnResolveCommand.options[index], self.files)
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Resolve')
         files = util.get_files(paths, group, index)
         self.name = "Resolve"
         if util.use_tortoise():
@@ -494,6 +515,7 @@ class SvnResolveCommand(SvnCommand):
 
 class SvnSwitchCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Switch')
         files = util.get_files(paths, group, index)
         self.name = "Switch"
         if util.use_tortoise():
@@ -507,6 +529,7 @@ class SvnSwitchCommand(SvnCommand):
 
 class SvnBranchCommand(SvnCommand):
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Branch')
         files = util.get_files(paths, group, index)
         self.name = "Branch"
         if util.use_tortoise():
@@ -523,6 +546,7 @@ class SvnCheckoutCommand(SvnCommand):
         self.name = "Rename"
         self.run_command('checkout', self.files)
     def run(self, paths=None, group=-1, index=-1):
+        util.debug('Checkout')
         files = util.get_files(paths, group, index)
         self.name = "Checkout"
         if util.prefer_tortoise():
