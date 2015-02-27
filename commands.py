@@ -12,17 +12,17 @@ STATUS_PARSE = r'(^[A-Z\?\!\ >]+?) +(.*)'
 INFO_PARSE_REVISION = r"Revision: (\d+)"
 INFO_PARSE_LAST_CHANGE = r"Last Changed Rev: (\d+)"
 
-class SvnViewMessageCommand(sublime_plugin.TextCommand):
+class HypnoSvnViewMessageCommand(sublime_plugin.TextCommand):
     def run(self, edit, message=""):
         self.view.set_read_only(False)
         self.view.insert(edit, self.view.size(), message + '\n')
         self.view.set_read_only(True)
 
-class SvnKillProcessesCommand(sublime_plugin.WindowCommand):
+class HypnoSvnKillProcessesCommand(sublime_plugin.WindowCommand):
     def run(self):
         thread.terminate_all()
 
-class SvnCommand(sublime_plugin.WindowCommand):
+class HypnoSvnCommand(sublime_plugin.WindowCommand):
     recent_files = []
 
     def nothing(nothing1=None, nothing2=None, nothing3=None, **args):
@@ -71,9 +71,9 @@ class SvnCommand(sublime_plugin.WindowCommand):
 
     def test_all(self, files):
         uid = "*".join(files)
-        for tests in SvnCommand.recent_files:
+        for tests in HypnoSvnCommand.recent_files:
             if time.time() - tests['timestamp'] > 1:
-                SvnCommand.recent_files.remove(tests)
+                HypnoSvnCommand.recent_files.remove(tests)
                 continue
             if uid == tests['uid']:
                 return tests
@@ -86,7 +86,7 @@ class SvnCommand(sublime_plugin.WindowCommand):
             'folder': self.is_folder(files),
             'single': self.is_single(files)
         }
-        SvnCommand.recent_files.append(tests)
+        HypnoSvnCommand.recent_files.append(tests)
         return tests
 
     def run(self, cmd="", paths=None, group=-1, index=-1):
@@ -99,7 +99,7 @@ class SvnCommand(sublime_plugin.WindowCommand):
     def is_visible(self, paths=None, group=-1, index=-1):
         return util.enabled()
 
-class SvnCommitCommand(SvnCommand):
+class HypnoSvnCommitCommand(HypnoSvnCommand):
     def escape(self, message):
         return message.replace('"', '\\"')
     def commit(self):
@@ -178,7 +178,7 @@ class SvnCommitCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned']
 
-class SvnUpdateRevisionCommand(SvnCommand):
+class HypnoSvnUpdateRevisionCommand(HypnoSvnCommand):
     def on_done_input(self, value):
         self.name = "Update to revision (%s)" % value
         self.run_command('update -r %s' % value, self.files)
@@ -230,7 +230,7 @@ class SvnUpdateRevisionCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.use_native()
 
-class SvnUpdateCommand(SvnCommand):
+class HypnoSvnUpdateCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Update')
         files = util.get_files(paths, group, index)
@@ -246,7 +246,7 @@ class SvnUpdateCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.enabled()
 
-class SvnLogCommand(SvnCommand):
+class HypnoSvnLogCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Log')
         files = util.get_files(paths, group, index)
@@ -266,7 +266,7 @@ class SvnLogCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.enabled()
 
-class SvnStatusCommand(SvnCommand):
+class HypnoSvnStatusCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Check for Modifications')
         files = util.get_files(paths, group, index)
@@ -282,7 +282,7 @@ class SvnStatusCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.enabled()
 
-class SvnAddCommand(SvnCommand):
+class HypnoSvnAddCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Add')
         files = util.get_files(paths, group, index)
@@ -294,7 +294,7 @@ class SvnAddCommand(SvnCommand):
             return
         self.run_command('add', files)
 
-class SvnDeleteCommand(SvnCommand):
+class HypnoSvnDeleteCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Delete')
         files = util.get_files(paths, group, index)
@@ -310,7 +310,7 @@ class SvnDeleteCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.enabled()
 
-class SvnRevertCommand(SvnCommand):
+class HypnoSvnRevertCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Revert')
         files = util.get_files(paths, group, index)
@@ -326,7 +326,7 @@ class SvnRevertCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.enabled()
 
-class SvnCleanupCommand(SvnCommand):
+class HypnoSvnCleanupCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Cleanup')
         files = util.get_files(paths, group, index)
@@ -342,7 +342,7 @@ class SvnCleanupCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.enabled()
 
-class SvnLockCommand(SvnCommand):
+class HypnoSvnLockCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Lock')
         files = util.get_files(paths, group, index)
@@ -358,7 +358,7 @@ class SvnLockCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.enabled()
 
-class SvnStealLockCommand(SvnCommand):
+class HypnoSvnStealLockCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Steal Lock')
         if not util.use_native():
@@ -371,7 +371,7 @@ class SvnStealLockCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.use_native()
 
-class SvnUnlockCommand(SvnCommand):
+class HypnoSvnUnlockCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Unlock')
         files = util.get_files(paths, group, index)
@@ -387,7 +387,7 @@ class SvnUnlockCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.enabled()
 
-class SvnMergeCommand(SvnCommand):
+class HypnoSvnMergeCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Merge')
         files = util.get_files(paths, group, index)
@@ -403,7 +403,7 @@ class SvnMergeCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and util.use_tortoise()
 
-class SvnDiffCommand(SvnCommand):
+class HypnoSvnDiffCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Diff')
         files = util.get_files(paths, group, index)
@@ -419,7 +419,7 @@ class SvnDiffCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['file'] and tests['versionned'] and tests['changed'] and util.enabled()
 
-class SvnDiffPreviousCommand(SvnCommand):
+class HypnoSvnDiffPreviousCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Diff with previous')
         files = util.get_files(paths, group, index)
@@ -439,7 +439,7 @@ class SvnDiffPreviousCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['file'] and tests['versionned'] and not tests['changed'] and util.enabled()
 
-class SvnRenameCommand(SvnCommand):
+class HypnoSvnRenameCommand(HypnoSvnCommand):
     def on_done_input(self, value):
         self.name = "Rename"
         self.run_command('rename --parents' + self.current_path + self.current_name + ' ' + self.current_path + value)
@@ -462,7 +462,7 @@ class SvnRenameCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and util.enabled()
 
-class SvnBlameCommand(SvnCommand):
+class HypnoSvnBlameCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Blame')
         files = util.get_files(paths, group, index)
@@ -476,7 +476,7 @@ class SvnBlameCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and util.enabled()
 
-class SvnConflictEditorCommand(SvnCommand):
+class HypnoSvnConflictEditorCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Conflict Editor')
         files = util.get_files(paths, group, index)
@@ -486,7 +486,7 @@ class SvnConflictEditorCommand(SvnCommand):
         tests = self.test_all(files)
         return util.use_tortoise() and tests['versionned']
 
-class SvnResolveCommand(SvnCommand):
+class HypnoSvnResolveCommand(HypnoSvnCommand):
     options = [
         'base',
         'working',
@@ -496,7 +496,7 @@ class SvnResolveCommand(SvnCommand):
         'theirs-full'
     ]
     def on_select(self, index):
-        self.run_command('resolve -R --accept ' + SvnResolveCommand.options[index], self.files)
+        self.run_command('resolve -R --accept ' + HypnoSvnResolveCommand.options[index], self.files)
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Resolve')
         files = util.get_files(paths, group, index)
@@ -505,13 +505,13 @@ class SvnResolveCommand(SvnCommand):
             self.run_tortoise("resolve", files)
             return
         self.files = files
-        sublime.active_window().show_quick_panel(SvnResolveCommand.options, self.on_select)
+        sublime.active_window().show_quick_panel(HypnoSvnResolveCommand.options, self.on_select)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and util.enabled()
 
-class SvnSwitchCommand(SvnCommand):
+class HypnoSvnSwitchCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Switch')
         files = util.get_files(paths, group, index)
@@ -525,7 +525,7 @@ class SvnSwitchCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and util.use_tortoise()
 
-class SvnBranchCommand(SvnCommand):
+class HypnoSvnBranchCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Branch')
         files = util.get_files(paths, group, index)
@@ -539,7 +539,7 @@ class SvnBranchCommand(SvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and util.use_tortoise()
 
-class SvnCheckoutCommand(SvnCommand):
+class HypnoSvnCheckoutCommand(HypnoSvnCommand):
     def on_done_input(self, value):
         self.name = "Rename"
         self.run_command('checkout', self.files)

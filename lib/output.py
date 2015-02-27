@@ -45,7 +45,7 @@ class SvnView(sublime_plugin.EventListener):
             return
         msg = re.sub(r'\r\n?', '\n', message)
         view.run_command(
-            'svn_view_message',
+            'hypno_svn_view_message',
             {
                 "message": msg
             }
