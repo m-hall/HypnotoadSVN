@@ -4,6 +4,7 @@ import os
 import os.path
 import re
 import subprocess
+import time
 from .lib import util, thread, settings, output
 
 LOG_PARSE = r'-{72}[\r\n]+r(\d+) \| ([^|]+) \| ([^|]+) \| [^\n\r]+[\n\r]+(.+)'
