@@ -62,6 +62,8 @@ def prefer_tortoise(command="Default"):
     if not use_native():
         return use_tortoise()
     prefers = settings.get('prefer')
+    if isinstance(prefers, str):
+        return use_tortoise and prefers == 'tortoiseSVN'
     if command not in prefers.keys():
         command = "Default"
     return use_tortoise() and prefers.get(command) == 'tortoiseSVN'
