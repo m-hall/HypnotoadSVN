@@ -5,6 +5,7 @@ DEFAULT_SIDE_BAR_FILE = "Packages/HypnotoadSVN/menus/Default Side Bar.sublime-me
 USER_SIDE_BAR_FILE = "/User/HypnotoadSVN/Side Bar.sublime-menu"
 
 def create_user_side_bar():
+    """Create the sidebar config in the user directory"""
     if os.path.exists(USER_SIDE_BAR_FILE):
         return
     if not os.path.exists(os.path.join(sublime.packages_path(), 'User', 'HypnotoadSVN')):

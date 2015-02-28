@@ -25,6 +25,7 @@ def get_path_components(path):
     return components
 
 def get_files(paths=None, group=-1, index=-1):
+    """Get a list of files based on command input"""
     files = []
     if isinstance(paths, list):
         files = files+paths
@@ -39,15 +40,18 @@ def get_files(paths=None, group=-1, index=-1):
     return files
 
 def enabled():
+    """Check if the plugin is enabled"""
     return use_native() or use_tortoise()
 
 def use_native():
+    """Check if native SVN support is enabled"""
     if settings.get_native('disable') is not True:
         return True
     return False
 
 if os.name == 'nt':
     def use_tortoise():
+        """In Widnows, Check if TortoiseSVN support is enabled"""
         if settings.get_tortoise('disable') is not True:
             tortoise_path = settings.get_tortoise('tortoiseproc_path');
             if os.path.isfile(tortoise_path):
@@ -55,10 +59,12 @@ if os.name == 'nt':
         return False
 else:
     def use_tortoise():
+        """Not in Windows, TortoiseSVN is not available"""
         return False
 
 
 def prefer_tortoise(command="Default"):
+    """Check if TortoiseSVN is preferred over native SVN"""
     if not use_native():
         return use_tortoise()
     prefers = settings.get('prefer')
@@ -69,8 +75,10 @@ def prefer_tortoise(command="Default"):
     return use_tortoise() and prefers.get(command) == 'tortoiseSVN'
 
 def tortoise_path(paths):
+    """Join paths for a TortoiseProc command"""
     return "*".join(paths)
 
 def debug(message):
+    """Send output to console if debugging is enabled"""
     if (settings.get("debug", default=False)):
         print('HypnotoadSVN: ' + message)

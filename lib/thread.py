@@ -8,8 +8,10 @@ TIME_INTERVAL = 0.05
 LOADING_SIZE = 7
 
 class Process(Thread):
+    """A threaded process"""
     active_processes = []
     def __init__(self, name, cmd, paths=None, log=True, async=False, on_complete=None):
+        """Initializes a Process object"""
         Thread.__init__(self)
         self.name = name
         self.cmd = cmd
@@ -37,14 +39,8 @@ class Process(Thread):
         else:
             self.run()
 
-    def runSync(self):
-        self.process = Popen(self.command, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
-        self.outputText, self.errorText = self.process.communicate()
-        if self.log:
-            output.add_result_message(self.outputText)
-        self.complete()
-
     def run(self):
+        """Runs the process"""
         self.process = Popen(self.command, stdout=PIPE, stderr=PIPE, shell=True, universal_newlines=True)
         Process.active_processes.append(self)
         for line in self.process.stdout:
@@ -56,6 +52,7 @@ class Process(Thread):
         self.complete()
 
     def get_path(self, paths):
+        """Gets path for command arguments"""
         path = None
         if paths:
             path = '"' + '" "'.join(paths) + '"'
@@ -65,6 +62,7 @@ class Process(Thread):
         return path
 
     def complete(self):
+        """Handles the complete signal from a process"""
         if self.done:
             return
         util.debug(self.command + " DONE")
@@ -78,6 +76,7 @@ class Process(Thread):
             self.on_complete(self)
 
     def check_status(self):
+        """Checks the status of a running process"""
         if self not in Process.active_processes:
             return
         if self.done:
@@ -92,16 +91,20 @@ class Process(Thread):
             self.timer.start()
 
     def output(self):
+        """Get output from the process"""
         return self.outputText
 
     def error(self):
+        """Get error text from the process"""
         return self.errorText
 
     def terminate(self):
+        """Terminates the process"""
         if not self.done:
             self.process.terminate()
         self.complete()
 
 def terminate_all():
+    """Terminates all active processes"""
     for proc in Process.active_processes:
         proc.terminate()

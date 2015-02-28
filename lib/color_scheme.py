@@ -49,15 +49,19 @@ SCHEMES = [
 
 listening = False
 def stop_listening():
+    """Stops the listener from doing anything"""
     listening = False
 
 def start_listening():
+    """Makes the listener start handling changes"""
     listening = True
 
 def add_listener():
+    """Add the listener for settings changes"""
     settings.listen_to_changes(LISTENER_NAME, listener)
 
 def listener():
+    """Handles changes to settings"""
     if not listening:
         start_listening()
         return
@@ -65,14 +69,11 @@ def listener():
     generate()
 
 def generate():
+    """Generates a new color scheme that includes hypnotoad values"""
     sublime.set_timeout_async(generate_async, 0)
 
 def generate_async():
-    """
-    Generate a modified copy of the current color scheme that contains SublimeLinter color entries.
-    The current color scheme is checked for SublimeLinter color entries. If any are missing,
-    the scheme is copied, the entries are added, and the color scheme is rewritten to Packages/User/SublimeLinter.
-    """
+    """Generate a modified copy of the current color scheme that contains hypnotoad color entries."""
 
     # First make sure the user prefs are valid. If not, bail.
     path = os.path.join(sublime.packages_path(), 'User', 'Preferences.sublime-settings')
