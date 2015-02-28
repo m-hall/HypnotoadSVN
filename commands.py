@@ -442,20 +442,17 @@ class HypnoSvnDiffPreviousCommand(HypnoSvnCommand):
 class HypnoSvnRenameCommand(HypnoSvnCommand):
     def on_done_input(self, value):
         self.name = "Rename"
-        self.run_command('rename --parents' + self.current_path + self.current_name + ' ' + self.current_path + value)
+        self.run_command('rename --parents' + os.path.join(self.current_path, self.current_name) + ' ' + os.path.join(self.current_path, value))
     def run(self, paths=None, group=-1, index=-1):
         util.debug('Rename')
         files = util.get_files(paths, group, index)
         self.name = "Rename"
-        if util.use_tortoise():
+        if util.prefer_tortoise():
             self.run_tortoise("rename", files)
             return
         if not util.use_native():
             return
-        path = util.get_path_components(files[0])
-        self.current_name = path[-1]
-        path.remove(path[-1])
-        self.current_path = "/".join(path) + "/"
+        self.head, self.tail = os.path.split(files[0])
         sublime.active_window().show_input_panel('Rename...', self.current_name, self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
         files = util.get_files(paths, group, index)
