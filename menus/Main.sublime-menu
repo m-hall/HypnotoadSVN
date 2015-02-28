@@ -32,9 +32,16 @@
 							{
 								"command": "open_file",
 								"args": {
-									"file": "${packages}/HypnotoadSVN/menus/Side Bar.sublime-menu"
+									"file": "${packages}/HypnotoadSVN/menus/Default Side Bar.sublime-menu"
 								},
-								"caption": "Side Bar - Plugin"
+								"caption": "Side Bar - Default"
+							},
+							{
+								"command": "open_file",
+								"args": {
+									"file": "${packages}/User/HypnotoadSVN/Side Bar.sublime-menu"
+								},
+								"caption": "Side Bar - User"
 							},
 							{ "caption": "-" },
 							{
