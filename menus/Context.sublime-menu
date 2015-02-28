@@ -1,0 +1,5 @@
+[
+    { "caption": "-" },
+    { "caption": "Clear Output", "command": "hypno_view_clear", "args": {}},
+    { "caption": "-", "id": "end" }
+]

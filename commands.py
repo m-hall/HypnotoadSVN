@@ -5,20 +5,37 @@ import os.path
 import re
 import time
 import subprocess
-from .lib import util, thread, settings
+from .lib import util, thread, settings, output
 
 LOG_PARSE = r'-{72}[\r\n]+r(\d+) \| ([^|]+) \| ([^|]+) \| [^\n\r]+[\n\r]+(.+)'
 STATUS_PARSE = r'(^[A-Z\?\!\ >]+?) +(.*)'
 INFO_PARSE_REVISION = r"Revision: (\d+)"
 INFO_PARSE_LAST_CHANGE = r"Last Changed Rev: (\d+)"
 
-class HypnoSvnViewMessageCommand(sublime_plugin.TextCommand):
+class HypnoViewMessageCommand(sublime_plugin.TextCommand):
     def run(self, edit, message=""):
         self.view.set_read_only(False)
         self.view.insert(edit, self.view.size(), message + '\n')
         self.view.set_read_only(True)
 
-class HypnoSvnKillProcessesCommand(sublime_plugin.WindowCommand):
+class HypnoViewClearCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        self.view.set_read_only(False)
+        self.view.erase(edit, sublime.Region(0, self.view.size()))
+        self.view.set_read_only(True)
+    def is_visible(self, edit=None):
+        return output.SvnView.view == self.view
+
+class HypnoOutputClearCommand(sublime_plugin.WindowCommand):
+    def run(self, group=-1, index=-1):
+        output.clear()
+    def is_visible(self, group=-1, index=-1):
+        if group >=0 and index >= 0:
+            view = sublime.active_window().views_in_group(group)[index]
+            return output.SvnView.view == view
+        return True
+
+class HypnoKillProcessesCommand(sublime_plugin.WindowCommand):
     def run(self):
         thread.terminate_all()
 

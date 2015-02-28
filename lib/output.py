@@ -59,11 +59,13 @@ class SvnView(sublime_plugin.EventListener):
             return
         msg = re.sub(r'\r\n?', '\n', message)
         view.run_command(
-            'hypno_svn_view_message',
+            'hypno_view_message',
             {
                 "message": msg
             }
         );
+    def clear():
+
     def end():
         output = settings.get_native("outputTo", "panel")
         if output == "dialog":
@@ -129,3 +131,6 @@ def add_error_section(code = None):
 
 def end_command():
     SvnView.end()
+
+def clear():
+    SvnView.clear()
