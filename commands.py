@@ -166,7 +166,7 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         util.debug('Commit')
         files = util.get_files(paths, group, index)
         self.name = "Commit"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise("commit"):
             self.run_tortoise('commit', files)
             return
         if not util.use_native():
@@ -235,7 +235,7 @@ class HypnoSvnUpdateCommand(HypnoSvnCommand):
         util.debug('Update')
         files = util.get_files(paths, group, index)
         self.name = "Update"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('update'):
             self.run_tortoise('update', files)
             return
         if not util.use_native():
@@ -251,7 +251,7 @@ class HypnoSvnLogCommand(HypnoSvnCommand):
         util.debug('Log')
         files = util.get_files(paths, group, index)
         self.name = "Log"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('log'):
             self.run_tortoise('log', files)
             return
         if not util.use_native():
@@ -271,7 +271,7 @@ class HypnoSvnStatusCommand(HypnoSvnCommand):
         util.debug('Check for Modifications')
         files = util.get_files(paths, group, index)
         self.name = "Check for Modifications"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('status'):
             self.run_tortoise('repostatus', files)
             return
         if not util.use_native():
@@ -287,7 +287,7 @@ class HypnoSvnAddCommand(HypnoSvnCommand):
         util.debug('Add')
         files = util.get_files(paths, group, index)
         self.name = "Add"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('add'):
             self.run_tortoise('add', files)
             return
         if not util.use_native():
@@ -299,7 +299,7 @@ class HypnoSvnDeleteCommand(HypnoSvnCommand):
         util.debug('Delete')
         files = util.get_files(paths, group, index)
         self.name = "Delete"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('delete'):
             self.run_tortoise('remove', files)
             return
         if not util.use_native():
@@ -315,7 +315,7 @@ class HypnoSvnRevertCommand(HypnoSvnCommand):
         util.debug('Revert')
         files = util.get_files(paths, group, index)
         self.name = "Revert"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('revert'):
             self.run_tortoise('revert', files)
             return
         if not util.use_native():
@@ -331,7 +331,7 @@ class HypnoSvnCleanupCommand(HypnoSvnCommand):
         util.debug('Cleanup')
         files = util.get_files(paths, group, index)
         self.name = "Cleanup"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('cleanup'):
             self.run_tortoise('cleanup', files)
             return
         if not util.use_native():
@@ -347,7 +347,7 @@ class HypnoSvnLockCommand(HypnoSvnCommand):
         util.debug('Lock')
         files = util.get_files(paths, group, index)
         self.name = "Lock"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('lock'):
             self.run_tortoise('lock', files)
             return
         if not util.use_native():
@@ -376,7 +376,7 @@ class HypnoSvnUnlockCommand(HypnoSvnCommand):
         util.debug('Unlock')
         files = util.get_files(paths, group, index)
         self.name = "Unlock"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('unlock'):
             self.run_tortoise('unlock', files)
             return
         if not util.use_native():
@@ -408,7 +408,7 @@ class HypnoSvnDiffCommand(HypnoSvnCommand):
         util.debug('Diff')
         files = util.get_files(paths, group, index)
         self.name = "Diff"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('diff'):
             self.run_tortoise("diff", files)
             return
         if not util.use_native():
@@ -428,7 +428,7 @@ class HypnoSvnDiffPreviousCommand(HypnoSvnCommand):
         output = p.output()
         current = re.search(INFO_PARSE_REVISION, output).group(1)
         last = str(int(re.search(INFO_PARSE_LAST_CHANGE, output).group(1)) - 1)
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('diff'):
             self.run_tortoise("diff /startrev:" + last + " /endrev:" + current, files)
             return
         if not util.use_native():
@@ -447,7 +447,7 @@ class HypnoSvnRenameCommand(HypnoSvnCommand):
         util.debug('Rename')
         files = util.get_files(paths, group, index)
         self.name = "Rename"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('rename'):
             self.run_tortoise("rename", files)
             return
         if not util.use_native():
@@ -464,7 +464,7 @@ class HypnoSvnBlameCommand(HypnoSvnCommand):
         util.debug('Blame')
         files = util.get_files(paths, group, index)
         self.name = "Blame"
-        if util.use_tortoise():
+        if util.use_tortoise('blame'):
             self.run_tortoise("blame", files)
             return
         self.run_command('blame', files)
@@ -544,7 +544,7 @@ class HypnoSvnCheckoutCommand(HypnoSvnCommand):
         util.debug('Checkout')
         files = util.get_files(paths, group, index)
         self.name = "Checkout"
-        if util.prefer_tortoise():
+        if util.prefer_tortoise('checkout'):
             self.run_tortoise("checkout", files)
             return
         if not util.use_native():

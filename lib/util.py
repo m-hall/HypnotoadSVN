@@ -58,8 +58,13 @@ else:
         return False
 
 
-def prefer_tortoise():
-    return use_tortoise() and (settings.get('prefer') == 'tortoiseSVN' or not use_native())
+def prefer_tortoise(command="Default"):
+    if not use_native():
+        return use_tortoise()
+    prefers = settings.get('prefer')
+    if command not in prefers.keys():
+        command = "Default"
+    return use_tortoise() and prefers.get(command) == 'tortoiseSVN'
 
 def tortoise_path(paths):
     return "*".join(paths)

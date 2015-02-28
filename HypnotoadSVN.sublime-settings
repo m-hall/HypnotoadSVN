@@ -13,5 +13,32 @@
         "disable": false,
         "tortoiseproc_path": "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe", // path to TortoiseProc
     },
-    "prefer": "nativeSVN"
+    "prefer": {
+        // Anything that doesn't have it's own default will use this one
+        // nativeSVN or tortoiseSVN for everything
+        "default": "nativeSVN",
+
+        // Supported, but tortoise is better
+        "diff": "tortoiseSVN",
+        "blame": "tortoiseSVN",
+
+        // Supported native commands
+        // "commit": "nativeSVN",
+        // "update": "nativeSVN",
+        // "add": "nativeSVN",
+        // "delete": "nativeSVN",
+        // "rename": "nativeSVN",
+        // "revert": "nativeSVN",
+        // "log": "nativeSVN",
+        // "status": "nativeSVN",
+        // "cleanup": "nativeSVN",
+        // "lock": "nativeSVN",
+        // "unlock": "nativeSVN",
+
+        // Right now these commands are only supported in tortoise
+        // "resolve": "tortoiseSVN",
+        // "switch": "tortoiseSVN",
+        // "branch": "tortoiseSVN",
+        // "checkout": "nativeSVN"
+    }
 }
