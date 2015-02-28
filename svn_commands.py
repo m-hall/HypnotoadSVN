@@ -85,8 +85,11 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
             'changed': self.is_changed(files),
             'file': self.is_file(files),
             'folder': self.is_folder(files),
-            'single': self.is_single(files)
+            'single': self.is_single(files),
+            'native': util.use_native(),
+            'tortoise': util.use_tortoise()
         }
+        tests['enabled'] = tests['native'] or tests['tortoise']
         HypnoSvnCommand.recent_files.append(tests)
         return tests
 
@@ -252,7 +255,7 @@ class HypnoSvnUpdateRevisionCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.use_native()
+        return tests['versionned'] and tests['native']
 
 class HypnoSvnUpdateCommand(HypnoSvnCommand):
     """A command that updates to HEAD"""
@@ -271,7 +274,7 @@ class HypnoSvnUpdateCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.enabled()
+        return tests['versionned'] and tests['enabled']
 
 class HypnoSvnLogCommand(HypnoSvnCommand):
     """A command the gets recent logs"""
@@ -294,7 +297,7 @@ class HypnoSvnLogCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.enabled()
+        return tests['versionned'] and tests['enabled']
 
 class HypnoSvnStatusCommand(HypnoSvnCommand):
     """A command that checks the status of the files"""
@@ -313,7 +316,7 @@ class HypnoSvnStatusCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.enabled()
+        return tests['versionned'] and tests['enabled']
 
 class HypnoSvnAddCommand(HypnoSvnCommand):
     """Adds unversionned files to the repo"""
@@ -346,7 +349,7 @@ class HypnoSvnDeleteCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.enabled()
+        return tests['versionned'] and tests['enabled']
 
 class HypnoSvnRevertCommand(HypnoSvnCommand):
     """Reverts changes made to the working copy"""
@@ -365,7 +368,7 @@ class HypnoSvnRevertCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.enabled()
+        return tests['versionned'] and tests['enabled']
 
 class HypnoSvnCleanupCommand(HypnoSvnCommand):
     """Cleans up broken repos"""
@@ -384,7 +387,7 @@ class HypnoSvnCleanupCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.enabled()
+        return tests['versionned'] and tests['enabled']
 
 class HypnoSvnLockCommand(HypnoSvnCommand):
     """Gets a lock on the selected files"""
@@ -403,7 +406,7 @@ class HypnoSvnLockCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.enabled()
+        return tests['versionned'] and tests['enabled']
 
 class HypnoSvnStealLockCommand(HypnoSvnCommand):
     """Steals a lock from another user"""
@@ -419,7 +422,7 @@ class HypnoSvnStealLockCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.use_native()
+        return tests['versionned'] and tests['native']
 
 class HypnoSvnUnlockCommand(HypnoSvnCommand):
     """Unlocks the repo"""
@@ -438,7 +441,7 @@ class HypnoSvnUnlockCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.enabled()
+        return tests['versionned'] and tests['enabled']
 
 class HypnoSvnMergeCommand(HypnoSvnCommand):
     """Merges changes from the repo to the working copy"""
@@ -457,7 +460,7 @@ class HypnoSvnMergeCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and util.use_tortoise()
+        return tests['versionned'] and tests['single'] and tests['tortoise']
 
 class HypnoSvnDiffCommand(HypnoSvnCommand):
     """Lists the changes to a working copy file"""
@@ -476,7 +479,7 @@ class HypnoSvnDiffCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['file'] and tests['versionned'] and tests['changed'] and util.enabled()
+        return tests['file'] and tests['versionned'] and tests['changed'] and tests['enabled']
 
 class HypnoSvnDiffPreviousCommand(HypnoSvnCommand):
     """Lists the changes between latest and previous revisions"""
@@ -499,7 +502,7 @@ class HypnoSvnDiffPreviousCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['file'] and tests['versionned'] and not tests['changed'] and util.enabled()
+        return tests['file'] and tests['versionned'] and not tests['changed'] and tests['enabled']
 
 class HypnoSvnRenameCommand(HypnoSvnCommand):
     """Renames a file or folder in SVN"""
@@ -523,7 +526,7 @@ class HypnoSvnRenameCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and util.enabled()
+        return tests['versionned'] and tests['single'] and tests['enabled']
 
 class HypnoSvnBlameCommand(HypnoSvnCommand):
     """Checks who has made the last changes to each line in a file"""
@@ -540,7 +543,7 @@ class HypnoSvnBlameCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and util.enabled()
+        return tests['versionned'] and tests['enabled']
 
 class HypnoSvnConflictEditorCommand(HypnoSvnCommand):
     """Opens the TortoiseSVN conflict editor"""
@@ -582,7 +585,7 @@ class HypnoSvnResolveCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and util.enabled()
+        return tests['versionned'] and tests['single'] and tests['enabled']
 
 class HypnoSvnSwitchCommand(HypnoSvnCommand):
     """Switches the working copy to a different branch"""
@@ -599,7 +602,7 @@ class HypnoSvnSwitchCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and util.use_tortoise()
+        return tests['versionned'] and tests['single'] and tests['tortoise']
 
 class HypnoSvnBranchCommand(HypnoSvnCommand):
     """Creates a new branch"""
@@ -616,7 +619,7 @@ class HypnoSvnBranchCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and util.use_tortoise()
+        return tests['versionned'] and tests['single'] and tests['tortoise']
 
 class HypnoSvnCheckoutCommand(HypnoSvnCommand):
     """Checks out a repo"""
@@ -640,4 +643,4 @@ class HypnoSvnCheckoutCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return not tests['versionned'] and tests['folder'] and util.enabled()
+        return not tests['versionned'] and tests['folder'] and tests['enabled']
