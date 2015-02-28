@@ -11,17 +11,31 @@ class SvnView(sublime_plugin.EventListener):
     buffer = ""
     view = None
     panel = None
+    def find_existing_view():
+        if SvnView.view:
+            return SvnView.view
+        views = sublime.active_window().views()
+        for view in views:
+            if (
+                view.name() == VIEW_NAME
+                and view.is_read_only()
+                and view.is_scratch()
+            ):
+                return view
+        return None
     def get():
         output = settings.get_native("outputTo", "panel")
         if output == "dialog":
             return None
         if output == "tab":
             if SvnView.view is None or SvnView.view.window() is None:
-                view = sublime.active_window().new_file()
-                view.set_scratch(True)
-                view.set_name(VIEW_NAME)
+                view = SvnView.find_existing_view()
+                if view is None:
+                    view = sublime.active_window().new_file()
+                    view.set_scratch(True)
+                    view.set_name(VIEW_NAME)
+                    view.set_read_only(True)
                 view.set_syntax_file(SYNTAX)
-                view.set_read_only(True)
                 SvnView.view = view
             return SvnView.view
         if SvnView.panel is None:
