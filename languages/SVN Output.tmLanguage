@@ -84,7 +84,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.status.svn-output</string>
+					<string>constant.other.status.svn-output</string>
 				</dict>
 				<key>2</key>
 				<dict>
