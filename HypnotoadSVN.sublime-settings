@@ -1,24 +1,50 @@
 {
+    // Enables debug output into the sublime console
     "debug": false,
+
+    // Settings for native SVN commands
     "nativeSVN": {
+
+        // Prevent use of native SVN commands
+        // NOTE: this does not prevent use of native SVN, just enabling the user commands
         "disable": false,
-        "updateToRevisionHistory": true, // Set this to false to simply enter the desired revision number
-        "updateToRevisionHistorySize": 20, // This changes the number of items in the revision history panel
+
+        // Gets a list of revisions from the log for the user to select
+        // If disabled (false), the user simply enters the revision number
+        "updateToRevisionHistory": true,
+        // If Update to revision history is enabled, this sets the number of reivsions to show
+        "updateToRevisionHistorySize": 20,
+
+        // Sets the number of revisions to get for log history
         "logHistorySize": 20,
-        "outputTo": "panel", // "tab", "panel", "dialog"
+
+        // Sets where the output goes from SVN commands; if none is set, then "panel" is used
+        // "panel":  opens an output panel at the bottom of the window (default)
+        // "tab":    opens a new tab for output
+        // "dialog": opens an alert dialog for the results of each command
+        "outputTo": "panel",
     },
 
+    // Settings for Tortoise SVN
     // Windows only
     "tortoiseSVN": {
+
+        // Prevent use of tortoise SVN commands
+        // NOTE: if OS is not windows, tortoise is disabled anyway
         "disable": false,
-        "tortoiseproc_path": "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe", // path to TortoiseProc
+
+        // Path to TortoiseProc.exe
+        // If path is not a file, then tortoise commands will be disabled
+        "tortoiseproc_path": "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe",
     },
+
+    // Specifies which commands use nativeSVN or tortoiseSVN
+    // Widnows only (since tortoiseSVN is only available on windows)
+    // Anything not specified will use "default" instead
     "prefer": {
-        // Anything that doesn't have it's own default will use this one
-        // nativeSVN or tortoiseSVN for everything
         "default": "nativeSVN",
 
-        // Supported, but tortoise is better
+        // Diff and blame use tortoiseSVN if possible because the interface is better for now
         "diff": "tortoiseSVN",
         "blame": "tortoiseSVN",
 
