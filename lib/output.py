@@ -85,7 +85,7 @@ class SvnView(sublime_plugin.EventListener):
     def focus():
         """Brings the output view into focus"""
         view = SvnView.get()
-        if view is None:
+        if view is None or view.window() is None:
             return
         view.window().focus_view(view)
     def scroll_to_bottom():
