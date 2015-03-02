@@ -34,14 +34,19 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
 
     def test_versionned(self, result):
         """Tests output to verify if a file is versionned"""
-        return 'not a working copy' not in result
+        return re.search(INFO_PARSE_REVISION, result, re.M) is not None
 
     def is_versionned(self, files):
         """Runs a native command to verify if a file is versionned"""
         if len(files) == 0:
             return False
-        p = self.run_command('info', files, False, False)
-        return self.test_versionned(p.output() + p.error())
+
+        versionned = False
+        for f in files:
+            p = self.run_command('info', [ f ], False, False)
+            if self.test_versionned(p.output() + p.error()) is True:
+                return True
+        return False
 
     def is_changed(self, files):
         """Runs a status command to see if a file has been changed since last revision"""
@@ -586,7 +591,7 @@ class HypnoSvnConflictEditorCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return util.use_tortoise() and tests['versionned']
+        return tests['tortoise'] and tests['versionned']
 
 class HypnoSvnResolveCommand(HypnoSvnCommand):
     """Resolves conflicts"""
