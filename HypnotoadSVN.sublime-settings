@@ -2,6 +2,11 @@
     // Enables debug output into the sublime console
     "debug": false,
 
+    // Sets the base file for the global commands
+    // "current": uses the active view as the base
+    // "project": uses the project root folder(s) as the base
+    "commandBaseFiles": "project",
+
     // Settings for native SVN commands
     "nativeSVN": {
 

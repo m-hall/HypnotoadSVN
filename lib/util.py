@@ -24,8 +24,10 @@ def get_path_components(path):
 
     return components
 
-def get_files(paths=None, group=-1, index=-1):
+def get_files(paths=None, group=-1, index=-1, base=None):
     """Get a list of files based on command input"""
+    if base is None:
+        base = settings.get('commandBaseFiles', default='project')
     files = []
     if isinstance(paths, list):
         files = files+paths
@@ -33,10 +35,14 @@ def get_files(paths=None, group=-1, index=-1):
         view = sublime.active_window().views_in_group(group)[index]
         files.append(view.file_name())
     if len(files) == 0:
-        view = sublime.active_window().active_view()
-        file_name = view.file_name()
-        if file_name is not None and os.path.exists(file_name):
-            files.append(file_name)
+        if base is 'current':
+            view = sublime.active_window().active_view()
+            file_name = view.file_name()
+            if file_name is not None and os.path.exists(file_name):
+                files.append(file_name)
+        else:
+            folders = sublime.active_window().folders()
+            return folders
     return files
 
 def enabled():
@@ -81,4 +87,4 @@ def tortoise_path(paths):
 def debug(message):
     """Send output to console if debugging is enabled"""
     if (settings.get("debug", default=False)):
-        print('HypnotoadSVN: ' + message)
+        print('HypnotoadSVN: ' + str(message))

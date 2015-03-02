@@ -1,6 +1,23 @@
 # Settings
 This document explains the available settings for the HypnotoadSVN plugin
 
+## Debug
+Adds extra output to the Sublime console. By default debug is turned off.
+This should only be used for development or if there are unexpected behaviours.
+
+```Javascript
+"debug": false,
+```
+
+## Command base files
+Sets the files to use for global commands.
+Set this value to "project" to use the root folders/files of the project.
+Set this value to "current" to use the active view.
+
+```Javascript
+"commandBaseFiles": "project",
+```
+
 ## Native SVN
 Native SVN commands are available on all systems capable of using this plugin.
 The only requirements is the the SVN command line program is installed.
