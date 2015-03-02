@@ -300,6 +300,35 @@ class HypnoSvnLogCommand(HypnoSvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
 
+class HypnoSvnLogNumberCommand(HypnoSvnCommand):
+    """A command the gets a specific number of log entries"""
+    def on_done_input(self, value):
+        """Handles completion of an input panel"""
+        try:
+            revisions = int(value)
+        except:
+            return
+        if revisions < 1:
+            return
+        revisions = str(revisions)
+        self.name = "Log (" + revisions + ")"
+        self.run_command('log -v -l %s' % revisions, self.files)
+    def run(self, paths=None, group=-1, index=-1):
+        """Runs the command"""
+        if not util.use_native():
+            return
+        util.debug('Log N')
+        self.files = util.get_files(paths, group, index)
+        self.name = "Log"
+        revisions = settings.get_native('logHistorySize', 20)
+
+        sublime.active_window().show_input_panel('Number of logs...', str(revisions), self.on_done_input, self.nothing, self.nothing)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        """Checks if the view should be visible"""
+        files = util.get_files(paths, group, index)
+        tests = self.test_all(files)
+        return tests['versionned'] and tests['native']
+
 class HypnoSvnStatusCommand(HypnoSvnCommand):
     """A command that checks the status of the files"""
     def run(self, paths=None, group=-1, index=-1):

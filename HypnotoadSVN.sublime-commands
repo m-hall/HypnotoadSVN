@@ -9,6 +9,7 @@
     { "caption": "HypnotoadSVN: Diff with previous version", "command": "hypno_svn_diff_previous"},
     { "caption": "HypnotoadSVN: Check for Modifications", "command": "hypno_svn_status"},
     { "caption": "HypnotoadSVN: Log", "command": "hypno_svn_log"},
+    { "caption": "HypnotoadSVN: Log N", "command": "hypno_svn_log_number"},
     { "caption": "HypnotoadSVN: Update to Revision", "command": "hypno_svn_update_revision"},
     { "caption": "HypnotoadSVN: Add", "command": "hypno_svn_add"},
     { "caption": "HypnotoadSVN: Rename", "command": "hypno_svn_rename"},

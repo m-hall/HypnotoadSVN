@@ -11,6 +11,7 @@
             { "caption": "Checkout", "command": "hypno_svn_checkout", "args": {"paths":[]}},
             { "caption": "Check for Modifications", "command": "hypno_svn_status", "args": {"paths":[]}},
             { "caption": "Log", "command": "hypno_svn_log", "args": {"paths":[]}},
+            { "caption": "Log N", "command": "hypno_svn_log_number", "args": {"paths":[]}},
             { "caption": "-" },
             { "caption": "Update to Revision", "command": "hypno_svn_update_revision", "args": {"paths":[]}},
             { "caption": "Add", "command": "hypno_svn_add", "args": {"paths":[]}},
