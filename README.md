@@ -19,31 +19,7 @@ This plugin started from [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/
 5. Optionally refer to "Settings" 
 
 ## Settings
-
-### Update To Revision
-Update to revision command can be modified to disable the history if you find it to be too slow.
-
-#### Default
-```Javascript
-{
-    "updateToRevisionHistory": true, // Set this to false to simply enter the desired revision number
-    "updateToRevisionHistorySize": 20 // This changes the number of items in the revision history panel
-}
-```
-
-### TortoiseSVN (Windows only)
-Support for running commands through TortoiseSVN interface.
-You MUST have TortoiseSVN installed to be able to use these options.
-
-#### Default
-```Javascript
-{
-    // Windows only
-    "useTortoise": false, // allows commands that can only be used via TortoiseSVN
-    "alwaysTortoise": false, // makes all commands run using TortoiseSVN only
-    "tortoiseproc_path": "C:\\Program Files\\TortoiseSVN\\bin\\TortoiseProc.exe", // path to TortoiseProc
-}
-```
+- [Documentation for settings](./docs/settings.md)
 
 ## Resources
 - [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/sublime-TortoiseSVN)
