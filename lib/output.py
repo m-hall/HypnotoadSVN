@@ -7,7 +7,7 @@ VIEW_NAME = 'SVN Output'
 PANEL_ID = 'svn-output'
 SYNTAX = 'Packages/HypnotoadSVN/languages/SVN Output.tmLanguage'
 
-class SvnView(sublime_plugin.EventListener):
+class SvnView:
     """Handles the SVN Output view/panel"""
     buffer = ""
     view = None
@@ -95,7 +95,7 @@ class SvnView(sublime_plugin.EventListener):
             return
         point = view.text_to_layout(view.size())
         view.set_viewport_position(point, True)
-    def on_close(self, view):
+    def close(view):
         """Stop using the view if it has been closed"""
         if view == SvnView.view:
             SvnView.view = None
