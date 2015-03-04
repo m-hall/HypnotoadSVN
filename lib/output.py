@@ -6,6 +6,7 @@ from . import util, settings
 VIEW_NAME = 'SVN Output'
 PANEL_ID = 'svn-output'
 SYNTAX = 'Packages/HypnotoadSVN/languages/SVN Output.tmLanguage'
+INDENT_LEVEL = 4
 
 class SvnView:
     """Handles the SVN Output view/panel"""
@@ -81,7 +82,7 @@ class SvnView:
         if output == "dialog":
             sublime.message_dialog(SvnView.buffer)
         SvnView.buffer = ""
-        SvnView.message("Completed\n")
+        SvnView.message(indent("Completed\n"))
     def focus():
         """Brings the output view into focus"""
         view = SvnView.get()
@@ -103,7 +104,7 @@ class SvnView:
             SvnView.panel = None
 
 
-def indent(text="", spaces=4):
+def indent(text="", spaces=INDENT_LEVEL):
     """Indents a message for output"""
     return " " * spaces + re.sub(r'\n', '\n' + " " * spaces, text)
 
@@ -111,11 +112,13 @@ def add_message(message):
     """Add a message to output"""
     SvnView.message(message)
 
-def add_command(name):
+def add_command(name, cmd=None):
     """Adds a named command to output"""
     SvnView.focus()
     SvnView.scroll_to_bottom()
     add_message("Command: " + name)
+    if settings.get_native("showRawCommand") and cmd is not None:
+        add_message(indent(cmd))
 
 def add_files(paths=None):
     """Add a list of files to output"""
@@ -124,33 +127,33 @@ def add_files(paths=None):
     s = paths
     if isinstance(paths, list):
         s = "\n".join(paths)
-    add_message("Files:\n" + indent(s))
+    add_message(indent("Files:\n" + indent(s)))
 
 def add_files_section():
     """Adds a files section to output"""
-    add_message("Files:")
+    add_message(indent("Files:"))
 
 def add_result(result):
     """Adds results to output"""
     if result:
-        add_message("Output:\n" + indent(result))
+        add_message(indent("Output:\n" + indent(result)))
 
 def add_result_section():
     """Opens a result section in output"""
-    add_message("Output:")
+    add_message(indent("Output:"))
 
 def add_result_message(result):
     """Adds a result message to output"""
-    add_message(indent(result))
+    add_message(indent(result, INDENT_LEVEL * 2))
 
 def add_error(err, code=None):
     """Adds errors to output"""
     if err:
-        add_message("Error: " + str(code if code is not None else "") + "\n" + indent(err))
+        add_message(indent("Error: " + str(code if code is not None else "") + "\n" + indent(err)))
 
 def add_error_section(code = None):
     """Opens an error section in output"""
-    add_message("Error: " + str(code if code is not None else ""))
+    add_message(indent("Error: " + str(code if code is not None else "")))
 
 def end_command():
     """Ends a command in output"""

@@ -24,15 +24,14 @@ class Process(Thread):
         self.errorText = None
         self.loading = 0
         self.on_complete = on_complete
-        if log:
-            output.add_command(self.name)
-            output.add_message(output.indent(cmd + ' ' + self.get_path(paths)))
-            output.add_files(self.paths)
-            output.add_result_section()
         if not paths:
             self.command = cmd
         else:
             self.command = cmd + ' ' + self.get_path(paths)
+        if log:
+            output.add_command(self.name, self.command)
+            output.add_files(self.paths)
+            output.add_result_section()
         util.debug(self.command)
         if self.async:
             self.start()

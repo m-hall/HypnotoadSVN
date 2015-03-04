@@ -16,6 +16,10 @@
 		</dict>
 		<dict>
 			<key>include</key>
+			<string>#commandRaw</string>
+		</dict>
+		<dict>
+			<key>include</key>
 			<string>#commandEnd</string>
 		</dict>
 		<dict>
@@ -63,6 +67,21 @@
 			<string>(?!:^|
 )(Completed)</string>
 		</dict>
+		<key>commandRaw</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>string.meta.command.raw.svn-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(?!:^|
+) {4}(svn [^
+]*)</string>
+		</dict>
 		<key>scopeName</key>
 		<dict>
 			<key>captures</key>
@@ -75,7 +94,7 @@
 			</dict>
 			<key>match</key>
 			<string>(?!:^|
-)(Output|Error|Files):</string>
+) {4}(Output|Error|Files):</string>
 		</dict>
 		<key>status</key>
 		<dict>
@@ -94,7 +113,7 @@
 			</dict>
 			<key>match</key>
 			<string>(?!:^|
-) {4}([UGMCADSIXRLE\?\!\+\&gt; ]+) ([^
+) {8}([UGMCADSIXRLE\?\!\+\&gt; ]+) ([^
 ]+)</string>
 		</dict>
 	</dict>

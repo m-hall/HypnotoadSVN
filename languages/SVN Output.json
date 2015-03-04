@@ -6,6 +6,7 @@
     "uuid": "feea73e8-edc4-4c42-b547-847410c70e16",
     "patterns": [
         { "include": "#command" },
+        { "include": "#commandRaw" },
         { "include": "#commandEnd" },
         { "include": "#scopeName" },
         { "include": "#status" }
@@ -19,8 +20,14 @@
                 "2": { "name": "string.meta.command.name.svn-output" }
             }
         },
+        "commandRaw": {
+            "match": "(?!:^|\n) {4}(svn [^\n]*)",
+            "captures": {
+                "1": { "name": "string.meta.command.raw.svn-output" }
+            }
+        },
         "scopeName": {
-            "match": "(?!:^|\n)(Output|Error|Files):",
+            "match": "(?!:^|\n) {4}(Output|Error|Files):",
             "captures": {
                 "1": { "name": "keyword.control.svn-output" }
             }
@@ -32,7 +39,7 @@
             }
         },
         "status": {
-            "match": "(?!:^|\n) {4}([UGMCADSIXRLE\\?\\!\\+\\> ]+) ([^\n]+)",
+            "match": "(?!:^|\n) {8}([UGMCADSIXRLE\\?\\!\\+\\> ]+) ([^\n]+)",
             "captures": {
                 "1": { "name": "constant.other.status.svn-output"},
                 "2": { "name": "string.path.svn-output"}

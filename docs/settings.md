@@ -30,17 +30,19 @@ Allows the user to disable all native SVN commands.
 ```
 
 ### Output
-Specifies the way SVN commands send their output.
-The default option is "panel".
+Modifies the way SVN commands send their output.
+The default "outputTo" option is "panel".
+You can also optionally include the raw command in the output.
 
 ```Javascript
 "outputTo": "panel",
+"outputRawCommand": false,
 ```
 
-#### Options
+#### "outputTo" Options
 - *panel*: opens an output panel at the bottom of the window (default)
 - *tab*: opens a new tab for output
-- *dialog*: opens an alert dialog for the results of each command
+- *dialog*: opens an alert dialog for the results of each command\
 
 ### Update to Revision
 Update to revision can optionally show a list of recent revisions for the user to select.
