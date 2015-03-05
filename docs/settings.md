@@ -32,17 +32,23 @@ Allows the user to disable all native SVN commands.
 ### Output
 Modifies the way SVN commands send their output.
 The default "outputTo" option is "panel".
+OutputScrollTo allows you to change how the auto-scroll behavior works.
 You can also optionally include the raw command in the output.
 
 ```Javascript
 "outputTo": "panel",
+"outputScrollTo": "command",
 "outputRawCommand": false,
 ```
+
+#### "outputScrollTo" Options
+- *command*: When a command is started, scroll the command to the top
+- *bottom*: Every time a line is added, make it visible
 
 #### "outputTo" Options
 - *panel*: opens an output panel at the bottom of the window (default)
 - *tab*: opens a new tab for output
-- *dialog*: opens an alert dialog for the results of each command\
+- *dialog*: opens an alert dialog for the results of each command
 
 ### Update to Revision
 Update to revision can optionally show a list of recent revisions for the user to select.
@@ -53,7 +59,7 @@ Update to revision can optionally show a list of recent revisions for the user t
 ```
 
 ### Logs
-You can change the maximum number of revisions to show when gettings logs.
+You can change the maximum number of revisions to show when getting logs.
 
 ```Javascript
 "logHistorySize": 20,
@@ -108,7 +114,7 @@ By default, all commands use the default, except for diff and blame, which prefe
 - blame
 
 #### Unsupported commands
-- resovle
+- resolve
 - switch
 - branch
 - checkout
