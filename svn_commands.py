@@ -332,7 +332,7 @@ class HypnoSvnLogNumberCommand(HypnoSvnCommand):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
-        return tests['versionned'] and tests['native']
+        return tests['versionned'] and tests['native'] and not util.prefer_tortoise('log')
 
 class HypnoSvnStatusCommand(HypnoSvnCommand):
     """A command that checks the status of the files"""
