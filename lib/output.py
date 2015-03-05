@@ -69,6 +69,8 @@ class SvnView:
                 "message": msg
             }
         );
+        if settings.get_native('outputScrollTo') == "bottom":
+            SvnView.scroll_bottom_to_visible()
     def clear():
         """Clears the output view"""
         view = SvnView.get()
@@ -86,16 +88,22 @@ class SvnView:
     def focus():
         """Brings the output view into focus"""
         view = SvnView.get()
-        if view is None or view.window() is None:
+        if view is None:
             return
         view.window().focus_view(view)
     def scroll_to_bottom():
-        """Scrolls the output view to the bottom of the view"""
+        """Scrolls the bottom of the view to the top of the viewport"""
         view = SvnView.get()
         if view is None:
             return
         point = view.text_to_layout(view.size())
         view.set_viewport_position(point, True)
+    def scroll_bottom_to_visible():
+        """Scrolls the bottom of the view into visible space"""
+        view = SvnView.get()
+        if view is None:
+            return
+        view.show(view.size(), False)
     def close(view):
         """Stop using the view if it has been closed"""
         if view == SvnView.view:
@@ -115,9 +123,10 @@ def add_message(message):
 def add_command(name, cmd=None):
     """Adds a named command to output"""
     SvnView.focus()
-    SvnView.scroll_to_bottom()
+    if settings.get_native('outputScrollTo', default="command") == "command":
+        SvnView.scroll_to_bottom()
     add_message("Command: " + name)
-    if settings.get_native("showRawCommand") and cmd is not None:
+    if settings.get_native("outputRawCommand") and cmd is not None:
         add_message(indent(cmd))
 
 def add_files(paths=None):

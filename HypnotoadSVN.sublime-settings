@@ -29,8 +29,13 @@
         // "dialog": opens an alert dialog for the results of each command
         "outputTo": "panel",
 
+        // Sets where the output scrolls to when running a command
+        // "command":  Scroll to the top of the command and stay there
+        // "bottom":   Keep the bottom of the output visible
+        "outputScrollTo": "command",
+
         // Include the raw commands in output
-        "showRawCommand": false,
+        "outputRawCommand": false,
     },
 
     // Settings for Tortoise SVN
