@@ -57,7 +57,7 @@ def use_native():
 
 if os.name == 'nt':
     def use_tortoise():
-        """In Widnows, Check if TortoiseSVN support is enabled"""
+        """In Windows, Check if TortoiseSVN support is enabled"""
         if settings.get_tortoise('disable') is not True:
             tortoise_path = settings.get_tortoise('tortoiseproc_path');
             if os.path.isfile(tortoise_path):

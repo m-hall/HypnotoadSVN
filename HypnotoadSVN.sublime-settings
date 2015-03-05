@@ -17,7 +17,7 @@
         // Gets a list of revisions from the log for the user to select
         // If disabled (false), the user simply enters the revision number
         "updateToRevisionHistory": true,
-        // If Update to revision history is enabled, this sets the number of reivsions to show
+        // If Update to revision history is enabled, this sets the number of revisions to show
         "updateToRevisionHistorySize": 20,
 
         // Sets the number of revisions to get for log history
@@ -52,7 +52,7 @@
     },
 
     // Specifies which commands use nativeSVN or tortoiseSVN
-    // Widnows only (since tortoiseSVN is only available on windows)
+    // Windows only (since tortoiseSVN is only available on windows)
     // Anything not specified will use "default" instead
     "prefer": {
         "default": "nativeSVN",

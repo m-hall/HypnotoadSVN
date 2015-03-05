@@ -3,7 +3,7 @@ This document explains the available settings for the HypnotoadSVN plugin
 
 ## Debug
 Adds extra output to the Sublime console. By default debug is turned off.
-This should only be used for development or if there are unexpected behaviours.
+This should only be used for development or if there are unexpected behaviors.
 
 ```Javascript
 "debug": false,
