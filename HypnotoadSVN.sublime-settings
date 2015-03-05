@@ -28,6 +28,9 @@
         // "tab":    opens a new tab for output
         // "dialog": opens an alert dialog for the results of each command
         "outputTo": "panel",
+
+        // Include the raw commands in output
+        "showRawCommand": false,
     },
 
     // Settings for Tortoise SVN
