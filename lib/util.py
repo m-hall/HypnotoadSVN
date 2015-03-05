@@ -77,7 +77,7 @@ def prefer_tortoise(command="Default"):
     if isinstance(prefers, str):
         return use_tortoise and prefers == 'tortoiseSVN'
     if command not in prefers.keys():
-        command = "Default"
+        command = "default"
     return use_tortoise() and prefers.get(command) == 'tortoiseSVN'
 
 def tortoise_path(paths):
