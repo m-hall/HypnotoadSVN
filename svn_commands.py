@@ -570,7 +570,7 @@ class HypnoSvnBlameCommand(HypnoSvnCommand):
         util.debug('Blame')
         files = util.get_files(paths, group, index)
         self.name = "Blame"
-        if util.use_tortoise('blame'):
+        if util.prefer_tortoise('blame'):
             self.run_tortoise("blame", files)
             return
         self.run_command('blame', files)
