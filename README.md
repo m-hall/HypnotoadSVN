@@ -1,5 +1,5 @@
 # HypnotoadSVN
-HypnotoadSVN is an extension for Sublime Text 2/3 that adds SVN features to the folder list and the command palette.
+HypnotoadSVN is an extension for Sublime Text 3 that adds SVN features to the folder list and the command palette.
 
 This plugin started from [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/sublime-TortoiseSVN).
 
