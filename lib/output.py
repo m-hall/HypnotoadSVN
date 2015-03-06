@@ -5,7 +5,7 @@ from . import util, settings
 
 VIEW_NAME = 'SVN Output'
 PANEL_ID = 'svn-output'
-SYNTAX = 'Packages/HypnotoadSVN/languages/SVN Output.tmLanguage'
+SYNTAX = 'Packages/HypnotoadSVN/languages/SVN Output.hidden-tmLanguage'
 INDENT_LEVEL = 4
 
 class SvnView:
