@@ -227,7 +227,7 @@ class HypnoSvnUpdateRevisionCommand(HypnoSvnCommand):
         show_more = len(matches) >= self.number
         for revision, author, date, message in matches:
             revisions.append(revision)
-            logs.append(revision + ": " + message)
+            logs.append([revision + ": " + message, author, date])
             if int(revision) is 1:
                 show_more = False
         if (show_more):
@@ -238,7 +238,7 @@ class HypnoSvnUpdateRevisionCommand(HypnoSvnCommand):
         """Handles the logs being available"""
         output = process.output()
         self.parse_logs(output)
-        util.debug(",".join(self.logs))
+        util.debug('found revisions:' + self.revisions[0] + '-' + self.revisions[-1])
         if len(self.logs) > 0:
             sublime.active_window().show_quick_panel(self.logs, self.on_select)
     def get_revisions(self, revisions):
