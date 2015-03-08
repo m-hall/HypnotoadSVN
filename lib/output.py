@@ -33,6 +33,7 @@ class SvnView:
             return None
         if output == "tab":
             if SvnView.view is None or SvnView.view.window() is None:
+                SvnView.view = None
                 view = SvnView.find_existing_view()
                 if view is None:
                     view = sublime.active_window().new_file()
