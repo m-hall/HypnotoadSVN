@@ -132,7 +132,10 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
     def on_done_input(self, value):
         """Handles completion of the input panel"""
         self.message = value
-        self.verify()
+        if settings.get_native("confirmBeforeCommit", True):
+            self.verify()
+        else:
+            self.commit()
     def show_message_panel(self):
         """Opens an input panel to get the commit message"""
         sublime.active_window().show_input_panel('Commit message', '', self.on_done_input, self.nothing, self.nothing)
@@ -144,12 +147,17 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         if index < 0:
             return
         if index == 0:
-            self.show_message_panel()
+            if self.selected > 0:
+                self.show_message_panel()
+            else:
+                sublime.status_message("SVN Commite: no files selected")
             return
         if self.includes[index]:
             self.items[index] = re.sub(r'^\[X\]', '[ ]', self.items[index])
+            self.selected = self.selected + 1
         else:
             self.items[index] = re.sub(r'^\[ \]', '[X]', self.items[index])
+            self.selected = self.selected - 1
         self.includes[index] = not self.includes[index]
         sublime.set_timeout(self.show_changes_panel, 50)
     def parse_changes(self, raw):
@@ -161,6 +169,7 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         files = []
         items = []
         includes = []
+        selected = 0
         files.append(None)
         items.append('Done')
         includes.append(None)
@@ -170,12 +179,14 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
             if inSVN:
                 items.append('[X]' + change + ": " + path)
                 includes.append(True)
+                selected = selected + 1
             else:
                 items.append('[ ]' + change + ": " + path)
                 includes.append(False)
         self.files = files
         self.items = items
         self.includes = includes
+        self.selected = selected
         return True
     def on_changes_available(self, process):
         """Shows the list of changes to the user"""
