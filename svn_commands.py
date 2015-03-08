@@ -30,6 +30,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
             error_message('Tortoise command can not be run: ' + cmd)
             return
         command = '"' + settings.get_tortoise_path() + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(files)
+        util.debug(command)
         return subprocess.Popen(command, stdout=subprocess.PIPE)
 
     def test_versionned(self, result):
