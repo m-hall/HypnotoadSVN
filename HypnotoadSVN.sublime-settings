@@ -14,8 +14,12 @@
         // NOTE: this does not prevent use of native SVN, just enabling the user commands
         "disable": false,
 
+        // Sets the minimum length for a commit message.
+        // 0 or less means no message is required
+        "commitMessageSize": 0,
+
         // Adds a step to commit after entering the message verifying that the commit is valid
-        "confirmBeforeCommit": true,
+        "commitConfirm": true,
 
         // Gets a list of revisions from the log for the user to select
         // If disabled (false), the user simply enters the revision number

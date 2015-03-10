@@ -132,7 +132,11 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
     def on_done_input(self, value):
         """Handles completion of the input panel"""
         self.message = value
-        if settings.get_native("confirmBeforeCommit", True):
+        minSize = settings.get_native("commitMessageSize", 0)
+        if minSize > 0 and len(value) < minSize:
+            sublime.status_message('Commit message too short')
+            return
+        if settings.get_native("commitConfirm", True):
             self.verify()
         else:
             self.commit()

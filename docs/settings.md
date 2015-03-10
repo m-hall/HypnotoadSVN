@@ -50,6 +50,16 @@ You can also optionally include the raw command in the output.
 - *tab*: opens a new tab for output
 - *dialog*: opens an alert dialog for the results of each command
 
+### Commit
+Modifies the commit workflow.
+A minimum message size can be required.
+Also the verification dialog can be disabled.
+
+```Javascript
+"commitMessageSize": 
+"commitConfirm": true,
+```
+
 ### Update to Revision
 Update to revision can optionally show a list of recent revisions for the user to select.
 
