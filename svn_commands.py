@@ -560,7 +560,7 @@ class HypnoSvnRenameCommand(HypnoSvnCommand):
     def on_done_input(self, value):
         """Handles completion of an input panel"""
         self.name = "Rename"
-        self.run_command('rename --parents' + os.path.join(self.current_path, self.current_name) + ' ' + os.path.join(self.current_path, value))
+        self.run_command('rename --parents ' + os.path.join(self.head, self.tail) + ' ' + os.path.join(self.head, value))
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
         util.debug('Rename')
@@ -572,7 +572,7 @@ class HypnoSvnRenameCommand(HypnoSvnCommand):
         if not util.use_native():
             return
         self.head, self.tail = os.path.split(files[0])
-        sublime.active_window().show_input_panel('Rename...', self.current_name, self.on_done_input, self.nothing, self.nothing)
+        sublime.active_window().show_input_panel('Rename...', self.tail, self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
         """Checks if the view should be visible"""
         files = util.get_files(paths, group, index)
