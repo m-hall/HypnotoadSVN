@@ -103,7 +103,7 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string> (-(l|r) [0-9]+|-m ".+?"|-[a-z]|--[a-z0-9-]+)</string>
+			<string> (-(l|r) [0-9]+|-m ".+?"|-[A-Za-z]|--[a-z0-9-]+)</string>
 		</dict>
 		<key>commandRaw</key>
 		<dict>
@@ -155,7 +155,7 @@
 		<dict>
 			<key>match</key>
 			<string>[A-Za-z]:\[^
-"''].*</string>
+"'']*</string>
 			<key>name</key>
 			<string>entity.name.filename.nt.svn-output</string>
 		</dict>

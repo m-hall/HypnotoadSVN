@@ -45,7 +45,7 @@
             }
         },
         "commandParam": {
-            "match": " (-(l|r) [0-9]+|-m \".+?\"|-[a-z]|--[a-z0-9-]+)",
+            "match": " (-(l|r) [0-9]+|-m \".+?\"|-[A-Za-z]|--[a-z0-9-]+)",
             "captures": {
                 "1": { "name": "variable.parameter.command.svn-output" }
             }
