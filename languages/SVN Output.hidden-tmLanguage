@@ -108,7 +108,8 @@
 		<key>commandRaw</key>
 		<dict>
 			<key>begin</key>
-			<string>^ {4}(svn)</string>
+			<string>(?!:^|
+) {4}(svn)</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
@@ -118,7 +119,8 @@
 				</dict>
 			</dict>
 			<key>end</key>
-			<string>$</string>
+			<string>
+(?!: {4}Files)</string>
 			<key>patterns</key>
 			<array>
 				<dict>
