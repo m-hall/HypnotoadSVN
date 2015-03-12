@@ -59,36 +59,42 @@
             ]
         },
         "files": {
+            "begin": "^ {4}(Files):",
+            "end": "^ {4}(End Files)",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.files.svn-output" }
+            },
+            "endCaptures": {
+                "1": { "name": "keyword.control.end.svn-output" }
+            },
             "patterns": [
-                {
-                    "match": "^ {4}(Files):",
-                    "captures": {
-                        "1": { "name": "keyword.control.files.svn-output" }
-                    }
-                }
-                // ,{ "include": "#filePath" }
+                { "include": "#filePath" }
             ]
         },
         "output": {
+            "begin": "^ {4}(Output):",
+            "end": "^ {4}(End Output)",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.output.svn-output" }
+            },
+            "endCaptures": {
+                "1": { "name": "keyword.control.end.svn-output" }
+            },
             "patterns": [
-                {
-                    "match": "^ {4}(Output):",
-                    "captures": {
-                        "1": { "name": "keyword.control.output.svn-output" }
-                    }
-                }
-                // ,{ "include": "#filePath" }
+                { "include": "#filePath" }
             ]
         },
         "error": {
+            "begin": "^ {4}(Error):",
+            "end": "^ {4}(End Error)",
+            "beginCaptures": {
+                "1": { "name": "keyword.control.error.svn-output" }
+            },
+            "endCaptures": {
+                "1": { "name": "keyword.control.end.svn-output" }
+            },
             "patterns": [
-                {
-                    "match": "^ {4}(Output):",
-                    "captures": {
-                        "1": { "name": "keyword.control.error.svn-output" }
-                    }
-                }
-                // ,{ "include": "#filePath" }
+                { "include": "#filePath" }
             ]
         },
         "filePath": {

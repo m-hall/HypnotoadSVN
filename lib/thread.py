@@ -46,6 +46,8 @@ class Process(Thread):
             self.lines.append(line)
             if self.log:
                 output.add_result_message(line.strip('\r\n'))
+        if self.log:
+            output.end_result_section()
         self.outputText = "\n".join(self.lines)
         self.errorText = self.process.stderr.read()
         self.complete()

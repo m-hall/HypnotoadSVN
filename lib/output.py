@@ -137,16 +137,27 @@ def add_files(paths=None):
     s = paths
     if isinstance(paths, list):
         s = "\n".join(paths)
-    add_message(indent("Files:\n" + indent(s)))
+    add_message(indent("Files:\n" + indent(s)+"\nEnd Files"))
+
+def end_section(name=None):
+    """Ends a section of output"""
+    if name is not None:
+        add_message(indent("End " + name))
+    else:
+        add_message(indent("End"))
 
 def add_files_section():
     """Adds a files section to output"""
     add_message(indent("Files:"))
 
+def end_files_section():
+    """Ends the files section"""
+    end_section("Files")
+
 def add_result(result):
     """Adds results to output"""
     if result:
-        add_message(indent("Output:\n" + indent(result)))
+        add_message(indent("Output:\n" + indent(result)+"\nEnd Output"))
 
 def add_result_section():
     """Opens a result section in output"""
@@ -156,14 +167,22 @@ def add_result_message(result):
     """Adds a result message to output"""
     add_message(indent(result, INDENT_LEVEL * 2))
 
+def end_result_section():
+    """Ends the result section"""
+    end_section("Output")
+
 def add_error(err, code=None):
     """Adds errors to output"""
     if err:
-        add_message(indent("Error: " + str(code if code is not None else "") + "\n" + indent(err)))
+        add_message(indent("Error: " + str(code if code is not None else "") + "\n" + indent(err)+"\nEnd Error"))
 
 def add_error_section(code = None):
     """Opens an error section in output"""
     add_message(indent("Error: " + str(code if code is not None else "")))
+
+def end_error_section():
+    """Ends the error section"""
+    end_section("Error")
 
 def end_command():
     """Ends a command in output"""
