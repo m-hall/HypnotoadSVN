@@ -74,7 +74,7 @@
             "name": "entity.name.filename.unix.svn-output"
         },
         "ntPath": {
-            "match": "[A-Za-z]:\\[^\n\"'']*",
+            "match": "[A-Za-z]:\\\\[^\n\"'']*",
             "name": "entity.name.filename.nt.svn-output"
         },
         "svnPath": {

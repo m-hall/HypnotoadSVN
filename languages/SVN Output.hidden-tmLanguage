@@ -154,7 +154,7 @@
 		<key>ntPath</key>
 		<dict>
 			<key>match</key>
-			<string>[A-Za-z]:\[^
+			<string>[A-Za-z]:\\[^
 "'']*</string>
 			<key>name</key>
 			<string>entity.name.filename.nt.svn-output</string>
