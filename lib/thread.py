@@ -25,9 +25,9 @@ class Process(Thread):
         self.loading = 0
         self.on_complete = on_complete
         if not paths:
-            self.command = cmd
+            self.command = cmd + ' --non-interactive'
         else:
-            self.command = cmd + ' ' + self.get_path(paths)
+            self.command = cmd + ' --non-interactive ' + self.get_path(paths)
         if log:
             output.add_command(self.name, self.command)
             output.add_files(self.paths)
