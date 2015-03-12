@@ -9,6 +9,7 @@ class HypnoViewMessageCommand(sublime_plugin.TextCommand):
         self.view.set_read_only(False)
         self.view.insert(edit, self.view.size(), message + '\n')
         self.view.set_read_only(True)
+        output.highlight_conflicts()
 
 class HypnoViewClearCommand(sublime_plugin.TextCommand):
     """A command that clears all content from a view"""

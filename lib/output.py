@@ -8,6 +8,21 @@ PANEL_ID = 'svn-output'
 SYNTAX = 'Packages/HypnotoadSVN/languages/SVN Output.hidden-tmLanguage'
 INDENT_LEVEL = 4
 
+CONFLICTS_MATCH = r"^ +C .*?$"
+CONFLICTS_GUTTER_KEY = "svn-conflicts"
+CONFLICTS_SCOPE = "message.error"
+
+UNDERLINE_FLAGS = sublime.DRAW_NO_FILL | sublime.DRAW_NO_OUTLINE | sublime.DRAW_EMPTY_AS_OVERWRITE
+
+CONFLICT_HIGHLIGHTS = {
+    'outline': sublime.DRAW_NO_FILL,
+    'fill': sublime.DRAW_NO_OUTLINE,
+    'solid': sublime.DRAW_SOLID_UNDERLINE | UNDERLINE_FLAGS,
+    'squiggly': sublime.DRAW_SQUIGGLY_UNDERLINE | UNDERLINE_FLAGS,
+    'stippled': sublime.DRAW_STIPPLED_UNDERLINE | UNDERLINE_FLAGS,
+    'none': sublime.HIDDEN
+}
+
 class SvnView:
     """Handles the SVN Output view/panel"""
     buffer = ""
@@ -172,3 +187,45 @@ def end_command():
 def clear():
     """Clears the output view"""
     SvnView.clear()
+
+def highlight_conflicts():
+    """Highlights the conflicted files found in commands"""
+    gutter = settings.get_native("outputGutter", "circle")
+    highlight = settings.get_native("outputHighlight", "none")
+    if gutter == "none" and highlight == "none":
+        return
+
+    if highlight in CONFLICT_HIGHLIGHTS:
+        style = CONFLICT_HIGHLIGHTS[highlight]
+    else:
+        style = CONFLICT_HIGHLIGHTS["none"]
+
+    view = SvnView.get()
+    region = sublime.Region(0, view.size())
+    contents = view.substr(region)
+    size = 0
+    regions = []
+
+    lines = contents.split("\n")
+    for line in lines:
+        m = re.match(CONFLICTS_MATCH, line)
+        if m:
+            region = sublime.Region(size + 8, size + len(line))
+            regions.append(region)
+        size = size + len(line) + 1
+
+    if gutter is "none":
+        view.add_regions(
+            CONFLICTS_GUTTER_KEY,
+            regions,
+            CONFLICTS_SCOPE,
+            flags=style | sublime.PERSISTENT
+        )
+    else:
+        view.add_regions(
+            CONFLICTS_GUTTER_KEY,
+            regions,
+            CONFLICTS_SCOPE,
+            gutter,
+            flags=style | sublime.PERSISTENT
+        )

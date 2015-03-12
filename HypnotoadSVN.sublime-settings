@@ -43,6 +43,9 @@
 
         // Include the raw commands in output
         "outputRawCommand": false,
+
+        "outputGutter": "circle",
+        "outputHighlight": "outline"
     },
 
     // Settings for Tortoise SVN
