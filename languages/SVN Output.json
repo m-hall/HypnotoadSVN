@@ -27,8 +27,8 @@
             ]
         },
         "commandRaw": {
-            "begin": "(?!:^|\n) {4}(svn)",
-            "end": "\n(?!: {4}Files)",
+            "begin": "^ {4}(svn)",
+            "end": "$",
             "beginCaptures": {
                 "1": { "name": "constant.other.command.raw.svn-output" }
             },
