@@ -22,16 +22,15 @@
             },
             "patterns": [
                 { "include": "#commandRaw" },
-                { "include": "#files" },
-                { "include": "#output" },
-                { "include": "#error" }
+                { "include": "#sections" },
+                { "include": "#filePath" }
             ]
         },
         "commandRaw": {
             "begin": "(?!:^|\n) {4}(svn)",
             "end": "\n(?!: {4}Files)",
             "beginCaptures": {
-                "1": { "name": "keyword.command.raw.svn-output" }
+                "1": { "name": "constant.other.command.raw.svn-output" }
             },
             "patterns": [
                 { "include": "#commandName" },
@@ -42,11 +41,11 @@
         "commandName": {
             "match": " (log|update|commit|revert|status|add|delete|cleanup|lock|unlock|merge|diff|rename|blame|resolve|switch|branch|checkout)",
             "captures": {
-                "1": { "name": "keyword.command.name.raw.svn-output" }
+                "1": { "name": "constant.other.name.raw.svn-output" }
             }
         },
         "commandParam": {
-            "match": " (-l [0-9]+|-m \".+?\"|-[a-z]|--[a-z0-9-]+)",
+            "match": " (-(l|r) [0-9]+|-m \".+?\"|-[a-z]|--[a-z0-9-]+)",
             "captures": {
                 "1": { "name": "variable.parameter.command.svn-output" }
             }
@@ -58,44 +57,11 @@
                 { "include": "#filePath" }
             ]
         },
-        "files": {
-            "begin": "^ {4}(Files):",
-            "end": "^ {4}(End Files)",
-            "beginCaptures": {
-                "1": { "name": "keyword.control.files.svn-output" }
-            },
-            "endCaptures": {
-                "1": { "name": "keyword.control.end.svn-output" }
-            },
-            "patterns": [
-                { "include": "#filePath" }
-            ]
-        },
-        "output": {
-            "begin": "^ {4}(Output):",
-            "end": "^ {4}(End Output)",
-            "beginCaptures": {
-                "1": { "name": "keyword.control.output.svn-output" }
-            },
-            "endCaptures": {
-                "1": { "name": "keyword.control.end.svn-output" }
-            },
-            "patterns": [
-                { "include": "#filePath" }
-            ]
-        },
-        "error": {
-            "begin": "^ {4}(Error):",
-            "end": "^ {4}(End Error)",
-            "beginCaptures": {
-                "1": { "name": "keyword.control.error.svn-output" }
-            },
-            "endCaptures": {
-                "1": { "name": "keyword.control.end.svn-output" }
-            },
-            "patterns": [
-                { "include": "#filePath" }
-            ]
+        "sections": {
+            "match": "^ {4}(Files|Output|Error):",
+            "captures": {
+                "1": { "name": "keyword.control.svn-output" }
+            }
         },
         "filePath": {
             "patterns": [
@@ -104,22 +70,16 @@
             ]
         },
         "unixPath": {
-            "match": "(\/[^\n\"'']*)",
-            "captures": {
-                "1": { "name": "entity.name.filename.unix.svn-output" }
-            }
+            "match": "\/[^\n\"'']*",
+            "name": "entity.name.filename.unix.svn-output"
         },
         "ntPath": {
-            "match": "([A-Za-z]:\\[^\n\"''].*)",
-            "captures": {
-                "1": { "name": "entity.name.filename.nt.svn-output" }
-            }
+            "match": "[A-Za-z]:\\[^\n\"'']*",
+            "name": "entity.name.filename.nt.svn-output"
         },
         "svnPath": {
             "match": "(\/[^\n\"'']*)",
-            "captures": {
-                "1": { "name": "entity.name.filename.svn.svn-output" }
-            }
+            "name": "entity.name.path.svn.svn-output"
         }
     }
 }

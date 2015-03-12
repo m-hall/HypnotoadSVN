@@ -57,15 +57,11 @@
 				</dict>
 				<dict>
 					<key>include</key>
-					<string>#files</string>
+					<string>#sections</string>
 				</dict>
 				<dict>
 					<key>include</key>
-					<string>#output</string>
-				</dict>
-				<dict>
-					<key>include</key>
-					<string>#error</string>
+					<string>#filePath</string>
 				</dict>
 			</array>
 		</dict>
@@ -90,7 +86,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.command.name.raw.svn-output</string>
+					<string>constant.other.name.raw.svn-output</string>
 				</dict>
 			</dict>
 			<key>match</key>
@@ -107,7 +103,7 @@
 				</dict>
 			</dict>
 			<key>match</key>
-			<string> (-l [0-9]+|-m ".+?"|-[a-z]|--[a-z0-9-]+)</string>
+			<string> (-(l|r) [0-9]+|-m ".+?"|-[a-z]|--[a-z0-9-]+)</string>
 		</dict>
 		<key>commandRaw</key>
 		<dict>
@@ -119,7 +115,7 @@
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.command.raw.svn-output</string>
+					<string>constant.other.command.raw.svn-output</string>
 				</dict>
 			</dict>
 			<key>end</key>
@@ -141,24 +137,6 @@
 				</dict>
 			</array>
 		</dict>
-		<key>error</key>
-		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.control.error.svn-output</string>
-						</dict>
-					</dict>
-					<key>match</key>
-					<string>^ {4}(Output):</string>
-				</dict>
-			</array>
-		</dict>
 		<key>filePath</key>
 		<dict>
 			<key>patterns</key>
@@ -173,83 +151,42 @@
 				</dict>
 			</array>
 		</dict>
-		<key>files</key>
-		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.control.files.svn-output</string>
-						</dict>
-					</dict>
-					<key>match</key>
-					<string>^ {4}(Files):</string>
-				</dict>
-			</array>
-		</dict>
 		<key>ntPath</key>
+		<dict>
+			<key>match</key>
+			<string>[A-Za-z]:\[^
+"''].*</string>
+			<key>name</key>
+			<string>entity.name.filename.nt.svn-output</string>
+		</dict>
+		<key>sections</key>
 		<dict>
 			<key>captures</key>
 			<dict>
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>entity.name.filename.nt.svn-output</string>
+					<string>keyword.control.svn-output</string>
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>([A-Za-z]:\[^
-"''].*)</string>
-		</dict>
-		<key>output</key>
-		<dict>
-			<key>patterns</key>
-			<array>
-				<dict>
-					<key>captures</key>
-					<dict>
-						<key>1</key>
-						<dict>
-							<key>name</key>
-							<string>keyword.control.output.svn-output</string>
-						</dict>
-					</dict>
-					<key>match</key>
-					<string>^ {4}(Output):</string>
-				</dict>
-			</array>
+			<string>^ {4}(Files|Output|Error):</string>
 		</dict>
 		<key>svnPath</key>
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.filename.svn.svn-output</string>
-				</dict>
-			</dict>
 			<key>match</key>
 			<string>(/[^
 "'']*)</string>
+			<key>name</key>
+			<string>entity.name.path.svn.svn-output</string>
 		</dict>
 		<key>unixPath</key>
 		<dict>
-			<key>captures</key>
-			<dict>
-				<key>1</key>
-				<dict>
-					<key>name</key>
-					<string>entity.name.filename.unix.svn-output</string>
-				</dict>
-			</dict>
 			<key>match</key>
-			<string>(/[^
-"'']*)</string>
+			<string>/[^
+"'']*</string>
+			<key>name</key>
+			<string>entity.name.filename.unix.svn-output</string>
 		</dict>
 	</dict>
 	<key>scopeName</key>
