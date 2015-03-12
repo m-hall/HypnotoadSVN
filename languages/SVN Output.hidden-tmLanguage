@@ -20,9 +20,7 @@
 		<key>command</key>
 		<dict>
 			<key>begin</key>
-			<string>(?!:^|
-)(Command): ([^
-]*)</string>
+			<string>^(Command): (.*)$</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
@@ -37,8 +35,7 @@
 				</dict>
 			</dict>
 			<key>end</key>
-			<string>(?!:^|
-) {4}(Completed)</string>
+			<string>^ {4}(Completed)</string>
 			<key>endCaptures</key>
 			<dict>
 				<key>1</key>
@@ -108,8 +105,7 @@
 		<key>commandRaw</key>
 		<dict>
 			<key>begin</key>
-			<string>(?!:^|
-) {4}(svn)</string>
+			<string>^ {4}(svn)</string>
 			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
@@ -119,8 +115,7 @@
 				</dict>
 			</dict>
 			<key>end</key>
-			<string>
-(?!: {4}Files)</string>
+			<string>$</string>
 			<key>patterns</key>
 			<array>
 				<dict>

@@ -11,8 +11,8 @@
     "repository": {
         "command": {
             "name": "meta.command.svn-output",
-            "begin": "(?!:^|\n)(Command): ([^\n]*)",
-            "end": "(?!:^|\n) {4}(Completed)",
+            "begin": "^(Command): (.*)$",
+            "end": "^ {4}(Completed)",
             "beginCaptures": {
                 "1": { "name": "keyword.control.svn-output" },
                 "2": { "name": "string.meta.command.name.svn-output" }
@@ -27,8 +27,8 @@
             ]
         },
         "commandRaw": {
-            "begin": "(?!:^|\n) {4}(svn)",
-            "end": "\n(?!: {4}Files)",
+            "begin": "^ {4}(svn)",
+            "end": "$",
             "beginCaptures": {
                 "1": { "name": "constant.other.command.raw.svn-output" }
             },
