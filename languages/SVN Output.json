@@ -5,44 +5,114 @@
     "fileTypes": ["SVN-output"],
     "uuid": "feea73e8-edc4-4c42-b547-847410c70e16",
     "patterns": [
-        { "include": "#command" },
-        { "include": "#commandRaw" },
-        { "include": "#commandEnd" },
-        { "include": "#scopeName" },
-        { "include": "#status" }
+        { "include": "#command" }
     ],
 
     "repository": {
         "command": {
-            "match": "(?!:^|\n)(Command): ([^\n]*)",
-            "captures": {
+            "name": "meta.command.svn-output",
+            "begin": "(?!:^|\n)(Command): ([^\n]*)",
+            "end": "(?!:^|\n) {4}(Completed)",
+            "beginCaptures": {
                 "1": { "name": "keyword.control.svn-output" },
                 "2": { "name": "string.meta.command.name.svn-output" }
-            }
+            },
+            "endCaptures": {
+                "1": { "name": "keyword.control.svn-output" }
+            },
+            "patterns": [
+                { "include": "#commandRaw" },
+                { "include": "#files" },
+                { "include": "#output" },
+                { "include": "#error" }
+            ]
         },
         "commandRaw": {
-            "match": "(?!:^|\n) {4}(svn [^\n]*)",
+            "begin": "(?!:^|\n) {4}(svn)",
+            "end": "\n(?!: {4}Files)",
+            "beginCaptures": {
+                "1": { "name": "keyword.command.raw.svn-output" }
+            },
+            "patterns": [
+                { "include": "#commandName" },
+                { "include": "#commandParam" },
+                { "include": "#commandFiles" }
+            ]
+        },
+        "commandName": {
+            "match": " (log|update|commit|revert|status|add|delete|cleanup|lock|unlock|merge|diff|rename|blame|resolve|switch|branch|checkout)",
             "captures": {
-                "1": { "name": "string.meta.command.raw.svn-output" }
+                "1": { "name": "keyword.command.name.raw.svn-output" }
             }
         },
-        "scopeName": {
-            "match": "(?!:^|\n) {4}(Output|Error|Files):",
+        "commandParam": {
+            "match": " (-l [0-9]+|-m \".+?\"|-[a-z]|--[a-z0-9-]+)",
             "captures": {
-                "1": { "name": "keyword.control.svn-output" }
+                "1": { "name": "variable.parameter.command.svn-output" }
             }
         },
-        "commandEnd": {
-            "match": "(?!:^|\n)(Completed)",
+        "commandFiles": {
+            "begin": " \"",
+            "end": "\"",
+            "patterns": [
+                { "include": "#filePath" }
+            ]
+        },
+        "files": {
+            "patterns": [
+                {
+                    "match": "^ {4}(Files):",
+                    "captures": {
+                        "1": { "name": "keyword.control.files.svn-output" }
+                    }
+                }
+                // ,{ "include": "#filePath" }
+            ]
+        },
+        "output": {
+            "patterns": [
+                {
+                    "match": "^ {4}(Output):",
+                    "captures": {
+                        "1": { "name": "keyword.control.output.svn-output" }
+                    }
+                }
+                // ,{ "include": "#filePath" }
+            ]
+        },
+        "error": {
+            "patterns": [
+                {
+                    "match": "^ {4}(Output):",
+                    "captures": {
+                        "1": { "name": "keyword.control.error.svn-output" }
+                    }
+                }
+                // ,{ "include": "#filePath" }
+            ]
+        },
+        "filePath": {
+            "patterns": [
+                { "include": "#unixPath" },
+                { "include": "#ntPath" }
+            ]
+        },
+        "unixPath": {
+            "match": "(\/[^\n\"'']*)",
             "captures": {
-                "1": { "name": "keyword.control.svn-output" }
+                "1": { "name": "entity.name.filename.unix.svn-output" }
             }
         },
-        "status": {
-            "match": "(?!:^|\n) {8}([UGMCADSIXRLE\\?\\!\\+\\> ]+) ([^\n]+)",
+        "ntPath": {
+            "match": "([A-Za-z]:\\[^\n\"''].*)",
             "captures": {
-                "1": { "name": "constant.other.status.svn-output"},
-                "2": { "name": "string.path.svn-output"}
+                "1": { "name": "entity.name.filename.nt.svn-output" }
+            }
+        },
+        "svnPath": {
+            "match": "(\/[^\n\"'']*)",
+            "captures": {
+                "1": { "name": "entity.name.filename.svn.svn-output" }
             }
         }
     }

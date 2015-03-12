@@ -14,28 +14,16 @@
 			<key>include</key>
 			<string>#command</string>
 		</dict>
-		<dict>
-			<key>include</key>
-			<string>#commandRaw</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#commandEnd</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#scopeName</string>
-		</dict>
-		<dict>
-			<key>include</key>
-			<string>#status</string>
-		</dict>
 	</array>
 	<key>repository</key>
 	<dict>
 		<key>command</key>
 		<dict>
-			<key>captures</key>
+			<key>begin</key>
+			<string>(?!:^|
+)(Command): ([^
+]*)</string>
+			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
 				<dict>
@@ -48,14 +36,10 @@
 					<string>string.meta.command.name.svn-output</string>
 				</dict>
 			</dict>
-			<key>match</key>
+			<key>end</key>
 			<string>(?!:^|
-)(Command): ([^
-]*)</string>
-		</dict>
-		<key>commandEnd</key>
-		<dict>
-			<key>captures</key>
+) {4}(Completed)</string>
+			<key>endCaptures</key>
 			<dict>
 				<key>1</key>
 				<dict>
@@ -63,58 +47,209 @@
 					<string>keyword.control.svn-output</string>
 				</dict>
 			</dict>
+			<key>name</key>
+			<string>meta.command.svn-output</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#commandRaw</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#files</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#output</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#error</string>
+				</dict>
+			</array>
+		</dict>
+		<key>commandFiles</key>
+		<dict>
+			<key>begin</key>
+			<string> "</string>
+			<key>end</key>
+			<string>"</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#filePath</string>
+				</dict>
+			</array>
+		</dict>
+		<key>commandName</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.command.name.raw.svn-output</string>
+				</dict>
+			</dict>
 			<key>match</key>
-			<string>(?!:^|
-)(Completed)</string>
+			<string> (log|update|commit|revert|status|add|delete|cleanup|lock|unlock|merge|diff|rename|blame|resolve|switch|branch|checkout)</string>
+		</dict>
+		<key>commandParam</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>variable.parameter.command.svn-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string> (-l [0-9]+|-m ".+?"|-[a-z]|--[a-z0-9-]+)</string>
 		</dict>
 		<key>commandRaw</key>
 		<dict>
-			<key>captures</key>
+			<key>begin</key>
+			<string>(?!:^|
+) {4}(svn)</string>
+			<key>beginCaptures</key>
 			<dict>
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>string.meta.command.raw.svn-output</string>
+					<string>keyword.command.raw.svn-output</string>
 				</dict>
 			</dict>
-			<key>match</key>
-			<string>(?!:^|
-) {4}(svn [^
-]*)</string>
+			<key>end</key>
+			<string>
+(?!: {4}Files)</string>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#commandName</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#commandParam</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#commandFiles</string>
+				</dict>
+			</array>
 		</dict>
-		<key>scopeName</key>
+		<key>error</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.error.svn-output</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>^ {4}(Output):</string>
+				</dict>
+			</array>
+		</dict>
+		<key>filePath</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>include</key>
+					<string>#unixPath</string>
+				</dict>
+				<dict>
+					<key>include</key>
+					<string>#ntPath</string>
+				</dict>
+			</array>
+		</dict>
+		<key>files</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.files.svn-output</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>^ {4}(Files):</string>
+				</dict>
+			</array>
+		</dict>
+		<key>ntPath</key>
 		<dict>
 			<key>captures</key>
 			<dict>
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>keyword.control.svn-output</string>
+					<string>entity.name.filename.nt.svn-output</string>
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>(?!:^|
-) {4}(Output|Error|Files):</string>
+			<string>([A-Za-z]:\[^
+"''].*)</string>
 		</dict>
-		<key>status</key>
+		<key>output</key>
+		<dict>
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>keyword.control.output.svn-output</string>
+						</dict>
+					</dict>
+					<key>match</key>
+					<string>^ {4}(Output):</string>
+				</dict>
+			</array>
+		</dict>
+		<key>svnPath</key>
 		<dict>
 			<key>captures</key>
 			<dict>
 				<key>1</key>
 				<dict>
 					<key>name</key>
-					<string>constant.other.status.svn-output</string>
-				</dict>
-				<key>2</key>
-				<dict>
-					<key>name</key>
-					<string>string.path.svn-output</string>
+					<string>entity.name.filename.svn.svn-output</string>
 				</dict>
 			</dict>
 			<key>match</key>
-			<string>(?!:^|
-) {8}([UGMCADSIXRLE\?\!\+\&gt; ]+) ([^
-]+)</string>
+			<string>(/[^
+"'']*)</string>
+		</dict>
+		<key>unixPath</key>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>entity.name.filename.unix.svn-output</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(/[^
+"'']*)</string>
 		</dict>
 	</dict>
 	<key>scopeName</key>
