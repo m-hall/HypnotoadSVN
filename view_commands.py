@@ -25,7 +25,7 @@ class HypnoViewClearCommand(sublime_plugin.TextCommand):
         self.view.set_read_only(True)
     def is_visible(self, edit=None):
         """Checks if the view should be visible"""
-        return output.SvnView.view == self.view
+        return output.SvnView.get_existing() == self.view
 
 class HypnoOutputClearCommand(sublime_plugin.WindowCommand):
     """A command that clears the SVN Output view"""
@@ -36,7 +36,7 @@ class HypnoOutputClearCommand(sublime_plugin.WindowCommand):
         """Checks if the view should be visible"""
         if group >=0 and index >= 0:
             view = sublime.active_window().views_in_group(group)[index]
-            return output.SvnView.view == view
+            return output.SvnView.get_existing() == view
         return True
 
 
@@ -63,7 +63,7 @@ class HypnoOutputOpenFileCommand(sublime_plugin.TextCommand):
                     win.open_file(path)
     def is_visible(self, edit=None):
         """Checks if the view should be visible"""
-        if output.SvnView.view != self.view:
+        if output.SvnView.get_existing() != self.view:
             return False
         regions = self.view.sel()
         for region in regions:
