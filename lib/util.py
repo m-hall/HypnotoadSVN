@@ -3,27 +3,6 @@ import re
 import os
 from . import settings
 
-def get_path_components(path):
-    """Split a file path into its components and return the list of components."""
-    components = []
-
-    while path:
-        head, tail = os.path.split(path)
-
-        if tail:
-            components.insert(0, tail)
-
-        if head:
-            if head == os.path.sep or head == os.path.altsep:
-                components.insert(0, head)
-                break
-
-            path = head
-        else:
-            break
-
-    return components
-
 def get_files(paths=None, group=-1, index=-1, base=None):
     """Get a list of files based on command input"""
     if base is None:
