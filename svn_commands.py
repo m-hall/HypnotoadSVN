@@ -5,7 +5,7 @@ import os.path
 import re
 import subprocess
 import time
-from .lib import util, thread, settings, output
+from .lib import util, thread, settings, output, panels
 
 LOG_PARSE = r'-{72}[\r\n]+r(\d+) \| ([^|]+) \| ([^|]+) \| [^\n\r]+[\n\r]+(.+)'
 STATUS_PARSE = r'(^[A-Z\?\!\ >]+?) +(.*)'
@@ -122,12 +122,7 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         self.run_command('commit -m "' + self.escape(self.message) + '"', self.files)
     def verify(self):
         """Checks with the user if the commit is valid"""
-        files = []
-        for index, include in enumerate(self.includes):
-            if include is True:
-                files.append(self.files[index])
-        if sublime.ok_cancel_dialog(self.message+'\n\nFiles:\n'+'\n'.join(files)):
-            self.files = files
+        if sublime.ok_cancel_dialog(self.message + '\n\nFiles:\n' + '\n'.join(self.files)):
             self.commit()
     def on_done_input(self, value):
         """Handles completion of the input panel"""
@@ -143,61 +138,33 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
     def show_message_panel(self):
         """Opens an input panel to get the commit message"""
         sublime.active_window().show_input_panel('Commit message', '', self.on_done_input, self.nothing, self.nothing)
-    def show_changes_panel(self):
-        """Opens a quick panel to select files for committing"""
-        sublime.active_window().show_quick_panel(self.items, self.on_select, sublime.MONOSPACE_FONT)
-    def on_select(self, index):
+    def on_complete(self, values):
         """Toggles a file for committing"""
-        if index < 0:
-            return
-        if index == 0:
-            if self.selected > 0:
-                self.show_message_panel()
-            else:
-                sublime.status_message("SVN Commite: no files selected")
-            return
-        if self.includes[index]:
-            self.items[index] = re.sub(r'^\[X\]', '[ ]', self.items[index])
-            self.selected = self.selected + 1
-        else:
-            self.items[index] = re.sub(r'^\[ \]', '[X]', self.items[index])
-            self.selected = self.selected - 1
-        self.includes[index] = not self.includes[index]
-        sublime.set_timeout(self.show_changes_panel, 50)
+        self.files = values
+        self.show_message_panel()
     def parse_changes(self, raw):
         """Parses the output of a status command"""
         matches = re.findall(STATUS_PARSE, raw, re.M)
         if len(matches) < 1:
             sublime.status_message('No changes to commit')
             return False
-        files = []
         items = []
-        includes = []
-        selected = 0
-        files.append(None)
-        items.append('Done')
-        includes.append(None)
         for change, path in matches:
             inSVN = self.is_versionned([path])
-            files.append(path.strip())
-            if inSVN:
-                items.append('[X]' + change + ": " + path)
-                includes.append(True)
-                selected = selected + 1
-            else:
-                items.append('[ ]' + change + ": " + path)
-                includes.append(False)
-        self.files = files
+            item = {
+                'label': path,
+                'value': path,
+                'selected': inSVN
+            }
+            items.append(item)
         self.items = items
-        self.includes = includes
-        self.selected = selected
         return True
     def on_changes_available(self, process):
         """Shows the list of changes to the user"""
         output = process.output()
         if self.parse_changes(output) == False:
             return
-        self.show_changes_panel()
+        panels.MultiSelect(self.items, self.on_complete, show_select_all=True)
     def get_changes(self):
         """Gets the committable changes"""
         thread.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
