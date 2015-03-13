@@ -1,5 +1,6 @@
 [
     { "caption": "-" },
     { "caption": "Clear Output", "command": "hypno_view_clear", "args": {}},
+    { "caption": "Open file(s)", "command": "hypno_output_open_file"},
     { "caption": "-", "id": "end" }
 ]

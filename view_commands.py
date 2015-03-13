@@ -1,6 +1,11 @@
 import sublime
 import sublime_plugin
+import os
+import re
 from .lib import output
+
+UNIX_PATH = r"/[^\n'\"]*"
+NT_PATH = r"[A-Za-z]:\\[^\n'\"]*"
 
 class HypnoViewMessageCommand(sublime_plugin.TextCommand):
     """A command that adds a message to the end of a view"""
@@ -33,3 +38,38 @@ class HypnoOutputClearCommand(sublime_plugin.WindowCommand):
             view = sublime.active_window().views_in_group(group)[index]
             return output.SvnView.view == view
         return True
+
+
+class HypnoOutputOpenFileCommand(sublime_plugin.TextCommand):
+    """A command that clears all content from a view"""
+    def line_to_file(self, line):
+        if os.name == 'nt':
+            match = re.search(NT_PATH, line)
+        else:
+            match = re.search(UNIX_PATH, line)
+        if not match:
+            return None
+        path = match.group(0)
+        return path if os.path.exists(path) and os.path.isfile(path) else None
+    def run(self, edit):
+        """Runs the command"""
+        win = sublime.active_window()
+        regions = self.view.sel()
+        for region in regions:
+            lines = self.view.lines(region)
+            for line in lines:
+                path = self.line_to_file(self.view.substr(line))
+                if path is not None:
+                    win.open_file(path)
+    def is_enabled(self, edit=None):
+        """Checks if the view should be visible"""
+        if output.SvnView.view != self.view:
+            return False
+        regions = self.view.sel()
+        for region in regions:
+            lines = self.view.lines(region)
+            for line in lines:
+                path = self.line_to_file(self.view.substr(line))
+                if path is not None:
+                    return True
+        return False
