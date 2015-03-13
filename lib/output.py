@@ -42,6 +42,7 @@ class SvnView:
                 return view
         return None
     def get_existing():
+        """Gets a view if one exists, does not create one if it does not"""
         output = settings.get_native("outputTo", "panel")
         if output == "tab":
             return SvnView.find_existing_view()
@@ -49,7 +50,7 @@ class SvnView:
             return SvnView.panel
         return None
     def get():
-        """Gets a view or panel for output"""
+        """Gets a view or panel for output, creates one if none available"""
         output = settings.get_native("outputTo", "panel")
         if output == "dialog":
             return None

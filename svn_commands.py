@@ -109,7 +109,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         self.run_command(cmd, files)
 
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         return util.enabled()
 
 class HypnoSvnCommitCommand(HypnoSvnCommand):
@@ -139,11 +139,11 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         """Opens an input panel to get the commit message"""
         sublime.active_window().show_input_panel('Commit message', '', self.on_done_input, self.nothing, self.nothing)
     def on_complete(self, values):
-        """Toggles a file for committing"""
+        """Handles completion of the MultiSelect"""
         self.files = values
         self.show_message_panel()
     def parse_changes(self, raw):
-        """Parses the output of a status command"""
+        """Parses the output of a status command for use in a MultiSelect"""
         matches = re.findall(STATUS_PARSE, raw, re.M)
         if len(matches) < 1:
             sublime.status_message('No changes to commit')
@@ -181,7 +181,7 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         self.files = files
         self.get_changes()
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned']
@@ -241,7 +241,7 @@ class HypnoSvnUpdateRevisionCommand(HypnoSvnCommand):
         else:
             sublime.active_window().show_input_panel('Which revision', '', self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['native']
@@ -260,7 +260,7 @@ class HypnoSvnUpdateCommand(HypnoSvnCommand):
             return
         self.run_command('update', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
@@ -283,7 +283,7 @@ class HypnoSvnLogCommand(HypnoSvnCommand):
         else:
             self.run_command('log -v', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
@@ -312,7 +312,7 @@ class HypnoSvnLogNumberCommand(HypnoSvnCommand):
 
         sublime.active_window().show_input_panel('Number of logs...', str(revisions), self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['native'] and not util.prefer_tortoise('log')
@@ -331,7 +331,7 @@ class HypnoSvnStatusCommand(HypnoSvnCommand):
             return
         self.run_command('status', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
@@ -364,7 +364,7 @@ class HypnoSvnDeleteCommand(HypnoSvnCommand):
             return
         self.run_command('delete', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
@@ -383,7 +383,7 @@ class HypnoSvnRevertCommand(HypnoSvnCommand):
             return
         self.run_command('revert -R', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
@@ -402,7 +402,7 @@ class HypnoSvnCleanupCommand(HypnoSvnCommand):
             return
         self.run_command('cleanup', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
@@ -421,7 +421,7 @@ class HypnoSvnLockCommand(HypnoSvnCommand):
             return
         self.run_command('lock', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
@@ -437,7 +437,7 @@ class HypnoSvnStealLockCommand(HypnoSvnCommand):
         self.name = "Steal Lock"
         self.run_command('lock --force', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['native']
@@ -456,7 +456,7 @@ class HypnoSvnUnlockCommand(HypnoSvnCommand):
             return
         self.run_command('unlock', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
@@ -475,7 +475,7 @@ class HypnoSvnMergeCommand(HypnoSvnCommand):
             return
         self.run_command('merge', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and tests['tortoise']
@@ -494,7 +494,7 @@ class HypnoSvnDiffCommand(HypnoSvnCommand):
             return
         self.run_command('diff', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['file'] and tests['versionned'] and tests['changed'] and tests['enabled']
@@ -517,7 +517,7 @@ class HypnoSvnDiffPreviousCommand(HypnoSvnCommand):
             return
         self.run_command('diff -r ' + last + ":" + current, files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['file'] and tests['versionned'] and not tests['changed'] and tests['enabled']
@@ -541,7 +541,7 @@ class HypnoSvnRenameCommand(HypnoSvnCommand):
         self.head, self.tail = os.path.split(files[0])
         sublime.active_window().show_input_panel('Rename...', self.tail, self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and tests['enabled']
@@ -558,7 +558,7 @@ class HypnoSvnBlameCommand(HypnoSvnCommand):
             return
         self.run_command('blame', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
@@ -571,7 +571,7 @@ class HypnoSvnConflictEditorCommand(HypnoSvnCommand):
         files = util.get_files(paths, group, index)
         self.run_tortoise('conflicteditor', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['tortoise'] and tests['versionned']
@@ -600,7 +600,7 @@ class HypnoSvnResolveCommand(HypnoSvnCommand):
         self.files = files
         sublime.active_window().show_quick_panel(HypnoSvnResolveCommand.options, self.on_select)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and tests['enabled']
@@ -617,7 +617,7 @@ class HypnoSvnSwitchCommand(HypnoSvnCommand):
             return
         #self.run_command('switch', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and tests['tortoise']
@@ -634,7 +634,7 @@ class HypnoSvnBranchCommand(HypnoSvnCommand):
             return
         #self.run_command('copy', files)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and tests['tortoise']
@@ -658,7 +658,7 @@ class HypnoSvnCheckoutCommand(HypnoSvnCommand):
         self.files = files
         sublime.active_window().show_input_panel('Checkout from...', 'http://', self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the view should be visible"""
+        """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return not tests['versionned'] and tests['folder'] and tests['enabled']

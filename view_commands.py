@@ -43,6 +43,7 @@ class HypnoOutputClearCommand(sublime_plugin.WindowCommand):
 class HypnoOutputOpenFileCommand(sublime_plugin.TextCommand):
     """A command that clears all content from a view"""
     def line_to_file(self, line):
+        """Checks if there is a valid path in the line"""
         if os.name == 'nt':
             match = re.search(NT_PATH, line)
         else:
