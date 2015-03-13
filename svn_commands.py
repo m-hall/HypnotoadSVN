@@ -87,7 +87,6 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
                 return tests
         tests = {
             'uid': uid,
-            'timestamp': time.time(),
             'versionned': self.is_versionned(files),
             'changed': self.is_changed(files),
             'file': self.is_file(files),
@@ -97,6 +96,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
             'tortoise': util.use_tortoise()
         }
         tests['enabled'] = tests['native'] or tests['tortoise']
+        tests['timestamp'] = time.time()
         HypnoSvnCommand.recent_files.append(tests)
         return tests
 
