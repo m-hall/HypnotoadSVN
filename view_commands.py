@@ -61,7 +61,7 @@ class HypnoOutputOpenFileCommand(sublime_plugin.TextCommand):
                 path = self.line_to_file(self.view.substr(line))
                 if path is not None:
                     win.open_file(path)
-    def is_enabled(self, edit=None):
+    def is_visible(self, edit=None):
         """Checks if the view should be visible"""
         if output.SvnView.view != self.view:
             return False
