@@ -44,7 +44,20 @@
         // Include the raw commands in output
         "outputRawCommand": false,
 
+        // Set the output gutter style for conflicts
+        // "dot": a small dot
+        // "circle": a circle that fills the width of the gutter
+        // "bookmark": a small arrow indicating the line
+        // "none": no gutter marker
         "outputGutter": "circle",
+
+        // Set the output highlight style for conflicts
+        // "fill": fills the background of the text
+        // "outline": outlines the selected area
+        // "solid": adds a solid underline to the selected area
+        // "squiggly": adds a squiggly underline to the selected area
+        // "stippled": adds a stippled underline to the selected area
+        // "none": no highlight
         "outputHighlight": "outline"
     },
 

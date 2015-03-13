@@ -34,11 +34,14 @@ Modifies the way SVN commands send their output.
 The default "outputTo" option is "panel".
 OutputScrollTo allows you to change how the auto-scroll behavior works.
 You can also optionally include the raw command in the output.
+Conflicts will also be highlighted, and the style can be changed for the gutter and highlights.
 
 ```Javascript
 "outputTo": "panel",
 "outputScrollTo": "command",
 "outputRawCommand": false,
+"outputGutter": "circle",
+"outputHighlight": "outline"
 ```
 
 #### "outputScrollTo" Options
@@ -49,6 +52,20 @@ You can also optionally include the raw command in the output.
 - *panel*: opens an output panel at the bottom of the window (default)
 - *tab*: opens a new tab for output
 - *dialog*: opens an alert dialog for the results of each command
+
+#### "outputGutter" Options
+- *dot*: a small dot
+- *circle*: a circle that fills the width of the gutter
+- *bookmark*: a small arrow indicating the line
+- *none*: no gutter marker
+
+#### "outputHighlight" Options
+- *fill*: fills the background of the text
+- *outline*: outlines the selected area
+- *solid*: adds a solid underline to the selected area
+- *squiggly*: adds a squiggly underline to the selected area
+- *stippled*: adds a stippled underline to the selected area
+- *none*: no highlight
 
 ### Commit
 Modifies the commit workflow.
