@@ -1,0 +1,17 @@
+HypnotoadSVN Update 1.1.0
+=========================
+
+Features
+--------
+- More info provided when selecting Update to Revision
+- Revert added to tab context
+- Add some options for committing with native
+  - The confirm dialog can now be skipped
+  - A minimum log message size can be required
+- Open files from output
+- Gutter markers for conflicted files in output
+
+Bugs Fixed
+----------
+- Fix rename command in native
+- All commands are now non-interactive
