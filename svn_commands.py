@@ -100,6 +100,39 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         HypnoSvnCommand.recent_files.append(tests)
         return tests
 
+    def on_complete(self, values):
+        """Handles completion of the MultiSelect"""
+        self.files = values
+
+    def parse_changes(self, raw):
+        """Parses the output of a status command for use in a MultiSelect"""
+        matches = re.findall(STATUS_PARSE, raw, re.M)
+        if len(matches) < 1:
+            sublime.status_message('No changes to commit')
+            return False
+        items = []
+        for change, path in matches:
+            inSVN = self.is_versionned([path])
+            item = {
+                'label': path,
+                'value': path,
+                'selected': inSVN
+            }
+            items.append(item)
+        self.items = items
+        return True
+
+    def on_changes_available(self, process):
+        """Shows the list of changes to the user"""
+        output = process.output()
+        if self.parse_changes(output) == False:
+            return
+        panels.MultiSelect(self.items, self.on_complete, show_select_all=True)
+
+    def select_changes(self):
+        """Gets the committable changes"""
+        thread.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
+
     def run(self, cmd="", paths=None, group=-1, index=-1):
         """Runs the command"""
         if cmd is "":
@@ -142,32 +175,6 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         """Handles completion of the MultiSelect"""
         self.files = values
         self.show_message_panel()
-    def parse_changes(self, raw):
-        """Parses the output of a status command for use in a MultiSelect"""
-        matches = re.findall(STATUS_PARSE, raw, re.M)
-        if len(matches) < 1:
-            sublime.status_message('No changes to commit')
-            return False
-        items = []
-        for change, path in matches:
-            inSVN = self.is_versionned([path])
-            item = {
-                'label': path,
-                'value': path,
-                'selected': inSVN
-            }
-            items.append(item)
-        self.items = items
-        return True
-    def on_changes_available(self, process):
-        """Shows the list of changes to the user"""
-        output = process.output()
-        if self.parse_changes(output) == False:
-            return
-        panels.MultiSelect(self.items, self.on_complete, show_select_all=True)
-    def get_changes(self):
-        """Gets the committable changes"""
-        thread.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
         util.debug('Commit')
@@ -182,7 +189,7 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         if self.is_file(files):
             self.show_message_panel()
         else:
-            self.get_changes()
+            self.select_changes()
     def is_visible(self, paths=None, group=-1, index=-1):
         """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
@@ -372,7 +379,7 @@ class HypnoSvnDeleteCommand(HypnoSvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
 
-class HypnoSvnRevertCommand(HypnoSvnCommand):
+class HypnoSvnRevertAllCommand(HypnoSvnCommand):
     """Reverts changes made to the working copy"""
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
@@ -385,6 +392,37 @@ class HypnoSvnRevertCommand(HypnoSvnCommand):
         if not util.use_native():
             return
         self.run_command('revert -R', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        """Checks if the command should be visible"""
+        files = util.get_files(paths, group, index)
+        tests = self.test_all(files)
+        return not util.prefer_tortoise('revert') and tests['versionned'] and tests['enabled']
+
+class HypnoSvnRevertCommand(HypnoSvnCommand):
+    """Reverts changes made to the working copy"""
+
+    def revert(self):
+        """Runs the revert command on the sepcified files."""
+        self.run_command("revert", self.files)
+    def on_complete(self, values):
+        """Handles completion of the MultiSelect"""
+        self.files = values
+        self.revert()
+    def run(self, paths=None, group=-1, index=-1):
+        """Runs the command"""
+        util.debug('Revert')
+        files = util.get_files(paths, group, index)
+        self.name = "Revert"
+        if util.prefer_tortoise('revert'):
+            self.run_tortoise('revert', files)
+            return
+        if not util.use_native():
+            return
+        self.files = files
+        if self.is_file(files):
+            self.revert()
+        else:
+            self.select_changes()
     def is_visible(self, paths=None, group=-1, index=-1):
         """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)

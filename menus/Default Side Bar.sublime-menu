@@ -18,6 +18,7 @@
             { "caption": "Rename", "command": "hypno_svn_rename", "args": {"paths":[]}},
             { "caption": "Delete", "command": "hypno_svn_delete", "args": {"paths":[]}},
             { "caption": "Revert", "command": "hypno_svn_revert", "args": {"paths":[]}},
+            { "caption": "Revert All", "command": "hypno_svn_revert_all", "args": {"paths":[]}},
             { "caption": "Blame", "command": "hypno_svn_blame", "args": {"paths":[]}},
             { "caption": "-" },
             { "caption": "Cleanup", "command": "hypno_svn_cleanup", "args": {"paths":[]}},
