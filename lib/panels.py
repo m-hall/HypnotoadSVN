@@ -89,7 +89,7 @@ class MultiSelect(object):
                 self.all(False)
         else:
             val['selected'] = not val['selected']
-            label = self.add_check(item['label'], item['selected'])
+            label = self.add_check(val['label'], val['selected'])
             self.items[index] = label
         self.reopen()
 
