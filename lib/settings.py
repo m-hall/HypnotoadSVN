@@ -1,4 +1,6 @@
 import sublime, sublime_plugin
+import os
+import json
 
 SETTINGS_FILE = "HypnotoadSVN.sublime-settings"
 GLOBAL_PREFERENCES = "Preferences.sublime-settings"
@@ -15,9 +17,30 @@ class Settings:
         """Gets a value from the plugin settings"""
         if not Settings.plugin:
             Settings.load()
+
+        plugin = Settings.plugin
+        project_file = sublime.active_window().project_file_name()
+        project = None
+        if project_file and os.path.exists(project_file):
+            try:
+                f = open(project_file, 'r')
+                x = json.load(f)
+                project = x['HypnotoadSVN']
+            except:
+                project = None
+        if project is None:
+            if type is not None:
+                return plugin.get(type, {}).get(name, default)
+            return plugin.get(name, default)
         if type is not None:
-            return Settings.plugin.get(type, {}).get(name, default)
-        return Settings.plugin.get(name, default)
+            project_value = project.get(type, {}).get(name, None)
+            if project_value is not None:
+                return project_value
+            return plugin.get(type, {}).get(name, default)
+        project_value = project.get(name, None)
+        if project_value is not None:
+            return project_value
+        return plugin.get(name, default)
 
 def get(name, svn_type=None, default=None):
     """Gets a value from settings"""
