@@ -179,7 +179,10 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         if not util.use_native():
             return
         self.files = files
-        self.get_changes()
+        if self.is_file(files):
+            self.show_message_panel()
+        else:
+            self.get_changes()
     def is_visible(self, paths=None, group=-1, index=-1):
         """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
