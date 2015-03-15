@@ -18,6 +18,21 @@ Set this value to "current" to use the active view.
 "commandBaseFiles": "project",
 ```
 
+### Paths
+You can also specify any path or list of paths.
+In general, it is better to only use the path option if you are setting it in your project settings.
+
+```Javascript
+"commandBaseFiles": "~/Projects/my_svn_project"
+```
+or
+```Javascript
+"commandBaseFiles": [
+    "~/Projects/my_svn_project",
+    "~/Projects/my_other_project"
+]
+```
+
 ## Native SVN
 Native SVN commands are available on all systems capable of using this plugin.
 The only requirements is the the SVN command line program is installed.

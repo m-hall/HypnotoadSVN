@@ -14,14 +14,21 @@ def get_files(paths=None, group=-1, index=-1, base=None):
         view = sublime.active_window().views_in_group(group)[index]
         files.append(view.file_name())
     if len(files) == 0:
-        if base is 'current':
+        if base == 'current':
             view = sublime.active_window().active_view()
             file_name = view.file_name()
             if file_name is not None and os.path.exists(file_name):
                 files.append(file_name)
-        else:
+        elif base == 'project':
             folders = sublime.active_window().folders()
             return folders
+        elif isinstance(base, list):
+            for b in base:
+                b = os.path.expanduser(b)
+                if os.path.exists(b):
+                    files.append(b)
+        elif os.path.exists(os.path.expanduser(base)):
+            files.append(os.path.expanduser(base))
     return files
 
 def enabled():
