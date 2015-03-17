@@ -1,4 +1,4 @@
-import sublime, sublime_plugin
+import sublime
 import os
 
 DEFAULT_SIDE_BAR_FILE = "Packages/HypnotoadSVN/menus/Default Side Bar.sublime-menu"

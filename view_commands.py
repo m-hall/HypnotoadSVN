@@ -52,7 +52,7 @@ class HypnoOutputOpenFileCommand(sublime_plugin.TextCommand):
             return None
         path = match.group(0)
         return path if os.path.exists(path) and os.path.isfile(path) else None
-    def run(self, edit):
+    def run(self):
         """Runs the command"""
         win = sublime.active_window()
         regions = self.view.sel()
@@ -62,7 +62,7 @@ class HypnoOutputOpenFileCommand(sublime_plugin.TextCommand):
                 path = self.line_to_file(self.view.substr(line))
                 if path is not None:
                     win.open_file(path)
-    def is_visible(self, edit=None):
+    def is_visible(self):
         """Checks if the view should be visible"""
         if output.SvnView.get_existing() != self.view:
             return False

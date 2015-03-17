@@ -1,4 +1,4 @@
-import sublime, sublime_plugin
+import sublime
 
 TIMEOUT = 50
 class MultiSelect(object):

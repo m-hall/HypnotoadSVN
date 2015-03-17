@@ -1,6 +1,3 @@
-import sublime
-import sublime_plugin
-import os
 from .lib import menu
 
 def plugin_loaded():

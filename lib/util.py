@@ -1,5 +1,4 @@
-import sublime, sublime_plugin
-import re
+import sublime
 import os
 from . import settings
 
@@ -10,7 +9,7 @@ def get_files(paths=None, group=-1, index=-1, base=None):
     files = []
     if isinstance(paths, list):
         files = files+paths
-    if group >=0 and index >= 0:
+    if group >= 0 and index >= 0:
         view = sublime.active_window().views_in_group(group)[index]
         files.append(view.file_name())
     if len(files) == 0:
@@ -45,8 +44,8 @@ if os.name == 'nt':
     def use_tortoise():
         """In Windows, Check if TortoiseSVN support is enabled"""
         if settings.get_tortoise('disable') is not True:
-            tortoise_path = settings.get_tortoise('tortoiseproc_path');
-            if os.path.isfile(tortoise_path):
+            proc_path = settings.get_tortoise('tortoiseproc_path')
+            if os.path.isfile(proc_path):
                 return True
         return False
 else:
@@ -72,5 +71,5 @@ def tortoise_path(paths):
 
 def debug(message):
     """Send output to console if debugging is enabled"""
-    if (settings.get("debug", default=False)):
+    if settings.get("debug", default=False):
         print('HypnotoadSVN: ' + str(message))

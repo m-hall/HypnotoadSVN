@@ -16,7 +16,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
     """Base command for svn commands"""
     recent_files = []
 
-    def nothing(nothing1=None, nothing2=None, nothing3=None, **args):
+    def nothing(self, nothing1=None, nothing2=None, nothing3=None, **args):
         """Does nothing, just a placeholder for things I don't handle"""
         return
 
@@ -27,7 +27,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
     def run_tortoise(self, cmd, files):
         """Starts a process for a TortoiseSVN command"""
         if not util.use_tortoise():
-            error_message('Tortoise command can not be run: ' + cmd)
+            sublime.error_message('Tortoise command can not be run: ' + cmd)
             return
         command = '"' + settings.get_tortoise_path() + '" /command:'+ cmd + ' /path:"%s"' % util.tortoise_path(files)
         util.debug(command)
@@ -42,9 +42,8 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         if len(files) == 0:
             return False
 
-        versionned = False
         for f in files:
-            p = self.run_command('info', [ f ], False, False)
+            p = self.run_command('info', [f], False, False)
             if self.test_versionned(p.output() + p.error()) is True:
                 return True
         return False

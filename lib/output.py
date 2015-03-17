@@ -73,7 +73,7 @@ class SvnView:
         sublime.active_window().run_command(
             'show_panel',
             {
-                'panel': 'output.'+PANEL_ID
+                'panel': 'output.' + PANEL_ID
             }
         )
         return SvnView.panel
@@ -92,7 +92,7 @@ class SvnView:
             {
                 "message": msg
             }
-        );
+        )
         if settings.get_native('outputScrollTo') == "bottom":
             SvnView.scroll_bottom_to_visible()
     def clear():
@@ -100,7 +100,7 @@ class SvnView:
         view = SvnView.get()
         if view is None:
             return
-        view.run_command('hypno_view_clear');
+        view.run_command('hypno_view_clear')
 
     def end():
         """Sends the end signal to the output"""
@@ -184,7 +184,7 @@ def add_error(err, code=None):
     if err:
         add_message(indent("Error: " + str(code if code is not None else "") + "\n" + indent(err)))
 
-def add_error_section(code = None):
+def add_error_section(code=None):
     """Opens an error section in output"""
     add_message(indent("Error: " + str(code if code is not None else "")))
 

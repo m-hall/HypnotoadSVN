@@ -1,5 +1,4 @@
 import sublime
-import re
 from subprocess import Popen, PIPE
 from threading import Thread, Timer
 from . import output, util
@@ -20,8 +19,9 @@ class Process(Thread):
         self.done = False
         self.log = log
         self.lines = []
-        self.outputText = None
-        self.errorText = None
+        self.output_text = None
+        self.error_text = None
+        self.timer = None
         self.loading = 0
         self.on_complete = on_complete
         if not paths:
@@ -46,8 +46,8 @@ class Process(Thread):
             self.lines.append(line)
             if self.log:
                 output.add_result_message(line.strip('\r\n'))
-        self.outputText = "\n".join(self.lines)
-        self.errorText = self.process.stderr.read()
+        self.output_text = "\n".join(self.lines)
+        self.error_text = self.process.stderr.read()
         self.complete()
 
     def get_path(self, paths):
@@ -91,11 +91,11 @@ class Process(Thread):
 
     def output(self):
         """Get output from the process"""
-        return self.outputText
+        return self.output_text
 
     def error(self):
         """Get error text from the process"""
-        return self.errorText
+        return self.error_text
 
     def terminate(self):
         """Terminates the process"""
