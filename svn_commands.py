@@ -8,7 +8,7 @@ import time
 from .lib import util, thread, settings, output, panels
 
 LOG_PARSE = r'-{72}[\r\n]+r(\d+) \| ([^|]+) \| ([^|]+) \| [^\n\r]+[\n\r]+(.+)'
-STATUS_PARSE = r'(^[A-Z\?\!\ >]+?) +(.*)'
+STATUS_PARSE = r'(^[A-Z\?\!\ >]+?) +(\+ +)?(.*)'
 INFO_PARSE_REVISION = r"Revision: (\d+)"
 INFO_PARSE_LAST_CHANGE = r"Last Changed Rev: (\d+)"
 
@@ -107,10 +107,10 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         """Parses the output of a status command for use in a MultiSelect"""
         matches = re.findall(STATUS_PARSE, raw, re.M)
         if len(matches) < 1:
-            sublime.status_message('No changes to commit')
+            sublime.status_message('No changes')
             return False
         items = []
-        for change, path in matches:
+        for change, modifier, path in matches:
             inSVN = self.is_versionned([path])
             item = {
                 'label': path,
