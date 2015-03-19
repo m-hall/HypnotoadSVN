@@ -501,25 +501,6 @@ class HypnoSvnUnlockCommand(HypnoSvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
 
-class HypnoSvnMergeCommand(HypnoSvnCommand):
-    """Merges changes from the repo to the working copy"""
-    def run(self, paths=None, group=-1, index=-1):
-        """Runs the command"""
-        util.debug('Merge')
-        files = util.get_files(paths, group, index)
-        self.name = "Merge"
-        if util.use_tortoise():
-            self.run_tortoise("merge", files)
-            return
-        if not util.use_native():
-            return
-        self.run_command('merge', files)
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        files = util.get_files(paths, group, index)
-        tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and tests['tortoise']
-
 class HypnoSvnDiffCommand(HypnoSvnCommand):
     """Lists the changes to a working copy file"""
     def run(self, paths=None, group=-1, index=-1):
@@ -645,6 +626,49 @@ class HypnoSvnResolveCommand(HypnoSvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and tests['enabled']
 
+class HypnoSvnCheckoutCommand(HypnoSvnCommand):
+    """Checks out a repo"""
+    def on_done_input(self, value):
+        """Handles completion of the input panel"""
+        self.name = "Rename"
+        self.run_command('checkout', self.files)
+    def run(self, paths=None, group=-1, index=-1):
+        """Runs the command"""
+        util.debug('Checkout')
+        files = util.get_files(paths, group, index)
+        self.name = "Checkout"
+        if util.prefer_tortoise('checkout'):
+            self.run_tortoise("checkout", files)
+            return
+        if not util.use_native():
+            return
+        self.files = files
+        sublime.active_window().show_input_panel('Checkout from...', 'http://', self.on_done_input, self.nothing, self.nothing)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        """Checks if the command should be visible"""
+        files = util.get_files(paths, group, index)
+        tests = self.test_all(files)
+        return not tests['versionned'] and tests['folder'] and tests['enabled']
+
+class HypnoSvnMergeCommand(HypnoSvnCommand):
+    """Merges changes from the repo to the working copy"""
+    def run(self, paths=None, group=-1, index=-1):
+        """Runs the command"""
+        util.debug('Merge')
+        files = util.get_files(paths, group, index)
+        self.name = "Merge"
+        if util.use_tortoise():
+            self.run_tortoise("merge", files)
+            return
+        if not util.use_native():
+            return
+        self.run_command('merge', files)
+    def is_visible(self, paths=None, group=-1, index=-1):
+        """Checks if the command should be visible"""
+        files = util.get_files(paths, group, index)
+        tests = self.test_all(files)
+        return tests['versionned'] and tests['single'] and tests['tortoise']
+
 class HypnoSvnSwitchCommand(HypnoSvnCommand):
     """Switches the working copy to a different branch"""
     def run(self, paths=None, group=-1, index=-1):
@@ -678,27 +702,3 @@ class HypnoSvnBranchCommand(HypnoSvnCommand):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and tests['tortoise']
-
-class HypnoSvnCheckoutCommand(HypnoSvnCommand):
-    """Checks out a repo"""
-    def on_done_input(self, value):
-        """Handles completion of the input panel"""
-        self.name = "Rename"
-        self.run_command('checkout', self.files)
-    def run(self, paths=None, group=-1, index=-1):
-        """Runs the command"""
-        util.debug('Checkout')
-        files = util.get_files(paths, group, index)
-        self.name = "Checkout"
-        if util.prefer_tortoise('checkout'):
-            self.run_tortoise("checkout", files)
-            return
-        if not util.use_native():
-            return
-        self.files = files
-        sublime.active_window().show_input_panel('Checkout from...', 'http://', self.on_done_input, self.nothing, self.nothing)
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        files = util.get_files(paths, group, index)
-        tests = self.test_all(files)
-        return not tests['versionned'] and tests['folder'] and tests['enabled']
