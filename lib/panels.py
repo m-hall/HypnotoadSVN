@@ -100,3 +100,71 @@ class MultiSelect(object):
     def open(self):
         """Opens the MultiSelect panel"""
         sublime.active_window().show_quick_panel(self.items, self.select, sublime.MONOSPACE_FONT)
+
+class SelectOrAdd(object):
+    """Opens a quick panel for multiple selection"""
+
+    def __init__(self, items, on_complete, on_cancel=None, add_base='', panel_name='Other...'):
+        """Constructs the SelectOrAdd"""
+        self.values = []
+        self.items = []
+        self.on_complete = on_complete
+        self.on_cancel = on_cancel
+        self.add_base = add_base
+        self.panel_name = panel_name
+        self.values.append('add')
+        self.items.append('Other...')
+        for item in items:
+            if isinstance(item, str):
+                self.values.append({
+                    'label': item,
+                    'value': item
+                })
+                self.items.append(item)
+            else:
+                panel_item = {
+                    'label': item['label'] or item['value'],
+                    'value': item['value'] or item['label']
+                }
+                self.values.append(panel_item)
+                self.items.append(panel_item['label'])
+        self.open()
+
+    def done(self):
+        """Sends the selected values to the complete callback"""
+        self.on_complete(self.value)
+
+    def done_add(self, value):
+        """Handles completion of the 'add' input panel"""
+        self.value = value
+        self.done()
+
+    def change(self, value):
+        """Handles change of the new item"""
+        return
+
+    def add(self):
+        """Adds a new item"""
+        sublime.active_window().show_input_panel(self.panel_name, self.add_base, self.done_add, self.change, self.cancel)
+
+    def cancel(self):
+        """Cancels the SelectOrAdd panel"""
+        if self.on_cancel is not None:
+            self.on_cancel()
+
+
+    def select(self, index):
+        """Selects an item from the SelectOrAdd panel"""
+        if index == -1:
+            self.cancel()
+            return
+        val = self.values[index]
+        if val == 'add':
+            self.add()
+        else:
+            self.value = val['value']
+            self.done()
+
+    def open(self):
+        """Opens the SelectOrAdd panel"""
+        sublime.active_window().show_quick_panel(self.items, self.select, sublime.MONOSPACE_FONT)
