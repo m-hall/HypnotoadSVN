@@ -5,14 +5,15 @@ import re
 from . import svn_commands
 from .lib import util, thread, settings, output, panels
 
-INFO_PARSE_URL = r"URL: ([^\n]*)"
-
 def get_branches():
+    """Get the branches listed in the project"""
     data = sublime.active_window().project_data()
     if not data:
         return []
-    return data.get('HypnotoadSVN', {}).get('branches', [])
+    return list(data.get('HypnotoadSVN', {}).get('branches', []))
+
 def add_branch(branch):
+    """Adds a branch to the project"""
     data = sublime.active_window().project_data()
     if data is None:
         data = {
@@ -31,6 +32,8 @@ def add_branch(branch):
             if branches is None:
                 branches = [branch]
             else:
+                if branch in branches:
+                    return
                 branches.append(branch)
             hypno['branches'] = branches
         data['HypnotoadSVN'] = hypno
@@ -58,6 +61,11 @@ class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
 
 class HypnoSvnSwitchCommand(svn_commands.HypnoSvnCommand):
     """Switches the working copy to a different branch"""
+    def on_select(self, value):
+        """Handles selecting a value"""
+        if value not in get_branches():
+            add_branch(value)
+        self.run_command('switch', [value, self.files[0]])
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
         util.debug('Switch')
@@ -66,7 +74,15 @@ class HypnoSvnSwitchCommand(svn_commands.HypnoSvnCommand):
         if util.use_tortoise():
             self.run_tortoise("switch", files)
             return
-        self.run_command('switch', files)
+        self.files = files
+        self.url = self.get_url(files[0])
+        add_branch(self.url)
+        branches = get_branches()
+        branches.remove(self.url)
+        if len(branches) > 0:
+            panels.SelectOrAdd(branches, self.on_select, add_base=self.url, input_name='Branch...')
+        else:
+            sublime.active_window().show_input_panel('Branch...', self.url, self.on_select, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
         """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
@@ -76,15 +92,11 @@ class HypnoSvnSwitchCommand(svn_commands.HypnoSvnCommand):
 class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
     """Creates a new branch"""
     def on_complete(self, proc):
+        """If the branch was successfully created, add it to the list of project branches"""
         if proc.returncode != 0:
             sublime.error_message('Branch creation failed')
             return
         add_branch(self.branch)
-    def get_url(self, file):
-        """Gets the svn url for a file"""
-        p = self.run_command('info', [file], False, False)
-        m = re.search(INFO_PARSE_URL, p.output(), re.M)
-        return m.group(1)
     def on_done_input(self, value):
         """Handles completion of an input panel"""
         if value is None or not util.is_url(value):
@@ -103,6 +115,7 @@ class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
             self.run_tortoise("branch", files)
             return
         self.url = self.get_url(files[0])
+        add_branch(self.url)
         sublime.active_window().show_input_panel('Branch to...', self.url, self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
         """Checks if the command should be visible"""

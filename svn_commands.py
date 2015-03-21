@@ -11,6 +11,7 @@ LOG_PARSE = r'-{72}[\r\n]+r(\d+) \| ([^|]+) \| ([^|]+) \| [^\n\r]+[\n\r]+(.+)'
 STATUS_PARSE = r'(^[A-Z\?\!\ >]+?) +(\+ +)?(.*)'
 INFO_PARSE_REVISION = r"Revision: (\d+)"
 INFO_PARSE_LAST_CHANGE = r"Last Changed Rev: (\d+)"
+INFO_PARSE_URL = r"URL: ([^\n]*)"
 
 class HypnoSvnCommand(sublime_plugin.WindowCommand):
     """Base command for svn commands"""
@@ -131,6 +132,12 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
     def select_changes(self):
         """Gets the committable changes"""
         thread.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
+
+    def get_url(self, file):
+        """Gets the svn url for a file"""
+        p = self.run_command('info', [file], False, False)
+        m = re.search(INFO_PARSE_URL, p.output(), re.M)
+        return m.group(1)
 
     def run(self, cmd="", paths=None, group=-1, index=-1):
         """Runs the command"""
