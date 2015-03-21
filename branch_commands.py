@@ -7,6 +7,36 @@ from .lib import util, thread, settings, output, panels
 
 INFO_PARSE_URL = r"URL: ([^\n]*)"
 
+def get_branches():
+    data = sublime.active_window().project_data()
+    if not data:
+        return []
+    return data.get('HypnotoadSVN', {}).get('branches', [])
+def add_branch(branch):
+    data = sublime.active_window().project_data()
+    if data is None:
+        data = {
+            "HypnotoadSVN": {
+                "branches": [branch]
+            }
+        }
+    else:
+        hypno = data.get("HypnotoadSVN")
+        if hypno is None:
+            data.set("HypnotoadSVN", {
+                "branches": [branch]
+            })
+        else:
+            branches = hypno.get("branches")
+            if branches is None:
+                branches = [branch]
+            else:
+                branches.append(branch)
+            hypno['branches'] = branches
+        data['HypnotoadSVN'] = hypno
+    sublime.active_window().set_project_data(data)
+
+
 class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
     """Merges changes from the repo to the working copy"""
     def run(self, paths=None, group=-1, index=-1):
@@ -45,13 +75,16 @@ class HypnoSvnSwitchCommand(svn_commands.HypnoSvnCommand):
 
 class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
     """Creates a new branch"""
-
+    def on_complete(self, proc):
+        if proc.returncode != 0:
+            sublime.error_message('Branch creation failed')
+            return
+        add_branch(self.branch)
     def get_url(self, file):
-        """Runs a native command to verify if a file is versionned"""
+        """Gets the svn url for a file"""
         p = self.run_command('info', [file], False, False)
         m = re.search(INFO_PARSE_URL, p.output(), re.M)
         return m.group(1)
-
     def on_done_input(self, value):
         """Handles completion of an input panel"""
         if value is None or not util.is_url(value):
@@ -59,7 +92,8 @@ class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
             return
         self.name = "Branch"
         items = [self.url, value]
-        self.run_command('copy', items)
+        self.branch = value
+        thread.Process(self.name, 'svn copy', items, True, True, self.on_complete)
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
         util.debug('Branch')
@@ -68,7 +102,6 @@ class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
         if util.use_tortoise():
             self.run_tortoise("branch", files)
             return
-
         self.url = self.get_url(files[0])
         sublime.active_window().show_input_panel('Branch to...', self.url, self.on_done_input, self.nothing, self.nothing)
     def is_visible(self, paths=None, group=-1, index=-1):
