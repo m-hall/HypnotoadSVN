@@ -104,7 +104,7 @@ class MultiSelect(object):
 class SelectOrAdd(object):
     """Opens a quick panel for multiple selection"""
 
-    def __init__(self, items, on_complete, on_cancel=None, add_base='', panel_name='Other...'):
+    def __init__(self, items, on_complete, on_cancel=None, add_base='', panel_name='Other...', input_name='Other...'):
         """Constructs the SelectOrAdd"""
         self.values = []
         self.items = []
@@ -145,7 +145,7 @@ class SelectOrAdd(object):
 
     def add(self):
         """Adds a new item"""
-        sublime.active_window().show_input_panel(self.panel_name, self.add_base, self.done_add, self.change, self.cancel)
+        sublime.active_window().show_input_panel(self.input_name, self.add_base, self.done_add, self.change, self.cancel)
 
     def cancel(self):
         """Cancels the SelectOrAdd panel"""
