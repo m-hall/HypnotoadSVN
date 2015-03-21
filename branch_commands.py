@@ -30,9 +30,9 @@ def add_branch(branch):
     else:
         hypno = data.get("HypnotoadSVN")
         if hypno is None:
-            data.set("HypnotoadSVN", {
+            data["HypnotoadSVN"] = {
                 "branches": [branch]
-            })
+            }
         else:
             branches = hypno.get("branches")
             if branches is None:
@@ -42,9 +42,12 @@ def add_branch(branch):
                     return True
                 branches.append(branch)
             hypno['branches'] = branches
-        data['HypnotoadSVN'] = hypno
     sublime.active_window().set_project_data(data)
     return True
+
+def nothing(nothing1=None, nothing2=None, nothing3=None, **args):
+    """Does nothing, just a placeholder for things I don't handle"""
+    return
 
 def pick_branch(current, on_complete):
     """Picks a branch from the project"""
@@ -54,7 +57,7 @@ def pick_branch(current, on_complete):
     if len(branches) > 0:
         panels.SelectOrAdd(branches, on_complete, add_base=current, input_name='Branch...')
     else:
-        sublime.active_window().show_input_panel('Branch...', current, on_complete, self.nothing, self.nothing)
+        sublime.active_window().show_input_panel('Branch...', current, on_complete, nothing, nothing)
 
 
 class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
