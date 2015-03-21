@@ -23,6 +23,7 @@ class Process(Thread):
         self.error_text = None
         self.timer = None
         self.loading = 0
+        self.returncode = None
         self.on_complete = on_complete
         if not paths:
             self.command = cmd + ' --non-interactive'
@@ -48,6 +49,7 @@ class Process(Thread):
                 output.add_result_message(line.strip('\r\n'))
         self.output_text = "\n".join(self.lines)
         self.error_text = self.process.stderr.read()
+        self.process.communicate()
         self.complete()
 
     def get_path(self, paths):
@@ -66,6 +68,7 @@ class Process(Thread):
             return
         util.debug(self.command + " DONE")
         self.done = True
+        self.returncode = self.process.returncode
         if self in Process.active_processes:
             Process.active_processes.remove(self)
         if self.log:
