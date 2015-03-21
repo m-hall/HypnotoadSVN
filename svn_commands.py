@@ -99,7 +99,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         HypnoSvnCommand.recent_files.append(tests)
         return tests
 
-    def on_complete(self, values):
+    def on_complete_select(self, values):
         """Handles completion of the MultiSelect"""
         self.files = values
 
@@ -126,7 +126,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         output = process.output()
         if self.parse_changes(output) == False:
             return
-        panels.MultiSelect(self.items, self.on_complete, show_select_all=True)
+        panels.MultiSelect(self.items, self.on_complete_select, show_select_all=True)
 
     def select_changes(self):
         """Gets the committable changes"""
