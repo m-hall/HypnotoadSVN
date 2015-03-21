@@ -63,6 +63,7 @@ def pick_branch(current, on_complete):
 class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
     """Merges changes from the repo to the working copy"""
     def on_revisions_picked(self, value):
+        """Verifies that the revisions are valid format then runs the merge"""
         cherrypick = value.replace(' ', '')
         if re.match(CHERRYPICK_FORMAT, cherrypick):
             param = '-c ' + cherrypick
@@ -73,14 +74,17 @@ class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
             return
         self.run_command('merge '+ param, [self.branch, self.files[0]])
     def pick_revisions(self):
+        """Prompts the user for revision numbers"""
         sublime.active_window().show_input_panel('Revisions...', '', self.on_revisions_picked, self.nothing, self.nothing)
     def on_branch_picked(self, value):
+        """Handles picking the branch"""
         if not add_branch(value):
             sublime.error_message('Branch is not a valid URL')
             return
         self.branch = value
         self.pick_revisions()
     def verify_changes(self, files):
+        """If the files are changed, checks with the user to confirm that they really want to merge."""
         if self.is_changed(files):
             message = 'There are changed files, are you sure you want to merge to this location?'
             if self.is_file(files):
