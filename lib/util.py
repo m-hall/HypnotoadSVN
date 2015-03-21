@@ -1,6 +1,9 @@
 import sublime
 import os
+import re
 from . import settings
+
+URL_TEST = r"https?:\/\/.*"
 
 def get_files(paths=None, group=-1, index=-1, base=None):
     """Get a list of files based on command input"""
@@ -73,3 +76,7 @@ def debug(message):
     """Send output to console if debugging is enabled"""
     if settings.get("debug", default=False):
         print('HypnotoadSVN: ' + str(message))
+
+
+def is_url(url):
+    return re.match(URL_TEST, url) is not None

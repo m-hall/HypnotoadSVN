@@ -11,6 +11,7 @@ LOG_PARSE = r'-{72}[\r\n]+r(\d+) \| ([^|]+) \| ([^|]+) \| [^\n\r]+[\n\r]+(.+)'
 STATUS_PARSE = r'(^[A-Z\?\!\ >]+?) +(\+ +)?(.*)'
 INFO_PARSE_REVISION = r"Revision: (\d+)"
 INFO_PARSE_LAST_CHANGE = r"Last Changed Rev: (\d+)"
+INFO_PARSE_URL = r"URL: ([^\n]*)"
 
 class HypnoSvnCommand(sublime_plugin.WindowCommand):
     """Base command for svn commands"""
@@ -99,7 +100,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         HypnoSvnCommand.recent_files.append(tests)
         return tests
 
-    def on_complete(self, values):
+    def on_complete_select(self, values):
         """Handles completion of the MultiSelect"""
         self.files = values
 
@@ -126,11 +127,17 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         output = process.output()
         if self.parse_changes(output) == False:
             return
-        panels.MultiSelect(self.items, self.on_complete, show_select_all=True)
+        panels.MultiSelect(self.items, self.on_complete_select, show_select_all=True)
 
     def select_changes(self):
         """Gets the committable changes"""
         thread.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
+
+    def get_url(self, file):
+        """Gets the svn url for a file"""
+        p = self.run_command('info', [file], False, False)
+        m = re.search(INFO_PARSE_URL, p.output(), re.M)
+        return m.group(1)
 
     def run(self, cmd="", paths=None, group=-1, index=-1):
         """Runs the command"""
@@ -501,25 +508,6 @@ class HypnoSvnUnlockCommand(HypnoSvnCommand):
         tests = self.test_all(files)
         return tests['versionned'] and tests['enabled']
 
-class HypnoSvnMergeCommand(HypnoSvnCommand):
-    """Merges changes from the repo to the working copy"""
-    def run(self, paths=None, group=-1, index=-1):
-        """Runs the command"""
-        util.debug('Merge')
-        files = util.get_files(paths, group, index)
-        self.name = "Merge"
-        if util.use_tortoise():
-            self.run_tortoise("merge", files)
-            return
-        if not util.use_native():
-            return
-        self.run_command('merge', files)
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        files = util.get_files(paths, group, index)
-        tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and tests['tortoise']
-
 class HypnoSvnDiffCommand(HypnoSvnCommand):
     """Lists the changes to a working copy file"""
     def run(self, paths=None, group=-1, index=-1):
@@ -644,40 +632,6 @@ class HypnoSvnResolveCommand(HypnoSvnCommand):
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
         return tests['versionned'] and tests['single'] and tests['enabled']
-
-class HypnoSvnSwitchCommand(HypnoSvnCommand):
-    """Switches the working copy to a different branch"""
-    def run(self, paths=None, group=-1, index=-1):
-        """Runs the command"""
-        util.debug('Switch')
-        files = util.get_files(paths, group, index)
-        self.name = "Switch"
-        if util.use_tortoise():
-            self.run_tortoise("switch", files)
-            return
-        #self.run_command('switch', files)
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        files = util.get_files(paths, group, index)
-        tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and tests['tortoise']
-
-class HypnoSvnBranchCommand(HypnoSvnCommand):
-    """Creates a new branch"""
-    def run(self, paths=None, group=-1, index=-1):
-        """Runs the command"""
-        util.debug('Branch')
-        files = util.get_files(paths, group, index)
-        self.name = "Branch"
-        if util.use_tortoise():
-            self.run_tortoise("branch", files)
-            return
-        #self.run_command('copy', files)
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        files = util.get_files(paths, group, index)
-        tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and tests['tortoise']
 
 class HypnoSvnCheckoutCommand(HypnoSvnCommand):
     """Checks out a repo"""

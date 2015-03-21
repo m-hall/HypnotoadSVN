@@ -19,19 +19,8 @@ class Settings:
             Settings.load()
 
         plugin = Settings.plugin
-        project_file = sublime.active_window().project_file_name()
-        project = None
-        if project_file and os.path.exists(project_file):
-            try:
-                f = open(project_file, 'r')
-                x = json.load(f)
-                project = x['HypnotoadSVN']
-            except:
-                project = None
-        if project is None:
-            if type is not None:
-                return plugin.get(type, {}).get(name, default)
-            return plugin.get(name, default)
+        project = sublime.active_window().project_data() or {}
+        project = project.get('HypnotoadSVN', {})
         if type is not None:
             project_value = project.get(type, {}).get(name, None)
             if project_value is not None:
