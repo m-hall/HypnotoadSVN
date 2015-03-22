@@ -98,11 +98,10 @@
         // "cleanup": "nativeSVN",
         // "lock": "nativeSVN",
         // "unlock": "nativeSVN",
-
-        // Right now these commands are only supported in tortoise
-        // "resolve": "tortoiseSVN",
-        // "switch": "tortoiseSVN",
-        // "branch": "tortoiseSVN",
+        // "resolve": "nativeSVN",
+        // "switch": "nativeSVN",
+        // "branch": "nativeSVN",
+        // "merge": "nativeSVN",
         // "checkout": "nativeSVN"
     }
 }

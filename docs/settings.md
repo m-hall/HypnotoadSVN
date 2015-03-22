@@ -154,9 +154,24 @@ By default, all commands use the default, except for diff and blame, which prefe
 - unlock
 - diff
 - blame
-
-#### Unsupported commands
 - resolve
 - switch
 - branch
+- merge
 - checkout
+
+## Project Settings
+All settings can also be added to the project files. While inside the project, these settings will overwrite the global settings on a case by case basis, so you won't have to copy all settings into each new project.
+In the project file, group all settings in the "HypnotoadSVN" object.
+
+### Branches
+Branches can only be added to project settings. They are currently not accessible via global settings.
+Branches will also automatically be added to you project settings as they are used.
+When you are not in a project, branches must be manually entered each 
+
+```Javascript
+"branches": [
+    'http://source.url/svn/trunk',
+    'http://source.url/svn/branches/my_branch'
+]
+```

@@ -9,11 +9,10 @@ This plugin started from [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/
 - Support for using TortoiseSVN on Windows
 - Wide array of commands supported
 - Command history
+- Customizable Side Bar
 
 ### Future
-- Support for more native commands
 - Specify external program for diff/blame/etc.
-- Improve interface for some commands
 - Folder diffs
 
 ##Requirements
