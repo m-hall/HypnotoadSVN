@@ -1,0 +1,9 @@
+HypnotoadSVN Update 1.2.0
+=========================
+
+Features
+--------
+- Native support for
+  - Merge
+  - Branch
+  - Switch
