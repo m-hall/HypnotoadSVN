@@ -167,7 +167,8 @@ In the project file, group all settings in the "HypnotoadSVN" object.
 ### Branches
 Branches can only be added to project settings. They are currently not accessible via global settings.
 Branches will also automatically be added to you project settings as they are used.
-When you are not in a project, branches must be manually entered each 
+When you are not in a project, branches are stored in Sublime's session data, which will be deleted after you close the window, and is NOT shared by other windows.
+Branches will appear in the same order as in the list, and will always move to the top of the list after being used.
 
 ```Javascript
 "branches": [

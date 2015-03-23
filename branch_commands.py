@@ -2,11 +2,17 @@ import sublime
 import sublime_plugin
 import os
 import re
+from functools import partial
 from . import svn_commands
 from .lib import util, thread, settings, output, panels
 
 CHERRYPICK_FORMAT = r"[\d:,\-\s]+"
 REVISIONS_FORMAT = r"(HEAD|BASE|COMMITTED|PREV|\d+):?(HEAD|BASE|COMMITTED|PREV|\d+)?"
+
+
+def nothing(nothing1=None, nothing2=None, nothing3=None, **args):
+    """Does nothing, just a placeholder for things I don't handle"""
+    return
 
 def get_branches():
     """Get the branches listed in the project"""
@@ -39,25 +45,30 @@ def add_branch(branch):
                 branches = [branch]
             else:
                 if branch in branches:
-                    return True
-                branches.append(branch)
+                    branches.remove(branch)
+                branches.insert(0, branch)
             hypno['branches'] = branches
-    sublime.active_window().set_project_data(data)
+    print(data['HypnotoadSVN']['branches'])
+    'sublime.active_window().set_project_data'(data)
     return True
 
-def nothing(nothing1=None, nothing2=None, nothing3=None, **args):
-    """Does nothing, just a placeholder for things I don't handle"""
-    return
+def picked_branch(on_complete, branch):
+    """Moves a branch to the top of the list after being picked"""
+    if not add_branch(branch):
+        sublime.error_message('Branch is not a valid URL')
+        return
+    on_complete(branch)
 
 def pick_branch(current, on_complete):
     """Picks a branch from the project"""
     add_branch(current)
     branches = get_branches()
     branches.remove(current)
+    picked = partial(picked_branch, on_complete)
     if len(branches) > 0:
-        panels.SelectOrAdd(branches, on_complete, add_base=current, input_name='Branch...')
+        panels.SelectOrAdd(branches, picked, add_base=current, input_name='Branch...')
     else:
-        sublime.active_window().show_input_panel('Branch...', current, on_complete, nothing, nothing)
+        sublime.active_window().show_input_panel('Branch...', current, picked, nothing, nothing)
 
 
 class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
@@ -78,9 +89,6 @@ class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
         sublime.active_window().show_input_panel('Revisions...', '', self.on_revisions_picked, self.nothing, self.nothing)
     def on_branch_picked(self, value):
         """Handles picking the branch"""
-        if not add_branch(value):
-            sublime.error_message('Branch is not a valid URL')
-            return
         self.branch = value
         self.pick_revisions()
     def verify_changes(self, files):
@@ -120,7 +128,6 @@ class HypnoSvnSwitchCommand(svn_commands.HypnoSvnCommand):
     """Switches the working copy to a different branch"""
     def on_branch_picked(self, value):
         """Handles selecting a value"""
-        add_branch(value)
         self.run_command('switch', [value, self.files[0]])
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
