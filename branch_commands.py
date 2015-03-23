@@ -97,7 +97,7 @@ class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
         util.debug('Merge')
         files = util.get_files(paths, group, index)
         self.name = "Merge"
-        if util.use_tortoise():
+        if util.prefer_tortoise('merge'):
             self.run_tortoise("merge", files)
             return
         if not util.use_native():
@@ -127,7 +127,7 @@ class HypnoSvnSwitchCommand(svn_commands.HypnoSvnCommand):
         util.debug('Switch')
         files = util.get_files(paths, group, index)
         self.name = "Switch"
-        if util.use_tortoise():
+        if util.prefer_tortoise('switch'):
             self.run_tortoise("switch", files)
             return
         self.files = files
@@ -161,7 +161,7 @@ class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
         util.debug('Branch')
         files = util.get_files(paths, group, index)
         self.name = "Branch"
-        if util.use_tortoise():
+        if util.prefer_tortoise('branch'):
             self.run_tortoise("branch", files)
             return
         self.url = self.get_url(files[0])
