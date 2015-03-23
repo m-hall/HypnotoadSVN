@@ -155,7 +155,7 @@ class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
         self.name = "Branch"
         items = [self.url, value]
         self.branch = value
-        thread.Process(self.name, 'svn copy', items, True, True, self.on_complete)
+        self.run_command('copy', items, on_complete=self.on_complete)
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
         util.debug('Branch')
