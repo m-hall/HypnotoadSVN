@@ -555,7 +555,9 @@ class HypnoSvnRenameCommand(HypnoSvnCommand):
     def on_done_input(self, value):
         """Handles completion of an input panel"""
         self.name = "Rename"
-        self.run_command('rename --parents ' + os.path.join(self.head, self.tail) + ' ' + os.path.join(self.head, value))
+        src = os.path.join(self.head, self.tail)
+        dest = os.path.join(self.head, value)
+        self.run_command('rename --parents', [src, dest])
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
         util.debug('Rename')
