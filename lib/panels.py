@@ -111,6 +111,7 @@ class SelectOrAdd(object):
         self.on_complete = on_complete
         self.on_cancel = on_cancel
         self.add_base = add_base
+        self.input_name = input_name
         self.panel_name = panel_name
         self.values.append('add')
         self.items.append('Other...')
