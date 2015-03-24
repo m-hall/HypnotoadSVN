@@ -11,7 +11,7 @@
 
     // Disables checking for valid commands when opening menus.
     // Set this to true if you find that the menu takes to long to open
-    "menuDontCheckStatus": false,
+    "disableSVNChecks": false,
 
     // Settings for native SVN commands
     "nativeSVN": {
