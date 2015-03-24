@@ -6,9 +6,11 @@ from . import output, util
 TIME_INTERVAL = 0.05
 LOADING_SIZE = 7
 
+
 class Process(Thread):
     """A threaded process"""
     active_processes = []
+
     def __init__(self, name, cmd, paths=None, log=True, async=False, on_complete=None):
         """Initializes a Process object"""
         Thread.__init__(self)
@@ -105,6 +107,7 @@ class Process(Thread):
         if not self.done:
             self.process.terminate()
         self.complete()
+
 
 def terminate_all():
     """Terminates all active processes"""

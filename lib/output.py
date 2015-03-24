@@ -23,11 +23,13 @@ CONFLICT_HIGHLIGHTS = {
     'none': sublime.HIDDEN
 }
 
+
 class SvnView:
     """Handles the SVN Output view/panel"""
     buffer = ""
     view = None
     panel = None
+
     def find_existing_view():
         """Finds a view that matches the signature of an SVN Output view"""
         if SvnView.view:
@@ -41,6 +43,7 @@ class SvnView:
             ):
                 return view
         return None
+
     def get_existing():
         """Gets a view if one exists, does not create one if it does not"""
         output = settings.get_native("outputTo", "panel")
@@ -49,6 +52,7 @@ class SvnView:
         if output == "panel" and SvnView.panel:
             return SvnView.panel
         return None
+
     def get():
         """Gets a view or panel for output, creates one if none available"""
         output = settings.get_native("outputTo", "panel")
@@ -77,6 +81,7 @@ class SvnView:
             }
         )
         return SvnView.panel
+
     def message(message):
         """Sends a message to the output"""
         output = settings.get_native("outputTo", "panel")
@@ -95,6 +100,7 @@ class SvnView:
         )
         if settings.get_native('outputScrollTo') == "bottom":
             SvnView.scroll_bottom_to_visible()
+
     def clear():
         """Clears the output view"""
         view = SvnView.get()
@@ -109,12 +115,14 @@ class SvnView:
             sublime.message_dialog(SvnView.buffer)
         SvnView.buffer = ""
         SvnView.message(indent("Completed\n"))
+
     def focus():
         """Brings the output view into focus"""
         view = SvnView.get()
         if view is None:
             return
         view.window().focus_view(view)
+
     def scroll_to_bottom():
         """Scrolls the bottom of the view to the top of the viewport"""
         view = SvnView.get()
@@ -122,12 +130,14 @@ class SvnView:
             return
         point = view.text_to_layout(view.size())
         view.set_viewport_position(point, True)
+
     def scroll_bottom_to_visible():
         """Scrolls the bottom of the view into visible space"""
         view = SvnView.get()
         if view is None:
             return
         view.show(view.size(), False)
+
     def close(view):
         """Stop using the view if it has been closed"""
         if view == SvnView.view:
@@ -140,9 +150,11 @@ def indent(text="", spaces=INDENT_LEVEL):
     """Indents a message for output"""
     return " " * spaces + re.sub(r'\n', '\n' + " " * spaces, text)
 
+
 def add_message(message):
     """Add a message to output"""
     SvnView.message(message)
+
 
 def add_command(name, cmd=None):
     """Adds a named command to output"""
@@ -153,6 +165,7 @@ def add_command(name, cmd=None):
     if settings.get_native("outputRawCommand") and cmd is not None:
         add_message(indent(cmd))
 
+
 def add_files(paths=None):
     """Add a list of files to output"""
     if paths is None:
@@ -162,39 +175,48 @@ def add_files(paths=None):
         s = "\n".join(paths)
     add_message(indent("Files:\n" + indent(s)))
 
+
 def add_files_section():
     """Adds a files section to output"""
     add_message(indent("Files:"))
+
 
 def add_result(result):
     """Adds results to output"""
     if result:
         add_message(indent("Output:\n" + indent(result)))
 
+
 def add_result_section():
     """Opens a result section in output"""
     add_message(indent("Output:"))
 
+
 def add_result_message(result):
     """Adds a result message to output"""
     add_message(indent(result, INDENT_LEVEL * 2))
+
 
 def add_error(err, code=None):
     """Adds errors to output"""
     if err:
         add_message(indent("Error: " + str(code if code is not None else "") + "\n" + indent(err)))
 
+
 def add_error_section(code=None):
     """Opens an error section in output"""
     add_message(indent("Error: " + str(code if code is not None else "")))
+
 
 def end_command():
     """Ends a command in output"""
     SvnView.end()
 
+
 def clear():
     """Clears the output view"""
     SvnView.clear()
+
 
 def highlight_conflicts():
     """Highlights the conflicted files found in commands"""

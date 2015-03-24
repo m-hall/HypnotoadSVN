@@ -1,6 +1,8 @@
 import sublime
 
 TIMEOUT = 50
+
+
 class MultiSelect(object):
     """Opens a quick panel for multiple selection"""
 
@@ -101,6 +103,7 @@ class MultiSelect(object):
         """Opens the MultiSelect panel"""
         sublime.active_window().show_quick_panel(self.items, self.select, sublime.MONOSPACE_FONT)
 
+
 class SelectOrAdd(object):
     """Opens a quick panel for multiple selection"""
 
@@ -152,7 +155,6 @@ class SelectOrAdd(object):
         """Cancels the SelectOrAdd panel"""
         if self.on_cancel is not None:
             self.on_cancel()
-
 
     def select(self, index):
         """Selects an item from the SelectOrAdd panel"""

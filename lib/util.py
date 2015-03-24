@@ -5,6 +5,7 @@ from . import settings
 
 URL_TEST = r"https?:\/\/.*"
 
+
 def get_files(paths=None, group=-1, index=-1, base=None):
     """Get a list of files based on command input"""
     if base is None:
@@ -33,9 +34,11 @@ def get_files(paths=None, group=-1, index=-1, base=None):
             files.append(os.path.expanduser(base))
     return files
 
+
 def enabled():
     """Check if the plugin is enabled"""
     return use_native() or use_tortoise()
+
 
 def use_native():
     """Check if native SVN support is enabled"""
@@ -68,9 +71,11 @@ def prefer_tortoise(command="Default"):
         command = "default"
     return use_tortoise() and prefers.get(command) == 'tortoiseSVN'
 
+
 def tortoise_path(paths):
     """Join paths for a TortoiseProc command"""
     return "*".join(paths)
+
 
 def debug(message):
     """Send output to console if debugging is enabled"""

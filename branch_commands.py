@@ -6,13 +6,14 @@ from functools import partial
 from . import svn_commands
 from .lib import util, thread, settings, output, panels
 
-CHERRYPICK_FORMAT = r"[\d:,\-\s]+"
-REVISIONS_FORMAT = r"(HEAD|BASE|COMMITTED|PREV|\d+):?(HEAD|BASE|COMMITTED|PREV|\d+)?"
+CHERRYPICK_FORMAT = r'[\d:,\-\s]+'
+REVISIONS_FORMAT = r'(HEAD|BASE|COMMITTED|PREV|\d+):?(HEAD|BASE|COMMITTED|PREV|\d+)?'
 
 
 def nothing(nothing1=None, nothing2=None, nothing3=None, **args):
     """Does nothing, just a placeholder for things I don't handle"""
     return
+
 
 def get_branches():
     """Get the branches listed in the project"""
@@ -21,26 +22,27 @@ def get_branches():
         return []
     return list(data.get('HypnotoadSVN', {}).get('branches', []))
 
+
 def add_branch(branch):
     """Adds a branch to the project"""
     if branch is None or not util.is_url(branch):
-        sublime.status_message("Invalid URL")
+        sublime.status_message('Invalid URL')
         return False
     data = sublime.active_window().project_data()
     if data is None:
         data = {
-            "HypnotoadSVN": {
-                "branches": [branch]
+            'HypnotoadSVN': {
+                'branches': [branch]
             }
         }
     else:
-        hypno = data.get("HypnotoadSVN")
+        hypno = data.get('HypnotoadSVN')
         if hypno is None:
-            data["HypnotoadSVN"] = {
-                "branches": [branch]
+            data['HypnotoadSVN'] = {
+                'branches': [branch]
             }
         else:
-            branches = hypno.get("branches")
+            branches = hypno.get('branches')
             if branches is None:
                 branches = [branch]
             else:
@@ -52,12 +54,14 @@ def add_branch(branch):
     'sublime.active_window().set_project_data'(data)
     return True
 
+
 def picked_branch(on_complete, branch):
     """Moves a branch to the top of the list after being picked"""
     if not add_branch(branch):
         sublime.error_message('Branch is not a valid URL')
         return
     on_complete(branch)
+
 
 def pick_branch(current, on_complete):
     """Picks a branch from the project"""
@@ -73,6 +77,20 @@ def pick_branch(current, on_complete):
 
 class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
     """Merges changes from the repo to the working copy"""
+
+    def __init__(self, window):
+        """Initialize the command object"""
+        super().__init__(window)
+        self.svn_name = 'Merge'
+        self.tests = {
+            'versionned': True,
+            'enabled': True,
+            'single': True
+        }
+        self.files = None
+        self.url = None
+        self.branch = None
+
     def on_revisions_picked(self, value):
         """Verifies that the revisions are valid format then runs the merge"""
         cherrypick = value.replace(' ', '')
@@ -83,14 +101,17 @@ class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
         else:
             sublime.error_message('Revisions are not in a valid format')
             return
-        self.run_command('merge '+ param, [self.branch, self.files[0]])
+        self.run_command('merge ' + param, [self.branch, self.files[0]])
+
     def pick_revisions(self):
         """Prompts the user for revision numbers"""
         sublime.active_window().show_input_panel('Revisions...', '', self.on_revisions_picked, self.nothing, self.nothing)
+
     def on_branch_picked(self, value):
         """Handles picking the branch"""
         self.branch = value
         self.pick_revisions()
+
     def verify_changes(self, files):
         """If the files are changed, checks with the user to confirm that they really want to merge."""
         if self.is_changed(files):
@@ -100,82 +121,93 @@ class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
             if not sublime.ok_cancel_dialog(message):
                 return False
         return True
+
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
-        util.debug('Merge')
+        util.debug(self.svn_name)
         files = util.get_files(paths, group, index)
-        self.name = "Merge"
         if util.prefer_tortoise('merge'):
-            self.run_tortoise("merge", files)
+            self.run_tortoise('merge', files)
             return
         if not util.use_native():
             return
         if not self.verify_changes(files):
             sublime.status_message('Merge cancelled by user.')
             return
-
         self.files = files
         self.url = self.get_url(files[0])
-
         pick_branch(self.url, self.on_branch_picked)
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        files = util.get_files(paths, group, index)
-        tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and tests['enabled']
+
 
 class HypnoSvnSwitchCommand(svn_commands.HypnoSvnCommand):
     """Switches the working copy to a different branch"""
+
+    def __init__(self, window):
+        """Initialize the command object"""
+        super().__init__(window)
+        self.svn_name = 'Switch'
+        self.tests = {
+            'versionned': True,
+            'enabled': True,
+            'single': True
+        }
+        self.files = None
+        self.url = None
+
     def on_branch_picked(self, value):
         """Handles selecting a value"""
         self.run_command('switch', [value, self.files[0]])
+
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
-        util.debug('Switch')
+        util.debug(self.svn_name)
         files = util.get_files(paths, group, index)
-        self.name = "Switch"
         if util.prefer_tortoise('switch'):
-            self.run_tortoise("switch", files)
+            self.run_tortoise('switch', files)
             return
         self.files = files
         self.url = self.get_url(files[0])
         pick_branch(self.url, self.on_branch_picked)
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        files = util.get_files(paths, group, index)
-        tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and tests['enabled']
+
 
 class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
     """Creates a new branch"""
+
+    def __init__(self, window):
+        """Initialize the command object"""
+        super().__init__(window)
+        self.svn_name = 'Branch'
+        self.tests = {
+            'versionned': True,
+            'enabled': True,
+            'single': True
+        }
+        self.url = None
+        self.branch = None
+
     def on_complete(self, proc):
         """If the branch was successfully created, add it to the list of project branches"""
         if proc.returncode != 0:
             sublime.error_message('Branch creation failed')
             return
         add_branch(self.branch)
+
     def on_done_input(self, value):
         """Handles completion of an input panel"""
         if value is None or not util.is_url(value):
-            sublime.status_message("Invalid URL")
+            sublime.status_message('Invalid URL')
             return
-        self.name = "Branch"
         items = [self.url, value]
         self.branch = value
         self.run_command('copy', items, on_complete=self.on_complete)
+
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
-        util.debug('Branch')
+        util.debug(self.svn_name)
         files = util.get_files(paths, group, index)
-        self.name = "Branch"
         if util.prefer_tortoise('branch'):
-            self.run_tortoise("branch", files)
+            self.run_tortoise('branch', files)
             return
         self.url = self.get_url(files[0])
         add_branch(self.url)
         sublime.active_window().show_input_panel('Branch to...', self.url, self.on_done_input, self.nothing, self.nothing)
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        files = util.get_files(paths, group, index)
-        tests = self.test_all(files)
-        return tests['versionned'] and tests['single'] and tests['enabled']
