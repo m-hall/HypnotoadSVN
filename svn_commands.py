@@ -17,6 +17,10 @@ INFO_PARSE_URL = r'URL: ([^\n]*)'
 class HypnoSvnCommand(sublime_plugin.WindowCommand):
     """Base command for svn commands"""
     recent_files = []
+    svn_tests = [
+        'versionned',
+        'changed'
+    ]
 
     def __init__(self, window):
         """Initializes the HypnoSvnCommand object"""
@@ -96,14 +100,15 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
                 return tests
         tests = {
             'uid': uid,
-            'versionned': self.is_versionned(files),
-            'changed': self.is_changed(files),
             'file': self.is_file(files),
             'folder': self.is_folder(files),
             'single': self.is_single(files),
             'native': util.use_native(),
             'tortoise': util.use_tortoise()
         }
+        if not settings.get("disableSVNChecks", default=False):
+            tests['versionned'] = self.is_versionned(files)
+            tests['changed'] = self.is_changed(files)
         tests['enabled'] = tests['native'] or tests['tortoise']
         tests['timestamp'] = time.time()
         HypnoSvnCommand.recent_files.append(tests)
@@ -160,7 +165,10 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         """Checks if the command should be visible"""
         files = util.get_files(paths, group, index)
         tests = self.test_all(files)
+        svn_checks_off = settings.get("disableSVNChecks", default=False)
         for key in self.tests:
+            if svn_checks_off and key in HypnoSvnCommand.svn_tests:
+                continue
             if tests[key] != self.tests[key]:
                 util.debug(self.svn_name + " is not visible because a test failed (%s)" % str(key))
                 return False
@@ -229,18 +237,6 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
             self.show_message_panel()
         else:
             self.select_changes()
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        print(self.svn_name)
-        files = util.get_files(paths, group, index)
-        tests = self.test_all(files)
-        for key in self.tests:
-            if key not in tests:
-                return false
-            if tests[key] != self.tests[key]:
-                print(self.svn_name + ": " + str(key))
-                return false
-        return True
 
 
 class HypnoSvnUpdateRevisionCommand(HypnoSvnCommand):
@@ -750,12 +746,6 @@ class HypnoSvnBlameCommand(HypnoSvnCommand):
             self.run_tortoise('blame', files)
             return
         self.run_command('blame', files)
-
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        files = util.get_files(paths, group, index)
-        tests = self.test_all(files)
-        return tests['versionned'] and tests['enabled']
 
 
 class HypnoSvnConflictEditorCommand(HypnoSvnCommand):
