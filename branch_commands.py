@@ -50,8 +50,7 @@ def add_branch(branch):
                     branches.remove(branch)
                 branches.insert(0, branch)
             hypno['branches'] = branches
-    print(data['HypnotoadSVN']['branches'])
-    'sublime.active_window().set_project_data'(data)
+    sublime.active_window().set_project_data(data)
     return True
 
 
