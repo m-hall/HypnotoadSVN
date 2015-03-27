@@ -1,7 +1,18 @@
 [
+    { "caption": "HypnotoadSVN: Settings - Default", "command": "open_file", "args":{"file": "${packages}/HypnotoadSVN/HypnotoadSVN.sublime-settings"} },
+    { "caption": "HypnotoadSVN: Settings - User", "command": "open_file", "args":{"file": "${packages}/User/HypnotoadSVN.sublime-settings"} },
+
+    { "caption": "HypnotoadSVN: Side Bar - Default", "command": "open_file", "args":{"file": "${packages}/HypnotoadSVN/menus/Default Side Bar.sublime-menu"} },
+    { "caption": "HypnotoadSVN: Side Bar - User", "command": "open_file", "args":{"file": "${packages}/User/HypnotoadSVN/Side Bar.sublime-menu"} },
+
+    { "caption": "HypnotoadSVN: Key Bindings - Default", "command": "open_file", "args":{"file": "${packages}/HypnotoadSVN/keymaps/Default (Windows).sublime-keymap", "platform": "Windows"} },
+    { "caption": "HypnotoadSVN: Key Bindings - Default", "command": "open_file", "args":{"file": "${packages}/HypnotoadSVN/keymaps/Default (OSX).sublime-keymap", "platform": "OSX"} },
+    { "caption": "HypnotoadSVN: Key Bindings - Default", "command": "open_file", "args":{"file": "${packages}/HypnotoadSVN/keymaps/Default (Linux).sublime-keymap", "platform": "Linux"} },
+
     { "caption": "HypnotoadSVN: Show output", "command": "show_panel", "args":{"panel": "output.svn-output"}},
     { "caption": "HypnotoadSVN: Kill active processes", "command": "hypno_kill_processes"},
     { "caption": "HypnotoadSVN: Clear Output", "command": "hypno_output_clear"},
+    
     { "caption": "HypnotoadSVN: Update", "command": "hypno_svn_update"},
     { "caption": "HypnotoadSVN: Commit", "command": "hypno_svn_commit"},
     { "caption": "HypnotoadSVN: Merge", "command": "hypno_svn_merge"},
