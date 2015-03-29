@@ -817,7 +817,7 @@ class HypnoSvnCheckoutCommand(HypnoSvnCommand):
 
     def on_done_input(self, value):
         """Handles completion of the input panel"""
-        self.run_command('checkout', self.files)
+        self.run_command('checkout', [value, self.files[0]])
 
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
