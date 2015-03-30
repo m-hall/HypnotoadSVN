@@ -6,8 +6,8 @@ from functools import partial
 from . import svn_commands
 from .lib import util, thread, settings, output, panels
 
-CHERRYPICK_FORMAT = r'[\d:,\-\s]+'
-REVISIONS_FORMAT = r'(HEAD|BASE|COMMITTED|PREV|\d+):?(HEAD|BASE|COMMITTED|PREV|\d+)?'
+CHERRYPICK_FORMAT = r'^(\-?\d+,?)+$'
+REVISIONS_FORMAT = r'^(HEAD|BASE|COMMITTED|PREV|\d+):?(HEAD|BASE|COMMITTED|PREV|\d+)?$'
 
 
 def nothing(nothing1=None, nothing2=None, nothing3=None, **args):
@@ -92,15 +92,20 @@ class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
 
     def on_revisions_picked(self, value):
         """Verifies that the revisions are valid format then runs the merge"""
-        cherrypick = value.replace(' ', '')
-        if re.match(CHERRYPICK_FORMAT, cherrypick):
-            param = '-c ' + cherrypick
-        elif re.match(REVISIONS_FORMAT, value):
-            param = '-r ' + value
-        else:
-            sublime.error_message('Revisions are not in a valid format')
+        args = value.split(' ')
+        argserr = []
+        params = []
+        for a in args:
+            if re.match(CHERRYPICK_FORMAT, a):
+                params.append('-c ' + a)
+            elif re.match(REVISIONS_FORMAT, a):
+                params.append('-r ' + a)
+            elif (a != ''):
+                argserr.append(a)
+        if len(argserr) != 0:
+            sublime.error_message('These revisions argument are not in a valid format:\n ' + '\n '.join(argserr))
             return
-        self.run_command('merge ' + param, [self.branch, self.files[0]])
+        self.run_command('merge ' + ' '.join(params), [self.branch, self.files[0]])
 
     def pick_revisions(self):
         """Prompts the user for revision numbers"""
@@ -136,6 +141,40 @@ class HypnoSvnMergeCommand(svn_commands.HypnoSvnCommand):
         self.files = files
         self.url = self.get_url(files[0])
         pick_branch(self.url, self.on_branch_picked)
+
+
+class HypnoSvnMergeReintegrateCommand(HypnoSvnMergeCommand):
+    """Merges reintegrate changes from branch to its origin"""
+
+    def __init__(self, window):
+        """Initialize the command object"""
+        super().__init__(window)
+        self.svn_name = 'Merge reintegrate'
+        self.tests = {
+            'versionned': True,
+            'enabled': True,
+            'single': True
+        }
+        self.files = None
+        self.url = None
+        self.branch = None
+
+    def on_revisions_picked(self, value):
+        """Verifies that the revisions are valid format then runs the merge"""
+        args = value.split(' ')
+        argserr = []
+        params = []
+        for a in args:
+            if re.match(CHERRYPICK_FORMAT, a):
+                params.append('-c ' + a)
+            elif re.match(REVISIONS_FORMAT, a):
+                params.append('-r ' + a)
+            elif (a != ''):
+                argserr.append(a)
+        if len(argserr) != 0:
+            sublime.error_message('These revisions argument are not in a valid format:\n ' + '\n '.join(argserr))
+            return
+        self.run_command('merge --reintegrate ' + ' '.join(params), [self.branch, self.files[0]])
 
 
 class HypnoSvnSwitchCommand(svn_commands.HypnoSvnCommand):
@@ -184,6 +223,10 @@ class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
         self.url = None
         self.branch = None
 
+    def escape(self, message):
+        """Escapes quotes in a commit message."""
+        return message.replace('"', '\\"')
+
     def on_complete(self, proc):
         """If the branch was successfully created, add it to the list of project branches"""
         if proc.returncode != 0:
@@ -191,14 +234,23 @@ class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
             return
         add_branch(self.branch)
 
+    def on_message_input(self, value):
+        """Handles completion of an input panel"""
+        self.message = value
+        minSize = settings.get_native('commitMessageSize', 0)
+        if minSize > 0 and len(value) < minSize:
+            sublime.status_message('Commit message too short')
+            return
+        items = [self.url, self.branch]
+        self.run_command('copy -m "' + self.escape(self.message) + '"', items, on_complete=self.on_complete)
+
     def on_done_input(self, value):
         """Handles completion of an input panel"""
         if value is None or not util.is_url(value):
             sublime.status_message('Invalid URL')
             return
-        items = [self.url, value]
         self.branch = value
-        self.run_command('copy', items, on_complete=self.on_complete)
+        sublime.active_window().show_input_panel('Copy message', 'Create branch \'branches/name\'', self.on_message_input, self.nothing, self.nothing)
 
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
