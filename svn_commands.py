@@ -218,7 +218,7 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         """Opens an input panel to get the commit message"""
         sublime.active_window().show_input_panel('Commit message', '', self.on_done_input, self.nothing, self.nothing)
 
-    def on_complete(self, values):
+    def on_complete_select(self, values):
         """Handles completion of the MultiSelect"""
         self.files = values
         self.show_message_panel()
@@ -524,7 +524,7 @@ class HypnoSvnRevertCommand(HypnoSvnCommand):
         """Runs the revert command on the sepcified files."""
         self.run_command('revert', self.files)
 
-    def on_complete(self, values):
+    def on_complete_select(self, values):
         """Handles completion of the MultiSelect"""
         self.files = values
         self.revert()
