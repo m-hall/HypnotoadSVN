@@ -32,8 +32,6 @@
             { "caption": "Lock", "command": "hypno_svn_lock", "args": {"paths":[]}},
             { "caption": "Steal Lock", "command": "hypno_svn_steal_lock", "args": {"paths":[]}},
             { "caption": "Unlock", "command": "hypno_svn_unlock", "args": {"paths":[]}}
-
-
         ]
     },
     { "caption": "-", "id": "end" }
