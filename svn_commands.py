@@ -486,6 +486,7 @@ class HypnoSvnRevertAllCommand(HypnoSvnCommand):
             'versionned': True,
             'enabled': True
         }
+        self.native_only = 'revert'
 
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
@@ -497,10 +498,6 @@ class HypnoSvnRevertAllCommand(HypnoSvnCommand):
         if not util.use_native():
             return
         self.run_command('revert -R', files)
-
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        return not util.prefer_tortoise('revert') and super().is_visible(paths, group, index)
 
 
 class HypnoSvnRevertCommand(HypnoSvnCommand):

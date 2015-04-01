@@ -152,9 +152,10 @@ class HypnoSvnMergeReintegrateCommand(HypnoSvnMergeCommand):
         self.svn_name = 'Merge reintegrate'
         self.tests = {
             'versionned': True,
-            'enabled': True,
+            'native': True,
             'single': True
         }
+        self.native_only = 'merge'
         self.files = None
         self.url = None
         self.branch = None
@@ -180,9 +181,6 @@ class HypnoSvnMergeReintegrateCommand(HypnoSvnMergeCommand):
         """Runs the command"""
         util.debug(self.svn_name)
         files = util.get_files(paths, group, index)
-        if not util.use_native():
-            sublime.status_message('Merge reintegrate is a native SVN only feature.')
-            return
         if not self.verify_changes(files):
             sublime.status_message('Merge cancelled by user.')
             return
