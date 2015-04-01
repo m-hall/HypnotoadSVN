@@ -11,7 +11,7 @@ class Process(Thread):
     """A threaded process"""
     active_processes = []
 
-    def __init__(self, name, cmd, paths=None, log=True, async=False, on_complete=None):
+    def __init__(self, name, cmd, paths=None, log=True, async=False, on_complete=None, username=None, password=None):
         """Initializes a Process object"""
         Thread.__init__(self)
         self.name = name
@@ -27,14 +27,25 @@ class Process(Thread):
         self.loading = 0
         self.returncode = None
         self.on_complete = on_complete
+        cmdString = cmd
+        if username:
+            cmd += ' --username "%s"' % util.escape_quotes(username)
+            cmdString += ' --username "%s"' % util.escape_quotes(username)
+            if password:
+                cmd += ' --password "%s"' % util.escape_quotes(password)
+                cmdString += ' --password "********"'
         if not paths:
             self.command = cmd + ' --non-interactive'
+            cmdString += ' --non-interactive'
         else:
             self.command = cmd + ' --non-interactive ' + self.get_path(paths)
+            cmdString += ' --non-interactive ' + self.get_path(paths)
         if log:
-            output.add_command(self.name, self.command)
+            output.add_command(self.name, cmdString)
             output.add_files(self.paths)
             output.add_result_section()
+
+        # debug will output the real password if included
         util.debug(self.command)
         if self.async:
             self.start()
