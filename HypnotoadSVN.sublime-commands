@@ -16,6 +16,7 @@
     { "caption": "HypnotoadSVN: Update", "command": "hypno_svn_update"},
     { "caption": "HypnotoadSVN: Commit", "command": "hypno_svn_commit"},
     { "caption": "HypnotoadSVN: Merge", "command": "hypno_svn_merge"},
+    { "caption": "HypnotoadSVN: Merge reintegrate", "command": "hypno_svn_merge_reintegrate"},
     { "caption": "HypnotoadSVN: Diff", "command": "hypno_svn_diff"},
     { "caption": "HypnotoadSVN: Diff with previous version", "command": "hypno_svn_diff_previous"},
     { "caption": "HypnotoadSVN: Check for Modifications", "command": "hypno_svn_status"},
