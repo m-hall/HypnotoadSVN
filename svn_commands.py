@@ -373,7 +373,7 @@ class HypnoSvnLogNumberCommand(HypnoSvnCommand):
     def __init__(self, window):
         """Initialize the command object"""
         super().__init__(window)
-        self.svn_name = 'Update to revision'
+        self.svn_name = 'Log N'
         self.tests = {
             'versionned': True,
             'native': True
