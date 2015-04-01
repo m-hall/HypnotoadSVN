@@ -220,6 +220,36 @@ class HypnoSvnSwitchCommand(svn_commands.HypnoSvnCommand):
         pick_branch(self.url, self.on_branch_picked)
 
 
+class HypnoSvnSwitchIgnoreAncestryCommand(svn_commands.HypnoSvnCommand):
+    """Switches the working copy to a different branch"""
+
+    def __init__(self, window):
+        """Initialize the command object"""
+        super().__init__(window)
+        self.svn_name = 'Switch ignore ancestry'
+        self.tests = {
+            'versionned': True,
+            'native': True,
+            'single': True
+        }
+        self.native_only = 'switch'
+        self.files = None
+        self.url = None
+
+    def on_branch_picked(self, value):
+        """Handles selecting a value"""
+        self.run_command('switch --ignore-ancestry ', [value, self.files[0]])
+
+
+    def run(self, paths=None, group=-1, index=-1):
+        """Runs the command"""
+        util.debug(self.svn_name)
+        files = util.get_files(paths, group, index)
+        self.files = files
+        self.url = self.get_url(files[0])
+        pick_branch(self.url, self.on_branch_picked)
+
+
 class HypnoSvnBranchCommand(svn_commands.HypnoSvnCommand):
     """Creates a new branch"""
 
