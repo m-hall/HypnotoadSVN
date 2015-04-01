@@ -60,7 +60,7 @@ else:
         return False
 
 
-def prefer_tortoise(command="Default"):
+def prefer_tortoise(command="default"):
     """Check if TortoiseSVN is preferred over native SVN"""
     if not use_native():
         return use_tortoise()
