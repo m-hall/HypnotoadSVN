@@ -189,13 +189,9 @@ class HypnoSvnCommitCommand(HypnoSvnCommand):
         self.files = None
         self.message = None
 
-    def escape(self, message):
-        """Escapes quotes in a commit message."""
-        return message.replace('"', '\\"')
-
     def commit(self):
         """Runs the native commit command"""
-        self.run_command('commit -m "' + self.escape(self.message) + '"', self.files)
+        self.run_command('commit -m "' + util.escape_quotes(self.message) + '"', self.files)
 
     def verify(self):
         """Checks with the user if the commit is valid"""
