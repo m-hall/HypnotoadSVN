@@ -175,6 +175,20 @@ class HypnoSvnMergeReintegrateCommand(HypnoSvnMergeCommand):
             sublime.error_message('These revisions argument are not in a valid format:\n ' + '\n '.join(argserr))
             return
         self.run_command('merge --reintegrate ' + ' '.join(params), [self.branch, self.files[0]])
+    
+    def run(self, paths=None, group=-1, index=-1):
+        """Runs the command"""
+        util.debug(self.svn_name)
+        files = util.get_files(paths, group, index)
+        if not util.use_native():
+            sublime.status_message('Merge reintegrate is a native SVN only feature.')
+            return
+        if not self.verify_changes(files):
+            sublime.status_message('Merge cancelled by user.')
+            return
+        self.files = files
+        self.url = self.get_url(files[0])
+        pick_branch(self.url, self.on_branch_picked)
 
 
 class HypnoSvnSwitchCommand(svn_commands.HypnoSvnCommand):
