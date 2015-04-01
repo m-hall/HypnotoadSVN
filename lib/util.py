@@ -85,3 +85,8 @@ def debug(message):
 
 def is_url(url):
     return re.match(URL_TEST, url) is not None
+
+
+def escape_quotes(message):
+    """Escapes quotes in a message."""
+    return message.replace('"', '\\"')
