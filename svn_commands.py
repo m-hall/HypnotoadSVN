@@ -29,6 +29,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         self.tests = {
             'enabled': True
         }
+        self.native_only = False
 
     def nothing(self, nothing1=None, nothing2=None, nothing3=None, **args):
         """Does nothing, just a placeholder for things I don't handle"""
@@ -172,6 +173,8 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
             if tests[key] != self.tests[key]:
                 util.debug(self.svn_name + " is not visible because a test failed (%s)" % str(key))
                 return False
+        if self.native_only is not False and util.prefer_tortoise(self.native_only):
+            return False;
         return True
 
 
@@ -375,6 +378,7 @@ class HypnoSvnLogNumberCommand(HypnoSvnCommand):
             'versionned': True,
             'native': True
         }
+        self.native_only = 'log'
         self.files = None
 
     def on_done_input(self, value):
@@ -398,10 +402,6 @@ class HypnoSvnLogNumberCommand(HypnoSvnCommand):
         revisions = settings.get_native('logHistorySize', 20)
 
         sublime.active_window().show_input_panel('Number of logs...', str(revisions), self.on_done_input, self.nothing, self.nothing)
-
-    def is_visible(self, paths=None, group=-1, index=-1):
-        """Checks if the command should be visible"""
-        return not util.prefer_tortoise('log') and super().is_visible(paths, group, index)
 
 
 class HypnoSvnStatusCommand(HypnoSvnCommand):
