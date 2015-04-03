@@ -16,3 +16,10 @@ def create_user_side_bar():
 
     with open(sublime.packages_path() + USER_SIDE_BAR_FILE, 'w', encoding='utf8') as f:
         f.write(side_bar_contents)
+
+
+def remove_user_side_bar():
+    """Remove the sidebar config in the user directory"""
+    if os.path.exists(os.path.join(sublime.packages_path(), 'User', 'HypnotoadSVN')):
+        os.remove(sublime.packages_path() + USER_SIDE_BAR_FILE)
+        os.rmdir(os.path.join(sublime.packages_path(), 'User', 'HypnotoadSVN'))
