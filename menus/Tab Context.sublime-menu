@@ -1,10 +1,10 @@
 [
-    { "caption": "-" },
-    { "caption": "SVN Update", "command": "hypno_svn_update", "args": {"group": -1, "index": -1}},
-    { "caption": "SVN Commit", "command": "hypno_svn_commit", "args": {"group": -1, "index": -1}},
-    { "caption": "SVN Revert", "command": "hypno_svn_revert", "args": {"group": -1, "index": -1}},
-    { "caption": "SVN Diff", "command": "hypno_svn_diff", "args": {"group": -1, "index": -1}},
-    { "caption": "SVN Diff with previous version", "command": "hypno_svn_diff_previous", "args": {"group": -1, "index": -1}},
-    { "caption": "Clear Output", "command": "hypno_output_clear", "args": {"group": -1, "index": -1}},
+    { "caption": "-", "id": "hypnotoadSVN" },
+    { "caption": "SVN Update", "command": "hypno_svn_update", "args": {"group": -1, "index": -1}, "id": "hypnotoadSVN-update" },
+    { "caption": "SVN Commit", "command": "hypno_svn_commit", "args": {"group": -1, "index": -1}, "id": "hypnotoadSVN-commit" },
+    { "caption": "SVN Revert", "command": "hypno_svn_revert", "args": {"group": -1, "index": -1}, "id": "hypnotoadSVN-revert" },
+    { "caption": "SVN Diff", "command": "hypno_svn_diff", "args": {"group": -1, "index": -1}, "id": "hypnotoadSVN-diff" },
+    { "caption": "SVN Diff with previous version", "command": "hypno_svn_diff_previous", "args": {"group": -1, "index": -1}, "id": "hypnotoadSVN-diff-previous" },
+    { "caption": "Clear Output", "command": "hypno_output_clear", "args": {"group": -1, "index": -1}, "id": "hypnotoadSVN-clear" },
     { "caption": "-", "id": "end" }
 ]

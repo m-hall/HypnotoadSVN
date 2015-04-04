@@ -3,6 +3,7 @@
     { "caption": "SVN Update", "command": "hypno_svn_update", "args": {"paths":[]}},
     { "caption": "SVN Commit", "command": "hypno_svn_commit", "args": {"paths":[]}},
     { "caption": "SVN Merge", "command": "hypno_svn_merge", "args": {"paths":[]}},
+    { "caption": "SVN Merge reintegrate", "command": "hypno_svn_merge_reintegrate", "args": {"paths":[]}},
     { "caption": "SVN Diff", "command": "hypno_svn_diff", "args": {"paths":[]}},
     { "caption": "SVN Diff with previous version", "command": "hypno_svn_diff_previous", "args": {"paths":[]}},
     {

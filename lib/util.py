@@ -3,7 +3,7 @@ import os
 import re
 from . import settings
 
-URL_TEST = r"https?:\/\/.*"
+URL_TEST = r"(http|https|svn|svn\+ssh)?:\/\/.*"
 
 
 def get_files(paths=None, group=-1, index=-1, base=None):
@@ -60,7 +60,7 @@ else:
         return False
 
 
-def prefer_tortoise(command="Default"):
+def prefer_tortoise(command="default"):
     """Check if TortoiseSVN is preferred over native SVN"""
     if not use_native():
         return use_tortoise()
