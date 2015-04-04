@@ -8,7 +8,7 @@ import time
 from .lib import util, thread, settings, output, panels
 
 LOG_PARSE = r'-{72}[\r\n]+r(\d+) \| ([^|]+) \| ([^|]+) \| [^\n\r]+[\n\r]+(.+)'
-STATUS_PARSE = r'(^[A-Z\?\!\ >]+?) +(\+ +)?(.*)'
+STATUS_PARSE = r'(^[A-W\?\!\ >]+?) +(\+ +)?(.*)'
 INFO_PARSE_REVISION = r'Revision: (\d+)'
 INFO_PARSE_LAST_CHANGE = r'Last Changed Rev: (\d+)'
 INFO_PARSE_URL = r'URL: ([^\n]*)'
