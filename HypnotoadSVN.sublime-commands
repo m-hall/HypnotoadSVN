@@ -33,6 +33,7 @@
     { "caption": "HypnotoadSVN: Edit Conflicts", "command": "hypno_svn_conflict_editor"},
     { "caption": "HypnotoadSVN: Resolve", "command": "hypno_svn_resolve"},
     { "caption": "HypnotoadSVN: Switch", "command": "hypno_svn_switch"},
+    { "caption": "HypnotoadSVN: Switch ignore ancestry", "command": "hypno_svn_switch_ignore_ancestry"},
     { "caption": "HypnotoadSVN: Branch", "command": "hypno_svn_branch"},
     { "caption": "HypnotoadSVN: Lock", "command": "hypno_svn_lock"},
     { "caption": "HypnotoadSVN: Steal Lock", "command": "hypno_svn_steal_lock"},
