@@ -1,0 +1,22 @@
+HypnotoadSVN 1.3.0
+==================
+
+Features
+--------
+- Added native command "Switch Ignore Ancestry"
+- Added native command "Merge Reintegrate"
+- Add command to reset the side bar
+
+Bugs Fixed
+----------
+- Fix a bug causing the side bar to reset every time the plugin was loaded
+- Menu will now be removed on uninstall
+- Fix incorrect name for "Log N"
+
+Installation Notes
+------------------
+New commands have been added; you can add them to your side bar file in one of 2 ways:
+- run the "HypnotoadSVN: Reset Side Bar" command from the command palette
+- manual copy the commands from the "Side Bar - Default" file to the "Side Bar - User" file
+
+If you have not modified your side bar, then it is recommended that you run the reset command.
