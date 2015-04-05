@@ -43,6 +43,10 @@
 								},
 								"caption": "Side Bar - User"
 							},
+							{
+								"command": "hypno_reset_side_bar",
+								"caption": "Side Bar - Reset To Default"
+							},
 							{ "caption": "-" },
 							{
 								"command": "open_file",
