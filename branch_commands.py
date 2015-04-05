@@ -158,25 +158,11 @@ class HypnoSvnMergeReintegrateCommand(HypnoSvnMergeCommand):
         self.native_only = 'merge'
         self.files = None
         self.url = None
-        self.branch = None
-
-    def on_revisions_picked(self, value):
-        """Verifies that the revisions are valid format then runs the merge"""
-        args = value.split(' ')
-        argserr = []
-        params = []
-        for a in args:
-            if re.match(CHERRYPICK_FORMAT, a):
-                params.append('-c ' + a)
-            elif re.match(REVISIONS_FORMAT, a):
-                params.append('-r ' + a)
-            elif (a != ''):
-                argserr.append(a)
-        if len(argserr) != 0:
-            sublime.error_message('These revisions argument are not in a valid format:\n ' + '\n '.join(argserr))
-            return
-        self.run_command('merge --reintegrate ' + ' '.join(params), [self.branch, self.files[0]])
     
+    def on_branch_picked(self, value):
+        """Handles picking the branch"""
+        self.run_command('merge --reintegrate', [value, self.files[0]])
+
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
         util.debug(self.svn_name)
