@@ -32,6 +32,7 @@ This plugin started from [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/
 
 ## Settings
 - [Documentation for settings](./docs/settings.md)
+- [Modifying your Side Bar](./docs/side-bar.md)
 
 ## Resources
 - [dexbol/sublime-TortoiseSVN](https://github.com/dexbol/sublime-TortoiseSVN)
