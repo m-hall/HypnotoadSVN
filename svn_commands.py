@@ -719,6 +719,31 @@ class HypnoSvnRenameCommand(HypnoSvnCommand):
         sublime.active_window().show_input_panel('Rename...', self.tail, self.on_done_input, self.nothing, self.nothing)
 
 
+class HypnoSvnMoveCommand(HypnoSvnCommand):
+    """Moves a file or folder in SVN"""
+
+    def __init__(self, window):
+        """Initialize the command object"""
+        super().__init__(window)
+        self.svn_name = 'Move'
+        self.tests = {
+            'versionned': True,
+            'native': True, #TortoiseProc does not seem to have an equivalent
+            'single': True
+        }
+
+    def on_done_input(self, value):
+        """Handles completion of an input panel"""
+        self.run_command('mv --parents', [self.src, value])
+
+    def run(self, paths=None, group=-1, index=-1):
+        """Runs the command"""
+        util.debug(self.svn_name)
+        files = util.get_files(paths, group, index)
+        self.src = files[0]
+        sublime.active_window().show_input_panel('Move...', files[0], self.on_done_input, self.nothing, self.nothing)
+
+
 class HypnoSvnBlameCommand(HypnoSvnCommand):
     """Checks who has made the last changes to each line in a file"""
 

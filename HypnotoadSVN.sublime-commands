@@ -27,6 +27,7 @@
     { "caption": "HypnotoadSVN: Update to Revision", "command": "hypno_svn_update_revision"},
     { "caption": "HypnotoadSVN: Add", "command": "hypno_svn_add"},
     { "caption": "HypnotoadSVN: Rename", "command": "hypno_svn_rename"},
+    { "caption": "HypnotoadSVN: Move", "command": "hypno_svn_move"},
     { "caption": "HypnotoadSVN: Delete", "command": "hypno_svn_delete"},
     { "caption": "HypnotoadSVN: Revert", "command": "hypno_svn_revert"},
     { "caption": "HypnotoadSVN: Revert All", "command": "hypno_svn_revert_all"},

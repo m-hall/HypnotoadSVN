@@ -153,6 +153,7 @@ By default, all commands use the default, except for diff and blame, which prefe
 - add
 - delete
 - rename
+- move
 - revert
 - log
 - status

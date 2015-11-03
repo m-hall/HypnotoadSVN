@@ -16,6 +16,7 @@
             { "caption": "Update to Revision", "command": "hypno_svn_update_revision", "args": {"paths":[]}},
             { "caption": "Add", "command": "hypno_svn_add", "args": {"paths":[]}},
             { "caption": "Rename", "command": "hypno_svn_rename", "args": {"paths":[]}},
+            { "caption": "Move", "command": "hypno_svn_move", "args": {"paths":[]}},
             { "caption": "Delete", "command": "hypno_svn_delete", "args": {"paths":[]}},
             { "caption": "Revert", "command": "hypno_svn_revert", "args": {"paths":[]}},
             { "caption": "Revert All", "command": "hypno_svn_revert_all", "args": {"paths":[]}},
