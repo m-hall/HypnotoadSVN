@@ -1,0 +1,16 @@
+HypnotoadSVN 1.4.0
+==================
+
+Features
+--------
+- Added native command "Move"
+- Added preliminary support for external diff programs
+- Revert All can now always be enabled as a shortcut
+
+Installation Notes
+------------------
+New commands have been added; you can add them to your side bar file in one of 2 ways:
+- run the "HypnotoadSVN: Reset Side Bar" command from the command palette
+- manual copy the commands from the "Side Bar - Default" file to the "Side Bar - User" file
+
+If you have not modified your side bar, then it is recommended that you run the reset command.
