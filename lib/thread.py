@@ -11,7 +11,7 @@ class Process(Thread):
     """A threaded process"""
     active_processes = []
 
-    def __init__(self, name, cmd, paths=None, log=True, async=False, on_complete=None):
+    def __init__(self, name, cmd, paths=None, log=True, async=False, on_complete=None, interactive=False):
         """Initializes a Process object"""
         Thread.__init__(self)
         self.name = name
@@ -28,9 +28,15 @@ class Process(Thread):
         self.returncode = None
         self.on_complete = on_complete
         if not paths:
-            self.command = cmd + ' --non-interactive'
+            if interactive:
+                self.command = cmd
+            else:
+                self.command = cmd + ' --non-interactive'
         else:
-            self.command = cmd + ' --non-interactive ' + self.get_path(paths)
+            if interactive:
+                self.command = cmd + ' ' + self.get_path(paths)
+            else:
+                self.command = cmd + ' --non-interactive ' + self.get_path(paths)
         if log:
             output.add_command(self.name, self.command)
             output.add_files(self.paths)

@@ -69,7 +69,13 @@
         // Allow the "revert all" command to be always visible
         // this allows the revert all command to act as a shortcut
         // when revert is set to tortoiseSVN
-        "alwaysEnableRevertAll": false
+        "alwaysEnableRevertAll": false,
+
+        // specify a diff command
+        // use false to use native svn command
+        // diff commands assume that the files are the last parameter for now
+        // also, this is not yet supported for "previous version"
+        "diffCommand": false
     },
 
     // Settings for Tortoise SVN

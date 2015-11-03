@@ -656,7 +656,27 @@ class HypnoSvnDiffCommand(HypnoSvnCommand):
             return
         if not util.use_native():
             return
-        self.run_command('diff', files)
+        command = settings.get_native('diffCommand', False)
+        if command is not False:
+            thread.Process(self.svn_name, command, files, log=False, async=True, interactive=True)
+        else:
+            self.run_command('diff', files)
+
+    def is_visible(self, paths=None, group=-1, index=-1):
+        command = False
+        if not util.prefer_tortoise('diff'):
+            command = settings.get_native('diffCommand', False)
+        if command is not False:
+            tests = self.tests
+            self.tests = {
+                'versionned': True,
+                'enabled': True,
+                'changed': True
+            }
+        value = super().is_visible(paths, group, index)
+        if command is not False:
+            self.tests = tests
+        return value
 
 
 class HypnoSvnDiffPreviousCommand(HypnoSvnCommand):
