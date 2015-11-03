@@ -64,7 +64,12 @@
         // "squiggly": adds a squiggly underline to the selected area
         // "stippled": adds a stippled underline to the selected area
         // "none": no highlight
-        "outputHighlight": "outline"
+        "outputHighlight": "outline",
+
+        // Allow the "revert all" command to be always visible
+        // this allows the revert all command to act as a shortcut
+        // when revert is set to tortoiseSVN
+        "alwaysEnableRevertAll": false
     },
 
     // Settings for Tortoise SVN

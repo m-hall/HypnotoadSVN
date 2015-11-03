@@ -484,7 +484,7 @@ class HypnoSvnRevertAllCommand(HypnoSvnCommand):
         self.svn_name = 'Revert All'
         self.tests = {
             'versionned': True,
-            'enabled': True
+            'native': True
         }
         self.native_only = 'revert'
 
@@ -492,12 +492,14 @@ class HypnoSvnRevertAllCommand(HypnoSvnCommand):
         """Runs the command"""
         util.debug(self.svn_name)
         files = util.get_files(paths, group, index)
-        if util.prefer_tortoise('revert'):
-            self.run_tortoise('revert', files)
-            return
-        if not util.use_native():
-            return
         self.run_command('revert -R', files)
+
+    def is_visible(self, paths=None, group=-1, index=-1):
+        if settings.get_native('alwaysEnableRevertAll', False):
+            self.native_only = False
+        value = super().is_visible(paths, group, index)
+        self.native_only = 'revert'
+        return value
 
 
 class HypnoSvnRevertCommand(HypnoSvnCommand):
