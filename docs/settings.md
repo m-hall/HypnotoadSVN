@@ -114,6 +114,20 @@ You can change the maximum number of revisions to show when getting logs.
 "logHistorySize": 20,
 ```
 
+### Revert All
+You can enable revert all to show even when "revert" is set to "tortoiseSVN". This is designed to allow you to very quickly perform a revert all when you know for certain that you want to revert all files, bypassing the file selection.
+
+```Javascript
+"alwaysEnableRevertAll": True,
+```
+
+### Diffs
+If you have your diff set to "native" then you can change the diff tool used to an external tool. Note that this is not a fully formed feature, so it does not yet work with diff with previous, and it only supports tools that use the file location as the final parameter.
+
+```Javascript
+"diffCommand": "meld"
+```
+
 
 ## Tortoise SVN
 As TortoiseSVN is only available for Windows, this section only applies to Windows users.
