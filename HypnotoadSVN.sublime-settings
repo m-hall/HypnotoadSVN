@@ -20,6 +20,11 @@
         // NOTE: this does not prevent use of native SVN, just enabling the user commands
         "disable": false,
 
+        // The path to the svn binary
+        // leave it to false to use the command "svn"
+        // Make a string with the full path to the binary or command otherwise
+        "svnPath": false,
+
         // Sets the minimum length for a commit message.
         // 0 or less means no message is required
         "commitMessageSize": 0,

@@ -37,7 +37,11 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
 
     def run_command(self, cmd, files=None, log=True, async=True, on_complete=None):
         """Starts a process for a native command"""
-        return thread.Process(self.svn_name, 'svn ' + cmd, files, log, async, on_complete)
+        svn_path = settings.get_native('svnPath', False)
+        if svn_path is False:
+            return thread.Process(self.svn_name, 'svn ' + cmd, files, log, async, on_complete)
+        else:
+            return thread.Process(self.svn_name, svn_path + ' ' + cmd, files, log, async, on_complete)
 
     def run_tortoise(self, cmd, files):
         """Starts a process for a TortoiseSVN command"""

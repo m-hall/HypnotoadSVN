@@ -51,6 +51,20 @@ Allows the user to disable all native SVN commands.
 "disable": false,
 ```
 
+### SVN Path
+Allows you to overwrite the location of the svn command, or to link to it if it's not in your PATH.
+
+```Javascript
+// Default (just use "svn" command instead of full path)
+"svnPath": false
+
+// Windows typically installs it to (with TortoiseSVN)
+"svnPath": "C:\\Program Files\\TortoiseSVN\\bin\\svn.exe"
+
+// OSX typicalls installs it to (with XCode)
+"svnPath": "/Applications/Xcode.app/Contents/Developer/usr/bin/svn"
+```
+
 ### Output
 Modifies the way SVN commands send their output.
 The default "outputTo" option is "panel".
