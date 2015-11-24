@@ -35,13 +35,17 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
         """Does nothing, just a placeholder for things I don't handle"""
         return
 
+    def get_svn_command(self):
+        """Gets the command to run for native SVN"""
+        svn_path = settings.get_native('svnPath', False)
+        if svn_path == false:
+            return 'svn '
+        else:
+            return svn_path + ' '
+
     def run_command(self, cmd, files=None, log=True, async=True, on_complete=None):
         """Starts a process for a native command"""
-        svn_path = settings.get_native('svnPath', False)
-        if svn_path is False:
-            return thread.Process(self.svn_name, 'svn ' + cmd, files, log, async, on_complete)
-        else:
-            return thread.Process(self.svn_name, svn_path + ' ' + cmd, files, log, async, on_complete)
+        return thread.Process(self.svn_name, self.get_svn_path() + cmd, files, log, async, on_complete)
 
     def run_tortoise(self, cmd, files):
         """Starts a process for a TortoiseSVN command"""
@@ -150,7 +154,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
 
     def select_changes(self):
         """Gets the committable changes"""
-        thread.Process('Log', 'svn status', self.files, False, True, self.on_changes_available)
+        thread.Process('Log', self.get_svn_path() + 'status', self.files, False, True, self.on_changes_available)
 
     def get_url(self, file):
         """Gets the svn url for a file"""
@@ -299,7 +303,7 @@ class HypnoSvnUpdateRevisionCommand(HypnoSvnCommand):
 
     def get_revisions(self, revisions):
         """Runs a process to get log output"""
-        thread.Process('Log', 'svn log -r HEAD:1 -l ' + str(revisions), self.files, False, True, self.on_logs_available)
+        thread.Process('Log', self.get_svn_path() + 'log -r HEAD:1 -l ' + str(revisions), self.files, False, True, self.on_logs_available)
 
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
