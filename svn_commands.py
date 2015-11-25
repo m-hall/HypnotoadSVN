@@ -38,7 +38,7 @@ class HypnoSvnCommand(sublime_plugin.WindowCommand):
     def get_svn_path(self):
         """Gets the command to run for native SVN"""
         svn_path = settings.get_native('svnPath', False)
-        if svn_path == false:
+        if svn_path == False:
             return 'svn '
         else:
             return svn_path + ' '
