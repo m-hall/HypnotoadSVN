@@ -16,6 +16,7 @@ Set this value to "current" to use the active view.
 
 ```Javascript
 "commandBaseFiles": "project",
+```
 
 ## Disable SVN Checks
 Disables SVN Info and SVN status checks when opening menus.
