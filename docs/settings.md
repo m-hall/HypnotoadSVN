@@ -9,6 +9,14 @@ This should only be used for development or if there are unexpected behaviors.
 "debug": false,
 ```
 
+## Disable SVN Checks
+Disables SVN Info and SVN status checks when opening menus.
+Enable this feature if you are finding that opening the menus either by right clicking in the folders view or the command palette.
+
+```Javascript
+"disableSVNChecks": false,
+```
+
 ## Command base files
 Sets the files to use for global commands.
 Set this value to "project" to use the root folders/files of the project.
@@ -16,14 +24,6 @@ Set this value to "current" to use the active view.
 
 ```Javascript
 "commandBaseFiles": "project",
-```
-
-## Disable SVN Checks
-Disables SVN Info and SVN status checks when opening menus.
-Enable this feature if you are finding that opening the menus either by right clicking in the folders view or the command palette.
-
-```Javascript
-"disableSVNChecks": false,
 ```
 
 ### Paths
