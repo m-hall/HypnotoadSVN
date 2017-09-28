@@ -308,12 +308,12 @@ class HypnoSvnUpdateRevisionCommand(HypnoSvnCommand):
     def run(self, paths=None, group=-1, index=-1):
         """Runs the command"""
         util.debug(self.svn_name)
+        files = util.get_files(paths, group, index)
         if util.prefer_tortoise('update'):
             self.run_tortoise('update /rev', files)
             return
         if not util.use_native():
             return
-        files = util.get_files(paths, group, index)
         self.files = files
         show_history = settings.get_native('updateToRevisionHistory', True)
         if (show_history):
